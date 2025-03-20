@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/petter/UUV_ws/src/deep_ocean/build/devel/setup.sh

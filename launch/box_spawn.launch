@@ -1,0 +1,14 @@
+<launch>
+
+
+  <!-- Load UUV Simulator’s underwater world -->
+  <include file="$(find uuv_gazebo_worlds)/launch/auv_underwater_world.launch"/>
+
+  <!-- Load the box model -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find deep_ocean)/urdf/box_rov.xacro'"/>
+
+  <!-- Spawn the floating box -->
+  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-param robot_description -urdf -model box_rov"/>
+
+</launch>

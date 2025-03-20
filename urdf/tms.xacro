@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<robot name="tms" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Fluid Density of Water (kg/m³) -->
+  <xacro:property name="fluid_density" value="1028"/>
+
+  <!-- Scaling Factor for the TMS. Greater size means it's easier to dock -->
+  <xacro:property name="scale_factor" value="1"/> <!-- Change this to scale up/down -->
+
+  <!-- Original Dimensions of the TMS -->
+  <xacro:property name="size_x_orig" value="1.64"/>
+  <xacro:property name="size_y_orig" value="1.07"/>
+  <xacro:property name="size_z_orig" value="1.62"/>
+
+  <!-- Scaled Dimensions -->
+  <xacro:property name="size_x" value="${size_x_orig * scale_factor}"/>
+  <xacro:property name="size_y" value="${size_y_orig * scale_factor}"/>
+  <xacro:property name="size_z" value="${size_z_orig * scale_factor}"/>
+
+  <!-- Mass (Scaled) -->
+  <xacro:property name="mass" value="${550 * (scale_factor * scale_factor * scale_factor)}"/>
+
+  <!-- Volume (to ensure neutral buoyancy) -->
+  <xacro:property name="volume" value="${mass / fluid_density}"/>
+
+  <!-- Center of Buoyancy (adjusted based on height) -->
+  <xacro:property name="cob_z" value="${0.5 * size_z}"/>
+
+  <!-- Inertia Calculation -->
+  <xacro:property name="ixx" value="${(1/12) * mass * (size_y * size_y + size_z * size_z)}"/>
+  <xacro:property name="iyy" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
+  <xacro:property name="izz" value="${(1/12) * mass * (size_x * size_x + size_y * size_y)}"/>
+
+  <link name="base_link">
+    <inertial>
+      <mass value="${mass}"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${ixx}" ixy="0.0" ixz="0.0" iyy="${iyy}" iyz="0.0" izz="${izz}"/>
+    </inertial>
+
+    <!-- Visual Representation -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://deep_ocean/meshes/tms_visual.dae" scale="${scale_factor} ${scale_factor} ${scale_factor}"/>
+      </geometry>
+    </visual>
+
+    <!-- Collision Geometry -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://deep_ocean/meshes/tms_collision.stl" scale="${scale_factor} ${scale_factor} ${scale_factor}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo>
+    <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+      <fluid_density>${fluid_density}</fluid_density>
+      <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
+      <debug>0</debug>      
+      <link name="base_link">
+        <neutrally_buoyant>0</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
+        <volume>${volume}</volume>  
+        <box>
+          <width>${size_x}</width>
+          <length>${size_y}</length>
+          <height>${size_z}</height>
+        </box>
+        <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
+
+        <!-- Hydrodynamic Model using Fossen type -->
+        <hydrodynamic_model>
+          <type>fossen</type>
+
+          <!-- Rough Added Mass Estimation -->
+          <added_mass>
+              ${0.1 * mass}  0  0  0  0  0
+              0  ${0.1 * mass}  0  0  0  0  
+              0  0  ${0.1 * mass}  0  0  0
+              0  0  0  ${0.05 * mass}  0  0
+              0  0  0  0  ${0.05 * mass}  0
+              0  0  0  0  0  ${0.05 * mass}
+          </added_mass>
+
+          <!-- Rough Linear Damping Estimation -->
+          <linear_damping>
+              ${-150 * size_x} ${-150 * size_y} ${-150 * size_z} 
+              ${-50 * size_z} ${-50 * size_y} ${-50 * size_x}
+          </linear_damping>
+
+          <quadratic_damping>
+              ${-200 * size_x} ${-200 * size_y} ${-200 * size_z} 
+              ${-75 * size_z} ${-75 * size_y} ${-75 * size_x}
+          </quadratic_damping>
+
+
+        </hydrodynamic_model>
+
+      </link>    
+    </plugin>
+  </gazebo>  
+</robot>

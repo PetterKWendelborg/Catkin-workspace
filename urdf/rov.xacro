@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+
+<robot name="rov" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- Fluid Density of Water (kg/m³) -->
+    <xacro:property name="fluid_density" value="1028"/>
+
+    <!-- Hardcoded Dimensions from the Collision Mesh -->
+    <xacro:property name="size_x" value="0.833"/> <!-- Width -->
+    <xacro:property name="size_y" value="1.25"/>  <!-- Length -->
+    <xacro:property name="size_z" value="0.77"/>  <!-- Height -->
+
+    <!-- Mass of the ROV -->
+    <xacro:property name="mass" value="326"/>
+
+    <!-- Compute Volume to Ensure Neutral Buoyancy -->
+    <xacro:property name="volume" value="${mass / fluid_density}"/>
+
+    <!-- Center of Buoyancy Adjusted -->
+    <xacro:property name="cob_z" value="${0.5 * size_z}"/>
+
+    <!-- Inertia Calculation -->
+    <xacro:property name="ixx" value="${(1/12) * mass * (size_y * size_y + size_z * size_z)}"/>
+    <xacro:property name="iyy" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
+    <xacro:property name="izz" value="${(1/12) * mass * (size_x * size_x + size_y * size_y)}"/>
+
+    <!-- Define Base Link -->
+    <link name="base_link">
+        <inertial>
+            <mass value="${mass}"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="${ixx}" ixy="0.0" ixz="0.0" iyy="${iyy}" iyz="0.0" izz="${izz}"/>
+        </inertial>
+
+        <!-- Visual Representation -->
+        <visual>
+            <geometry>
+                <mesh filename="package://deep_ocean/meshes/rov_visual.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+
+        <!-- Collision Geometry -->
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://deep_ocean/meshes/rov_collision.stl" scale="1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Define Thrusters -->
+    <xacro:macro name="thruster" params="thruster_name x y z roll pitch yaw">
+        <link name="${thruster_name}">
+            <visual>
+                <geometry>
+                    <cylinder length="0.0515" radius="0.067"/>
+                </geometry>
+            </visual>
+            <collision>
+                <geometry>
+                    <cylinder length="0.0515" radius="0.067"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="1.0"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+            </inertial>
+        </link>
+        <joint name="${thruster_name}_joint" type="fixed">
+            <parent link="base_link"/>
+            <child link="${thruster_name}"/>
+            <origin xyz="${x} ${y} ${z}" rpy="${roll} ${pitch} ${yaw}"/>
+        </joint>
+    </xacro:macro>
+
+    <!-- Instantiate Thrusters -->
+    <xacro:thruster thruster_name="thruster_1" x="0.22357" y="-0.56374" z="0.38038" roll="1.5708" pitch="0" yaw="-0.6981"/>
+    <xacro:thruster thruster_name="thruster_2" x="0.3381" y="0.15606" z="0.38038" roll="1.5708" pitch="0" yaw="0.6981"/>
+    <xacro:thruster thruster_name="thruster_3" x="0.30171" y="0.060821" z="0.70723" roll="0.1745" pitch="-0.3491" yaw="0"/>
+    <xacro:thruster thruster_name="thruster_4" x="-0.22357" y="-0.56374" z="0.38038" roll="1.5708" pitch="0" yaw="0.6981"/>
+    <xacro:thruster thruster_name="thruster_5" x="-0.3017" y="0.060821" z="0.70723" roll="0.1745" pitch="0.3491" yaw="0"/>
+    <xacro:thruster thruster_name="thruster_6" x="-0.3381" y="0.15606" z="0.38038" roll="1.5708" pitch="0" yaw="-0.6981"/>
+    <xacro:thruster thruster_name="thruster_7" x="-0.002266" y="-0.39991" z="0.70723" roll="-0.3491" pitch="0" yaw="0"/>
+
+    <gazebo>
+        <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+            <fluid_density>${fluid_density}</fluid_density>
+            <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
+            <debug>0</debug>      
+            <link name="base_link">
+                <neutrally_buoyant>1</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
+                <volume>${volume}</volume>  
+                <box>
+                    <width>${size_x}</width>
+                    <length>${size_y}</length>
+                    <height>${size_z}</height>
+                </box>
+                <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
+
+                <!-- Hydrodynamic Model using Fossen type -->
+                <hydrodynamic_model>
+                    <type>fossen</type>
+
+                    <!-- Rough Added Mass Estimation -->
+                    <added_mass>
+                        ${0.1 * mass}  0  0  0  0  0
+                        0  ${0.1 * mass}  0  0  0  0  
+                        0  0  ${0.1 * mass}  0  0  0
+                        0  0  0  ${0.05 * mass}  0  0
+                        0  0  0  0  ${0.05 * mass}  0
+                        0  0  0  0  0  ${0.05 * mass}
+                    </added_mass>
+
+                    <!-- Rough Linear Damping Estimation -->
+                    <linear_damping>
+                        ${-100 * size_x} ${-100 * size_y} ${-100 * size_z} 
+                        ${-40 * size_z} ${-40 * size_y} ${-40 * size_x}
+                    </linear_damping>
+
+                    <!-- Rough Quadratic Damping Estimation -->
+                    <quadratic_damping>
+                        ${-120 * size_x} ${-120 * size_y} ${-120 * size_z} 
+                        ${-50 * size_z} ${-50 * size_y} ${-50 * size_x}
+                    </quadratic_damping>
+
+                </hydrodynamic_model>
+
+            </link>    
+        </plugin>
+    </gazebo>  
+
+</robot>

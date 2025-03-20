@@ -1,0 +1,20 @@
+<launch>
+  
+    <!-- Start undervannsverden -->
+    <include file="$(find uuv_gazebo_worlds)/launch/auv_underwater_world.launch"/>
+
+    <!-- Spawn ROV -->
+    <group ns="rov">
+        <param name="robot_description" command="$(find xacro)/xacro '$(find deep_ocean)/urdf/rov.xacro'"/>
+        <node name="spawn_rov" pkg="gazebo_ros" type="spawn_model" output="screen"
+              args="-param robot_description -urdf -model rov -x 0 -y 0 -z -2" />
+    </group>
+
+    <!-- Spawn TMS -->
+    <group ns="tms">
+        <param name="robot_description" command="$(find xacro)/xacro '$(find deep_ocean)/urdf/tms.xacro'" />
+        <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
+              args="-param robot_description -urdf -model tms -x 2 -y 0 -z -2" />
+    </group>
+</launch>
+
