@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <robot name="tms" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+  <!-- Necessary for sonar to work -->
+  <xacro:arg name="namespace" default="tms"/>
+  <xacro:include filename="$(find uuv_sensor_ros_plugins)/urdf/sonar_snippets.xacro" />
+  <!-- Necessary for thruster_macro to work -->
+  <xacro:include filename="$(find uuv_descriptions)/urdf/rexrov_actuators_copy.xacro" />
+  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
+  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/thruster_snippets.xacro" />
+  <!-- Necessary for state publishing -->
+  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
+
   <!-- Fluid Density of Water (kg/m³) -->
   <xacro:property name="fluid_density" value="1028"/>
 
@@ -31,16 +41,16 @@
   <xacro:property name="iyy" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
   <xacro:property name="izz" value="${(1/12) * mass * (size_x * size_x + size_y * size_y)}"/>
 
-  <link name="base_link">
+  <link name="$(arg namespace)/base_link">
     <inertial>
       <mass value="${mass}"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
       <inertia ixx="${ixx}" ixy="0.0" ixz="0.0" iyy="${iyy}" iyz="0.0" izz="${izz}"/>
     </inertial>
 
     <!-- Visual Representation -->
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
       <geometry>
         <mesh filename="package://deep_ocean/meshes/tms_visual.dae" scale="${scale_factor} ${scale_factor} ${scale_factor}"/>
       </geometry>
@@ -48,7 +58,7 @@
 
     <!-- Collision Geometry -->
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
       <geometry>
         <mesh filename="package://deep_ocean/meshes/tms_collision.stl" scale="${scale_factor} ${scale_factor} ${scale_factor}"/>
       </geometry>
@@ -60,7 +70,7 @@
       <fluid_density>${fluid_density}</fluid_density>
       <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
       <debug>0</debug>      
-      <link name="base_link">
+      <link name="$(arg namespace)/base_link">
         <neutrally_buoyant>0</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
         <volume>${volume}</volume>  
         <box>
@@ -94,6 +104,15 @@
               ${-200 * size_x} ${-200 * size_y} ${-200 * size_z} 
               ${-75 * size_z} ${-75 * size_y} ${-75 * size_x}
           </quadratic_damping>
+          <linear_damping>
+              ${-150 * size_x} ${-150 * size_y} ${-150 * size_z} 
+              ${-50 * size_z} ${-50 * size_y} ${-50 * size_x}
+          </linear_damping>
+
+          <quadratic_damping>
+              ${-200 * size_x} ${-200 * size_y} ${-200 * size_z} 
+              ${-75 * size_z} ${-75 * size_y} ${-75 * size_x}
+          </quadratic_damping>
 
 
         </hydrodynamic_model>
@@ -101,4 +120,20 @@
       </link>    
     </plugin>
   </gazebo>  
+
+  <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
+
+  <!-- Initilizing thruster macro, might use another macro to achieve thrusters -->
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0">
+    <origin xyz="0.7650895 0.467385 0.528822" rpy="0 0 ${pi/2}"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1">
+    <origin xyz="0.765895 -0.467385 0.528822" rpy="0 0 ${-pi/2}"/>
+  </xacro:thruster_macro>
+
+  <!-- initilizing Sonar macro -->
+  <xacro:forward_multibeam_sonar_m450_130 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link">
+    <origin xyz="-0.9 0 1.02" rpy="0 0 3.14159"/>
+  </xacro:forward_multibeam_sonar_m450_130>
+
 </robot>
