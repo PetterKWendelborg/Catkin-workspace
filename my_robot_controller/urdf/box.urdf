@@ -1,0 +1,337 @@
+<?xml version="1.0"?>
+<robot name = "simple_box">
+
+    <link name = "dummy"/>
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <!--  box size = "0.4 0.4 0.8" -->
+                <!-- <box size = "0.4 0.4 8" /> -->
+
+                <!-- test box for log points -->
+                <box size = "0.4 5 8" />
+
+            </geometry>
+            <material name = "green">
+                <color rgba = "0 1 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.4 0.4 0.8"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value = "10.0"/>
+            <origin xyz = "0 0 0" rpy= "0 0 0"/> 
+            <inertia ixx="1.0" ixy = "0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+        </inertial>
+    </link>
+
+    <joint name= "dummy_joint" type = "fixed">
+        <parent link= "dummy" />
+        <child link= "base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <gazebo reference= "base_link">
+        <material>Gazebo/Green</material>
+        <mu1>0.2</mu1>
+        <mu2>0.2</mu2>
+
+    </gazebo>
+
+    <!-- depth camera -->
+
+    <!-- <link name= "depth_camera_link">
+        <visual>
+            <geometry> 
+                <box size= "0.1 0.1 0.1" />
+            </geometry>
+            <material name= "red" >
+                <color rgba= "1 0 0 1" />
+            </material>
+        </visual>
+        <inertial>
+            <mass value= "0.2" />
+            <origin xyz= "0 0 0" />
+            <inertia ixx= "0.1" ixy= "0.0" ixz= "0.0" iyy= "0.1" iyz= "0.0" izz= "0.1" />
+        </inertial>
+        <collision>
+            <geometry>
+                <box size= "0.1 0.1 0.1" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name= "depth_camera_joint" type= "fixed">
+        <parent link= "base_link" />
+        <child link= "depth_camera_link" />
+        <origin xyz= "0.25 0 3" rpy= "0 0 0"/>
+    </joint>  -->
+
+    <!-- depth camera optical -->
+
+    <!-- <link name= "depth_camera_optical_link"></link>
+
+    <joint name= "depth_camera_optical_joint" type= "fixed">
+        <parent link= "depth_camera_link" />
+        <child link= "depth_camera_optical_link" />
+        <origin xyz= "0 0 0 " rpy= "-1.57 0 -1.57"/>
+    </joint>
+
+    <gazebo reference= "depth_camera_link">
+        <material>Gazebo/Red</material>
+        <sensor name= "depth_camera_link" type= "depth">
+            <visualize>true</visualize>
+            <updateRate>10</updateRate>
+            <camera>
+                <horizontal_fov>1.047</horizontal_fov> 
+                <vertical_fov>1.047</vertical_fov>   
+                <image>
+                    <width>8</width>
+                    <height>8</height>
+                </image>
+                <clip>
+                    <near>0.1</near>
+                    <far>5.0</far>
+                </clip>
+            </camera>
+            <plugin name="depth_camera_sensor" filename="libgazebo_ros_openni_kinect.so">
+                <cameraName>depth_camera</cameraName>
+                <frameName>depth_camera_optical_link</frameName>
+                <alwaysOn>true</alwaysOn>
+                <pointCloudTopicName>points</pointCloudTopicName>
+                
+                <imageTopicName>rgb/image_raw</imageTopicName>
+                <depthImageTopicName>depth/image_raw</depthImageTopicName>
+                <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+                <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName> -->
+                
+                <!-- <baseline>0.1</baseline> -->
+                <!-- <hfov>1.0472</hfov> 
+                <vfov>1.0472</vfov>  -->
+            <!-- </plugin>
+        </sensor>
+    </gazebo> -->
+
+</robot>
+<!-- 
+    <gazebo reference="depth_camera_link">
+        <sensor type="ray" name="conical_lidar">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>true</visualize>
+            <update_rate>10.0</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>16</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-1.047</min_angle>
+                        <max_angle>1.047</max_angle>
+                    </horizontal>
+                    <vertical>
+                        <samples>16</samples> 
+                        <resolution>1</resolution>
+                        <min_angle>-0.26</min_angle>
+                        <max_angle>0.26</max_angle>
+                    </vertical>
+                </scan>
+                <range>
+                    <min>0.1</min>
+                    <max>5.0</max>
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise>
+            </ray>
+            <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_ray_sensor.so">
+                <topicName>sonar</topicName> 
+                <frameName>depth_camera_link</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>  -->
+
+
+    <!-- <gazebo reference="depth_camera_link">
+        <sensor type="gpu_ray" name="conical_lidar_sensor">
+            <pose>0.05 0 0 0 0 0</pose>
+            <visualize>true</visualize>
+            <update_rate>10.0</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>10</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-0.3</min_angle>
+                        <max_angle>0.3</max_angle>
+                    </horizontal>
+                    <vertical>
+                        <samples>10</samples> 
+                        <resolution>1</resolution>
+                        <min_angle>-0.5</min_angle>
+                        <max_angle>0</max_angle>
+                    </vertical>
+                </scan>
+                <range>
+                    <min>0.1</min>
+                    <max>5.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise>
+            </ray>
+            <plugin name="gazebo_ros_gpu_laser" filename="libgazebo_ros_gpu_laser.so">
+                <topicName>sonar</topicName>
+                <frameName>depth_camera_link</frameName>
+                <radiation_type>ultrasound</radiation_type>
+            </plugin>
+        </sensor>
+    </gazebo> -->
+
+    <!-- <gazebo reference="depth_camera_link">
+        <sensor type="ray" name="conical_lidar">
+            <pose>0.05 0 0 0 0 0</pose>
+            <visualize>true</visualize>
+            <update_rate>10</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>24</samples> 
+                        <resolution>1</resolution>
+                        <min_angle>-1.047</min_angle> 
+                        <max_angle>1.047</max_angle> 
+                    </horizontal>
+                    <vertical>
+                        <samples>24</samples> 
+                        <resolution>1</resolution>
+                        <min_angle>-0.5</min_angle> 
+                        <max_angle>0.5</max_angle> 
+                    </vertical>
+                </scan>
+                <range>
+                    <min>0.1</min>
+                    <max>5.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+            </ray>
+            <plugin name="sonar_plugin" filename="libgazebo_ros_range.so">
+                <topicName>sonar</topicName>
+                <radiation_type>ultrasound</radiation_type>
+                <frameName>depth_camera_link</frameName>
+            </plugin>
+        </sensor>
+    </gazebo> -->
+
+
+
+    <!-- <gazebo reference= "depth_camera_link">
+        <material>Gazebo/Red</material>
+        <sensor type= "depth" name= "depth_camera_sensor">
+            <update_rate>10</update_rate>
+            <visualize>true</visualize>
+            <camera>
+                <horizontal_fov>1.047</horizontal_fov> 
+                <vertical_fov>1.047</vertical_fov>   
+                <image>
+                    <width>320</width>
+                    <height>320</height>
+                </image>
+                <clip>
+                    <near>0.1</near>
+                    <far>5.0</far>
+                </clip>
+            </camera>
+            <plugin name= "depth_camera_sensor" filename= "libgazebo_ros_depth_camera.so">
+                <frameName>depth_camera_optical_link</frameName>
+                <cameraName>depth_camera</cameraName>
+                <topicName>sonar</topicName>
+
+            </plugin>
+        </sensor>
+    </gazebo> -->
+
+    <!-- sonar -->
+    
+    <!-- <link name= "sonar_sensor_link">
+        <visual>
+            <geometry> 
+                <box size= "0.1 0.1 0.1" />
+            </geometry>
+            <material name= "red" >
+                <color rgba= "1 0 0 1" />
+            </material>
+        </visual>
+        <inertial>
+            <mass value= "0.2" />
+            <origin xyz= "0 0 0" />
+            <inertia ixx= "0.1" ixy= "0.0" ixz= "0.0" iyy= "0.1" iyz= "0.0" izz= "0.1" />
+        </inertial>
+        <collision>
+            <geometry>
+                <box size= "0.1 0.1 0.1" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name= "sonar_sensor_joint" type= "fixed">
+        <parent link= "base_link" />
+        <child link= "sonar_sensor_link" />
+        <origin xyz= "0.25 0 0.05" rpy= "0 -1.57 0"/>
+    </joint> 
+
+
+    <gazebo reference= "sonar_sensor_link">
+        <material>Gazebo/Red</material>
+        <sensor type= "sonar" name= "sonar_sensor">
+            <update_rate>10.0</update_rate>
+            <visualize>true</visualize>
+            <sonar>
+                <min>0.1</min>
+                <max>5</max>
+                <radius>4</radius>
+                <frequency>50000</frequency>
+            </sonar> 
+            <plugin name= "sonar_sensor" filename= "libgazebo_ros_sonar.so">
+                <alwaysOn>true</alwaysOn>
+                <frameName>sonar_sensor_link</frameName>
+                <topicName>/sonar</topicName>
+
+            </plugin>
+        </sensor>
+    </gazebo>   -->
+    
+    <!-- sonar gazebo plugin -->
+
+    <!-- <gazebo reference= "sonar_sensor_link">
+        <material>Gazebo/Red</material>
+        <sensor type= "ray" name= "sonar_sensor">
+            <update_rate>10.0</update_rate>
+            <visualize>true</visualize>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>10</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-0.1</min_angle>
+                        <max_angle>0.1</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.1</min>
+                    <max>6</max>
+                    <resolution>0.01</resolution>
+                </range>
+            </ray> 
+            <plugin name= "sonar_sensor" filename= "libgazebo_ros_ray_sensor.so">
+                <frameName>sonar_sensor_link</frameName>
+                <output_type>sensor_msgs/Range</output_type>
+            </plugin>
+        </sensor>
+    </gazebo>  -->

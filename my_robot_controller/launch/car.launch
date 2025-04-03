@@ -1,0 +1,72 @@
+<launch>
+  <include file= "$(find gazebo_ros)/launch/empty_world.launch" />
+
+  <group ns= "car">
+    <node name= "spawn_car_urdf" pkg= "gazebo_ros" type= "spawn_model" args= "-param robot_description -urdf -model car -x 0 -y 0 -z 0.1" /> 
+    <param name= "robot_description" textfile= "$(find my_robot_controller)/urdf/car.urdf" />
+    
+    <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher" />
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+    
+    <!-- <node name= "car_drive" pkg= "my_robot_controller" type= "car_circle.py" output= "screen" /> -->
+
+
+    <node name= "log_points" pkg= "my_robot_controller" type= "pointcloud_data_conv.py" output= "screen" /> 
+
+    <node name= "tms_controller" pkg= "my_robot_controller" type= "tms_controller.py" output= "screen" />
+
+  </group>
+
+  
+  <group ns= "box">
+    <node name= "spawn_box_urdf" pkg= "gazebo_ros" type= "spawn_model" args= "-param robot_description -urdf -model box -x 4 -y 0 -z 0.1 -Y 3.14" />
+    <param name= "robot_description" textfile= "$(find my_robot_controller)/urdf/box.urdf" />
+    
+    <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher" />    
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+
+    <!-- <node name= "keys" pkg= "teleop_twist_keyboard" type= "teleop_twist_keyboard.py" output= "screen" /> -->
+    <!-- <node name= "log_points" pkg= "my_robot_controller" type= "pointcloud_data_conv.py" output= "screen" /> -->
+
+    <!-- <node name= "tms_controller" pkg= "my_robot_controller" type= "tms_controller.py" output= "screen" /> -->
+
+  </group>
+
+  <!-- <group ns= "new_box">
+    <node name= "spawn_box_urdf" pkg= "gazebo_ros" type= "spawn_model" args= "-param robot_description -urdf -model new_box -x -4 -y 0 -z 0.1 " />
+    <param name= "robot_description" textfile= "$(find my_robot_controller)/urdf/new_box.urdf" />
+    
+    <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher" />    
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+
+  </group> -->
+
+</launch>
+
+
+  <!-- en annen måte å skrive ns= "car", med remap slik at man kan bytte ut robot_description til noe annet -->
+  <!-- <group ns= "car">
+    <node name= "spawn_car_urdf" pkg= "gazebo_ros" type= "spawn_model" args= "-param car_description -urdf -model car -x 0 -y 0 -z 0.1" /> 
+
+    <param name= "car_description" textfile= "$(find my_robot_controller)/urdf/car.urdf" />
+    
+    <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher">
+      <remap from="robot_description" to="car_description"/>
+    </node>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+      <remap from="robot_description" to="car_description"/>
+    </node>
+
+    <node name= "car_drive" pkg= "my_robot_controller" type= "car_circle.py" output= "screen"/>
+    
+  </group> -->
+
+
+
+
+
+
