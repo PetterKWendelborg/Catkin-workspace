@@ -5,7 +5,7 @@
   <xacro:arg name="namespace" default="tms"/>
   <xacro:include filename="$(find uuv_sensor_ros_plugins)/urdf/sonar_snippets.xacro" />
   <!-- Necessary for thruster_macro to work -->
-  <xacro:include filename="$(find uuv_descriptions)/urdf/rexrov_actuators_copy.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
   <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
   <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/thruster_snippets.xacro" />
   <!-- Necessary for state publishing -->
