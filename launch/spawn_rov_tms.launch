@@ -1,35 +1,56 @@
 <launch>
     
-    <arg name="namespace" default="tms" />
+    <arg name="namespace_tms" default="tms" />
+    <arg name="namespace_rov" default="rov" />
 
     <!-- Start undervannsverden -->
-    <include file="$(find uuv_gazebo_worlds)/launch/auv_underwater_world.launch" />
+    <include file="$(find uuv_gazebo_worlds)/launch/ocean_waves.launch" />
 
     <!-- Spawn ROV -->
-    <!--group ns="rov">
-        <param name="robot_description" command="$(find xacro)/xacro '$(find deep_ocean)/urdf/rov.xacro'" />
+    <group ns="$(arg namespace_rov)">
+        <param name="robot_description" 
+        command="$(find xacro)/xacro '$(find deep_ocean)/urdf/rov.xacro'
+          namespace:=$(arg namespace_rov)" />
+
         <node name="spawn_rov" pkg="gazebo_ros" type="spawn_model" output="screen"
-              args="-param robot_description -urdf -model rov -x 0 -y 0 -z -10" />
-    </group-->
+              args="-param robot_description -urdf -model rov -x 1 -y -2 -z -10" />
+              
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
+          <param name="robot_description" value="/$(arg namespace_rov)/robot_description" />
+          <param name="publish_frequency" value="5" />
+        </node>              
+    </group>
 
     <!-- Spawn TMS -->
-    <group ns="$(arg namespace)">
+    <group ns="$(arg namespace_tms)">
         <param name="robot_description"
         command="$(find xacro)/xacro '$(find deep_ocean)/urdf/tms.xacro'
-          namespace:=$(arg namespace)" />
+          namespace:=$(arg namespace_tms)" />
+
         <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
               args="-param robot_description -urdf -model tms -x 5 -y 0 -z -10" />
 
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
-          <param name="robot_description" value="/$(arg namespace)/robot_description" />
+          <param name="robot_description" value="/$(arg namespace_tms)/robot_description" />
           <param name="publish_frequency" value="5" />
         </node>
+        <node name="ls_two_pc" pkg="deep_ocean" type="ls_two_pc.py" output="screen"/>
+        <node name="pc_converter" pkg="deep_ocean" type="pointcloud_data_conv.py" output="screen"/>
+
+
+        
     </group>
 
   <include file="$(find uuv_assistants)/launch/message_to_tf.launch">
-    <arg name="namespace" value="$(arg namespace)"/>
+    <arg name="namespace" value="$(arg namespace_tms)"/>
     <arg name="world_frame" value="world"/>
-    <arg name="child_frame_id" value="/$(arg namespace)/base_link"/>
+    <arg name="child_frame_id" value="/$(arg namespace_tms)/base_link"/>
+  </include>    
+
+  <include file="$(find uuv_assistants)/launch/message_to_tf.launch">
+    <arg name="namespace" value="$(arg namespace_rov)"/>
+    <arg name="world_frame" value="world"/>
+    <arg name="child_frame_id" value="/$(arg namespace_tms)/base_link"/>
   </include>    
 
     <!--node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find uuv_gazebo)/rviz/tms_sonar.rviz"/-->

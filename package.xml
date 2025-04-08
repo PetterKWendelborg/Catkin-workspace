@@ -65,6 +65,10 @@
   <exec_depend>uuv_descriptions</exec_depend>
   <exec_depend>thruster_snippets</exec_depend>
 
+  <depend>sesnor_msgs</depend>
+  <depend>laser_geometry</depend>
+  <depend>math</depend>
+  <depend>geometry_msgs</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

@@ -5,7 +5,7 @@
   <xacro:arg name="namespace" default="tms"/>
   <xacro:include filename="$(find uuv_sensor_ros_plugins)/urdf/sonar_snippets.xacro" />
   <!-- Necessary for thruster_macro to work -->
-  <xacro:include filename="$(find uuv_descriptions)/urdf/rexrov_actuators_copy.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
   <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
   <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/thruster_snippets.xacro" />
   <!-- Necessary for state publishing -->
@@ -44,7 +44,7 @@
   <link name="$(arg namespace)/base_link">
     <inertial>
       <mass value="${mass}"/>
-      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>5
       <inertia ixx="${ixx}" ixy="0.0" ixz="0.0" iyy="${iyy}" iyz="0.0" izz="${izz}"/>
     </inertial>
 
@@ -64,6 +64,20 @@
       </geometry>
     </collision>
   </link>
+
+  <!-- An attempt to restrict movement in z axis -->
+  <!--joint name="xy_plane_joint" type="planar">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <axis xyz="1 0 0"/>
+    <axis2 xyz="0 1 0"/>
+  </joint>
+
+  <joint name="yaw_joint" type="continuous">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <axis xyz="0 0 1"/>
+  </joint-->
 
   <gazebo>
     <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
@@ -125,10 +139,10 @@
 
   <!-- Initilizing thruster macro, might use another macro to achieve thrusters -->
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0">
-    <origin xyz="0.7650895 0.467385 0.528822" rpy="0 0 ${pi/2}"/>
+    <origin xyz="0.6650895 0.367385 0.828822" rpy="0 0 ${3*pi/4}"/>
   </xacro:thruster_macro>
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1">
-    <origin xyz="0.765895 -0.467385 0.528822" rpy="0 0 ${-pi/2}"/>
+    <origin xyz="0.665895 -0.367385 0.828822" rpy="0 0 ${-3*pi/4}"/>
   </xacro:thruster_macro>
 
   <!-- initilizing Sonar macro -->
