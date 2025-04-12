@@ -3,11 +3,11 @@
 
   <!-- Necessary for sonar to work -->
   <xacro:arg name="namespace" default="tms"/>
-  <xacro:include filename="$(find uuv_sensor_ros_plugins)/urdf/sonar_snippets.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf/sonar_snippets.xacro" />
   <!-- Necessary for thruster_macro to work -->
   <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
   <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
-  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/thruster_snippets.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf/thruster_snippets.xacro" />
   <!-- Necessary for state publishing -->
   <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
 
@@ -118,16 +118,6 @@
               ${-200 * size_x} ${-200 * size_y} ${-200 * size_z} 
               ${-75 * size_z} ${-75 * size_y} ${-75 * size_x}
           </quadratic_damping>
-          <linear_damping>
-              ${-150 * size_x} ${-150 * size_y} ${-150 * size_z} 
-              ${-50 * size_z} ${-50 * size_y} ${-50 * size_x}
-          </linear_damping>
-
-          <quadratic_damping>
-              ${-200 * size_x} ${-200 * size_y} ${-200 * size_z} 
-              ${-75 * size_z} ${-75 * size_y} ${-75 * size_x}
-          </quadratic_damping>
-
 
         </hydrodynamic_model>
 
@@ -138,10 +128,10 @@
   <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
 
   <!-- Initilizing thruster macro, might use another macro to achieve thrusters -->
-  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0">
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0" mesh_scale="1">
     <origin xyz="0.6650895 0.367385 0.828822" rpy="0 0 ${3*pi/4}"/>
   </xacro:thruster_macro>
-  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1">
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1" mesh_scale="1">
     <origin xyz="0.665895 -0.367385 0.828822" rpy="0 0 ${-3*pi/4}"/>
   </xacro:thruster_macro>
 

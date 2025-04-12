@@ -4,15 +4,19 @@
 
   <xacro:arg name="namespace" default="rov"/>
 
-  <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
-  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
-  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/thruster_snippets.xacro" />
+    <!-- Necessary for thrusters -->
+    <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
+    <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
+    <xacro:include filename="$(find deep_ocean)/urdf/thruster_snippets.xacro" />
+    <!-- Necessary for state publishing -->
+    <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
+
     <!-- Fluid Density of Water (kg/m³) -->
     <xacro:property name="fluid_density" value="1028"/>
 
     <!-- Hardcoded Dimensions from the Collision Mesh -->
-    <xacro:property name="size_x" value="0.833"/> <!-- Width -->
-    <xacro:property name="size_y" value="1.25"/>  <!-- Length -->
+    <xacro:property name="size_y" value="0.833"/> <!-- Width -->
+    <xacro:property name="size_x" value="1.25"/>  <!-- Length -->
     <xacro:property name="size_z" value="0.77"/>  <!-- Height -->
 
     <!-- Mass of the ROV -->
@@ -25,9 +29,9 @@
     <xacro:property name="cob_z" value="${0.5 * size_z}"/>
 
     <!-- Inertia Calculation -->
-    <xacro:property name="ixx" value="${(1/12) * mass * (size_y * size_y + size_z * size_z)}"/>
-    <xacro:property name="iyy" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
-    <xacro:property name="izz" value="${(1/12) * mass * (size_x * size_x + size_y * size_y)}"/>
+    <xacro:property name="ixx" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
+    <xacro:property name="iyy" value="${(1/12) * mass * (size_y * size_y + size_z * size_z)}"/>
+    <xacro:property name="izz" value="${(1/12) * mass * (size_y * size_y + size_x * size_x)}"/>
 
     <!-- Define Base Link -->
     <link name="$(arg namespace)/base_link">
@@ -53,64 +57,30 @@
         </collision>
     </link>
 
-    <!-- Define Thrusters -->
-    <xacro:macro name="thruster" params="thruster_name x y z roll pitch yaw">
-        <link name="${thruster_name}">
-            <visual>
-                <geometry>
-                    <cylinder length="0.0515" radius="0.067"/>
-                </geometry>
-            </visual>
-            <collision>
-                <geometry>
-                    <cylinder length="0.0515" radius="0.067"/>
-                </geometry>
-            </collision>
-            <inertial>
-                <mass value="1.0"/>
-                <origin xyz="0 0 0" rpy="0 0 0"/>
-                <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
-            </inertial>
-        </link>
-        <joint name="${thruster_name}_joint" type="fixed">
-            <parent link="$(arg namespace)/base_link"/>
-            <child link="${thruster_name}"/>
-            <origin xyz="${x} ${y} ${z}" rpy="${roll} ${pitch} ${yaw}"/>
-        </joint>
-    </xacro:macro>
-
-    <!-- Instantiate Thrusters -->
-    <xacro:thruster thruster_name="thruster_1" x="0.22357" y="-0.56374" z="0.38038" roll="1.5708" pitch="0" yaw="-0.6981"/>
-    <xacro:thruster thruster_name="thruster_2" x="0.3381" y="0.15606" z="0.38038" roll="1.5708" pitch="0" yaw="0.6981"/>
-    <xacro:thruster thruster_name="thruster_3" x="0.30171" y="0.060821" z="0.70723" roll="0.1745" pitch="-0.3491" yaw="0"/>
-    <xacro:thruster thruster_name="thruster_4" x="-0.22357" y="-0.56374" z="0.38038" roll="1.5708" pitch="0" yaw="0.6981"/>
-    <xacro:thruster thruster_name="thruster_5" x="-0.3017" y="0.060821" z="0.70723" roll="0.1745" pitch="0.3491" yaw="0"/>
-    <xacro:thruster thruster_name="thruster_6" x="-0.3381" y="0.15606" z="0.38038" roll="1.5708" pitch="0" yaw="-0.6981"/>
-    <xacro:thruster thruster_name="thruster_7" x="-0.002266" y="-0.39991" z="0.70723" roll="-0.3491" pitch="0" yaw="0"/>
-
-
-    <!-- All of them are 90 degrees wrong for the moment -->
-  <!--xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0">
-    <origin xyz="0.22357 -0.56374 0.38038" rpy="1.5708 0 -0.6981"/>
+    <!-- Initiating thrusters from UUV -->
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0">
+    <origin xyz="0.56374 0.22357 0.38038" rpy="1.5708 0 ${-0.6981}"/>
   </xacro:thruster_macro>
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1">
-    <origin xyz="0.3381 0.15606 0.38038" rpy="1.5708 0 0.6981"/>
+    <origin xyz="-0.15606 0.3381 0.38038" rpy="1.5708 0 ${0.6981}"/>
   </xacro:thruster_macro>
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="2">
-    <origin xyz="0.30171 0.060821 0.70723" rpy="0.1745 -0.3491 0"/>
+    <origin xyz="-0.060821 0.30171 0.70723" rpy="0.1745 ${-0.3491-pi/2} ${pi/2}"/>
   </xacro:thruster_macro>
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="3">
-    <origin xyz="-0.22357 -0.56374 0.38038" rpy="1.5708 0 0.6981"/>
+    <origin xyz="0.56374 -0.22357 0.38038" rpy="1.5708 0 ${0.6981}"/>
   </xacro:thruster_macro>
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="4">
-    <origin xyz="-0.3017 0.060821 0.70723" rpy="0.1745 0.3491 0"/>
+    <origin xyz="-0.060821 -0.3017 0.70723" rpy="0.1745 ${0.3491-pi/2} ${pi/2}"/>
   </xacro:thruster_macro>
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="5">
-    <origin xyz="-0.3381 0.15606 0.38038" rpy="1.5708 0 -0.6981"/>
+    <origin xyz="-0.15606 -0.3381 0.38038" rpy="1.5708 0 ${-0.6981}"/>
   </xacro:thruster_macro>
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="6">
-    <origin xyz="-0.002266 -0.39991 0.70723" rpy="-0.3491 0 0"/>
-  </xacro:thruster_macro-->
+    <origin xyz="0.39991 -0.002266 0.70723" rpy="-0.3491 ${-pi/2} ${pi/2}"/>
+  </xacro:thruster_macro>
+
+  <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
 
     <gazebo>
         <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
@@ -121,8 +91,8 @@
                 <neutrally_buoyant>1</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
                 <volume>${volume}</volume>  
                 <box>
-                    <width>${size_x}</width>
-                    <length>${size_y}</length>
+                    <width>${size_y}</width>
+                    <length>${size_x}</length>
                     <height>${size_z}</height>
                 </box>
                 <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
@@ -143,14 +113,14 @@
 
                     <!-- Rough Linear Damping Estimation -->
                     <linear_damping>
-                        ${-100 * size_x} ${-100 * size_y} ${-100 * size_z} 
-                        ${-40 * size_z} ${-40 * size_y} ${-40 * size_x}
+                        ${-100 * size_y} ${-100 * size_x} ${-100 * size_z} 
+                        ${-40 * size_z} ${-40 * size_x} ${-40 * size_y}
                     </linear_damping>
 
                     <!-- Rough Quadratic Damping Estimation -->
                     <quadratic_damping>
-                        ${-120 * size_x} ${-120 * size_y} ${-120 * size_z} 
-                        ${-50 * size_z} ${-50 * size_y} ${-50 * size_x}
+                        ${-120 * size_y} ${-120 * size_x} ${-120 * size_z} 
+                        ${-50 * size_z} ${-50 * size_x} ${-50 * size_y}
                     </quadratic_damping>
 
                 </hydrodynamic_model>
