@@ -1,0 +1,6 @@
+<launch>
+    
+    <include file="$(find deep_ocean)/rov_control/launch/start_thruster_manager_rov.launch" />
+    <include file="$(find deep_ocean)/tms_control/launch/start_thruster_manager_tms.launch" />
+
+</launch>

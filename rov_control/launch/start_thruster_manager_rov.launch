@@ -47,4 +47,7 @@
     <arg name="config_file" value="$(arg config_file)"/>
     <arg name="tam_file" value="$(arg tam_file)"/>
    </include>
+
+  <node name="rov_controller" pkg="deep_ocean" type="rov_controller.py" output="screen"/>
+
 </launch>

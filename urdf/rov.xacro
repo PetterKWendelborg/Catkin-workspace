@@ -4,6 +4,9 @@
 
   <xacro:arg name="namespace" default="rov"/>
 
+    <!-- Necessary for sensors -->
+    <xacro:include filename="$(find deep_ocean)/urdf/sonar_snippets.xacro" />
+    <!-- <xacro:include filename="$(find uuv_sensor_ros_plugins)/urdf/sensor_snippets.xacro"/> -->
     <!-- Necessary for thrusters -->
     <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
     <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
@@ -81,6 +84,16 @@
   </xacro:thruster_macro>
 
   <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
+
+    <!-- initilizing Sonar macro -->
+  <xacro:forward_multibeam_sonar_m450_130 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link">
+    <origin xyz="0.63 0 0.63" rpy="0 0 0"/>
+  </xacro:forward_multibeam_sonar_m450_130>
+
+    <!-- mounting camera -->
+  <!--xacro:default_camera namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" suffix="">
+    <origin xyz="0.63 0 0.4" rpy="0 0.6 0"/>
+  </xacro:default_camera-->
 
     <gazebo>
         <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">

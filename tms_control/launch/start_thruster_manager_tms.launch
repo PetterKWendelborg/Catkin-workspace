@@ -48,6 +48,6 @@
     <arg name="tam_file" value="$(arg tam_file)"/>
    </include>
    
-  <!--node name="tms_controller" pkg="deep_ocean" type="tms_controller.py" output="screen"/-->
+  <node name="tms_controller" pkg="deep_ocean" type="tms_controller_second.py" output="screen"/>
   
 </launch>

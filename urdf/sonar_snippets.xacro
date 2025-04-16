@@ -54,20 +54,21 @@
   </xacro:macro>
 
   <!-- Inspired by m450-130: http://www.blueview.com/products/2d-imaging-sonar/m900-series/ -->
-  <xacro:macro name="forward_multibeam_sonar_m450_130" params="namespace parent_link *origin">
+  <xacro:macro name="forward_multibeam_sonar_m450_130" params="namespace parent_link visualize:=true *origin">
     <xacro:multibeam_sonar
       namespace="${namespace}"
       suffix=""
       parent_link="${parent_link}"
       topic="sonar"
-      mass="0.015"
+      mass="0.0001"
       update_rate="25"
       samples="100"
       fov="2.27"
       range_min="1.0"
       range_max="5.0"
       range_stddev="0.027"
-      mesh="">
+      mesh=""
+      visualize="${visualize}">
       <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
       <xacro:insert_block name="origin" />
       <visual>
@@ -104,7 +105,7 @@
 
   <xacro:macro name="multibeam_sonar"
     params="namespace suffix parent_link topic mass update_rate
-      samples fov range_min range_max range_stddev mesh
+      samples fov range_min range_max range_stddev mesh visualize
       *inertia *origin *visual">
     <!-- Sensor link -->
     <link name="${namespace}/sonar${suffix}_link">
@@ -122,14 +123,14 @@
     <xacro:insert_block name="origin" />
     <parent link="${parent_link}" />
     <child link="${namespace}/sonar${suffix}_link" />
-    <limit upper="0.13" lower="0.13" effort="0" velocity="0" />
-    <axis xyz="0 1 0"/>
+    <limit upper="0" lower="0" effort="0" velocity="0" />
+    <axis xyz="1 0 0"/>
   </joint>
 
   <gazebo reference="${namespace}/sonar${suffix}_link">
     <sensor type="gpu_ray" name="sonar${suffix}">
       <pose>0 0 0 0 0 0</pose>
-      <visualize>true</visualize>
+      <visualize>${visualize}</visualize>
       <update_rate>${update_rate}</update_rate>
       <ray>
         <scan>
