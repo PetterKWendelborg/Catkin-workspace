@@ -15,3 +15,12 @@ Mapper og filer som nå ikke blir brukt, men som jeg ikke vet hvordan å fjerne 
 - deep_ocean/config, er blitt erstatet av rov_control og tms_control
 - deep_ocean/launch/alle launch filer inni her som ikke er spawn_rov_tma.launch, start_thruster_manager filene er flyttet til rov_control og tms_control
 - deep_ocean/urdf/kladd.xacro og box_rov.xacro, disse blir ikke brukt noen plasser.
+
+V2
+
+Lagt til flere scripts, slik at ROV også kan headde
+Også flere scripts fra Johnny sin branch slik at TMS har en 3D sonar + scripts som lar den fungere
+ArUco mesh er lagt til i meshes og i TMS.xacro
+Sonar lagt til på ROV
+Endret mass på sonar og thrusters til veldig lite
+IMU er lagt til TMS + graf på slutten av simulering som viser yaw
