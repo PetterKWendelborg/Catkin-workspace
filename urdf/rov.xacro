@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 
 <robot name="rov" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="namespace" default="rov"/>
+
+  <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
+  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
+  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/thruster_snippets.xacro" />
     <!-- Fluid Density of Water (kg/m³) -->
     <xacro:property name="fluid_density" value="1028"/>
 
@@ -24,7 +30,7 @@
     <xacro:property name="izz" value="${(1/12) * mass * (size_x * size_x + size_y * size_y)}"/>
 
     <!-- Define Base Link -->
-    <link name="base_link">
+    <link name="$(arg namespace)/base_link">
         <inertial>
             <mass value="${mass}"/>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -67,7 +73,7 @@
             </inertial>
         </link>
         <joint name="${thruster_name}_joint" type="fixed">
-            <parent link="base_link"/>
+            <parent link="$(arg namespace)/base_link"/>
             <child link="${thruster_name}"/>
             <origin xyz="${x} ${y} ${z}" rpy="${roll} ${pitch} ${yaw}"/>
         </joint>
@@ -82,12 +88,36 @@
     <xacro:thruster thruster_name="thruster_6" x="-0.3381" y="0.15606" z="0.38038" roll="1.5708" pitch="0" yaw="-0.6981"/>
     <xacro:thruster thruster_name="thruster_7" x="-0.002266" y="-0.39991" z="0.70723" roll="-0.3491" pitch="0" yaw="0"/>
 
+
+    <!-- All of them are 90 degrees wrong for the moment -->
+  <!--xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0">
+    <origin xyz="0.22357 -0.56374 0.38038" rpy="1.5708 0 -0.6981"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1">
+    <origin xyz="0.3381 0.15606 0.38038" rpy="1.5708 0 0.6981"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="2">
+    <origin xyz="0.30171 0.060821 0.70723" rpy="0.1745 -0.3491 0"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="3">
+    <origin xyz="-0.22357 -0.56374 0.38038" rpy="1.5708 0 0.6981"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="4">
+    <origin xyz="-0.3017 0.060821 0.70723" rpy="0.1745 0.3491 0"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="5">
+    <origin xyz="-0.3381 0.15606 0.38038" rpy="1.5708 0 -0.6981"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="6">
+    <origin xyz="-0.002266 -0.39991 0.70723" rpy="-0.3491 0 0"/>
+  </xacro:thruster_macro-->
+
     <gazebo>
         <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
             <fluid_density>${fluid_density}</fluid_density>
             <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
             <debug>0</debug>      
-            <link name="base_link">
+            <link name="$(arg namespace)/base_link">
                 <neutrally_buoyant>1</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
                 <volume>${volume}</volume>  
                 <box>
