@@ -26,4 +26,7 @@ Endret mass på sonar og thrusters til veldig lite
 IMU er lagt til TMS + graf på slutten av simulering som viser yaw
 Fjernet ubrukte mapper og filer som nevnt over
 
-La til en Materials mappe, her ligger python scripts for å lage calibrationbrett og ArUco markør, itillegg til en png av hver.
+La til en Materials mappe, her ligger en scripts mappe for python scripts for å lage calibrationbrett og ArUco markør
+og textures mappe som inneholder Aruco og checkerboard pnd og dae filer
+IMU på ROV
+La til ArUco markør og calibration brett i tms og tms_second.xacro
