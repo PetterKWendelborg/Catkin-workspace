@@ -1,7 +1,11 @@
 #!/usr/bin/env python3 
 import rospy
 import math
+import time
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Point, Wrench
+
+condition = False
 
 def center_call(center_msg, pub):
 
@@ -19,23 +23,42 @@ def center_call(center_msg, pub):
     # rospy.loginfo(f"angle to center = {math.degrees(angle_to_center_gaz)} deg") 
 
     tms_wrench_msg = Wrench()
-
+    boolean = Bool()
+    global condition
     if angle_to_center_gaz_deg >= -hyst_window and angle_to_center_gaz_deg <= hyst_window:
         tms_wrench_msg.torque.z = 0
+        
+        #setter timer her?
+        condition = True
+
+        if angle_to_center_gaz_deg >= -hyst_window and angle_to_center_gaz_deg <= hyst_window:
+            rospy.loginfo("pls_head_rov")
+            boolean.data = True
+            condition_pub.publish(boolean)
 
     elif angle_to_center_gaz_deg <= -hyst_window:
         tms_wrench_msg.torque.z = 4
+        condition = False
 
     elif angle_to_center_gaz_deg >= hyst_window:
         tms_wrench_msg.torque.z = -4
+        condition = False
 
     else:
         tms_wrench_msg.torque.z = 0
+        condition = False
 
 
     # tms_twist_msg.angular.z = angle_to_center_gaz
 
     pub.publish(tms_wrench_msg)
+
+    # boolean = Bool()
+    # global condition
+    # if condition == True:
+    #     rospy.loginfo("pls_head_rov")
+    #     boolean.data = True
+    #     condition_pub.publish(boolean)
 
 
 if __name__ == "__main__":
@@ -44,5 +67,8 @@ if __name__ == "__main__":
     cmd_vel_pub = rospy.Publisher("/tms/thruster_manager/input", Wrench, queue_size = 10)
 
     rospy.Subscriber("/rov_center", Point, center_call, cmd_vel_pub)
+    condition_pub = rospy.Publisher("/tms/heading_done", Bool, queue_size = 10)
+
+   
 
     rospy.spin()

@@ -28,8 +28,8 @@ def pc_callback(pc_msg, pub):
 
     
     
-    rov = 1
-    if len(points_list) >= rov:
+    tms = 1
+    if len(points_list) >= tms:
 
         #regner ut hele punktet, men ettersom TMS bare skal rotere z aksen, så tror jeg ikke y behøves
         center_x  = sum(p[0] for p in points_list)/len(points_list)
@@ -37,12 +37,12 @@ def pc_callback(pc_msg, pub):
         center_z  = sum(p[2] for p in points_list)/len(points_list)
 
         #regner ut vinklen til senter punktet, men skal overføre den til annen node
-        angle_to_center = math.asin(center_x/center_z)
+        angle_to_center = math.asin(center_y/center_x)
         # angle_to_center_ros = math.asin(center_y/center_x)
 
-       # rospy.loginfo(f"center point: x= {center_x:.4f} y={center_y:.4f} z={center_z:.4f}")  
-       # rospy.loginfo(f"angle to center = {angle_to_center} rad")  
-        #rospy.loginfo(f"angle to center = {math.degrees(angle_to_center)} deg")  
+#        rospy.loginfo(f"center point: x= {center_x:.4f} y={center_y:.4f} z={center_z:.4f}")  
+#        rospy.loginfo(f"angle to center = {angle_to_center} rad")  
+#        rospy.loginfo(f"angle to center = {math.degrees(angle_to_center)} deg")  
 
         center_msg = Point()
         center_msg.x = center_x
@@ -50,18 +50,18 @@ def pc_callback(pc_msg, pub):
         center_msg.z = center_z
         pub.publish(center_msg)
         
-    #else:
-        #rospy.loginfo("TMS stands still, rov not detected")
+#    else:
+#        rospy.loginfo("TMS stands still, rov not detected")
 
-    #rospy.loginfo(f"-----------------") 
+#    rospy.loginfo(f"-----------------") 
 
 if __name__ == "__main__":
     rospy.init_node("pointcloud_points")
 
 
-    center_pub = rospy.Publisher("/rov_center", Point, queue_size=10)
+    center_pub = rospy.Publisher("/tms_center", Point, queue_size=10)
 
-    rospy.Subscriber("/tms/depth_camera/points",PointCloud2,pc_callback, center_pub)
+    rospy.Subscriber("rov/sonar/pointcloud",PointCloud2,pc_callback, center_pub)
 
     rospy.spin()
 
