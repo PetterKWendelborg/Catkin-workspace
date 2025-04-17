@@ -66,22 +66,6 @@
     </collision>
   </link>
 
-  <!-- Spawning in ArUco marker -->
-  <link name="$(arg namespace)/aruco_marker">
-  <visual>
-    <origin xyz="0.25 0 0.2" rpy="0 0 0"/>  <!-- Adjust position as needed -->
-    <geometry>
-      <mesh filename="file://$(find deep_ocean)/meshes/Marker0.dae"/>
-    </geometry>
-  </visual>
-  </link>
-
-  <joint name="$(arg namespace)/aruco_joint" type="fixed">
-    <parent link="$(arg namespace)/base_link"/>  <!-- Adjust parent as needed -->
-    <child link="$(arg namespace)/aruco_marker"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>  <!-- Position on top front of vehicle -->
-  </joint>
-
   <gazebo>
     <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
       <fluid_density>${fluid_density}</fluid_density>
@@ -270,5 +254,37 @@
       <pose>0 0 0 0 0 0</pose>
     </sensor>
   </gazebo>
+
+  <!-- Spawning in ArUco marker -->
+  <link name="$(arg namespace)/aruco_marker">
+  <visual>
+    <origin xyz="0.25 0 0.41" rpy="${pi/2} 0 ${-pi/2}"/>
+    <geometry>
+      <mesh filename="file://$(find deep_ocean)/materials/textures/marker_0.dae" scale="0.6 0.6 0.6"/>
+    </geometry>
+  </visual>
+  </link>
+
+  <joint name="$(arg namespace)/aruco_joint" type="fixed">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/aruco_marker"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Spawning a calibration board of 7x10 dimension -->
+  <link name="$(arg namespace)/calibration_board">
+  <visual>
+    <origin xyz="-2 1 0.4" rpy="${pi/2} 0 ${-pi/2}"/>
+    <geometry>
+      <mesh filename="file://$(find deep_ocean)/materials/textures/checkerboard_7x10_bordered.dae" scale="0.6 0.6 0.6"/>
+    </geometry>
+  </visual>
+  </link>
+
+  <joint name="$(arg namespace)/checker_joint" type="fixed">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/calibration_board"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
 
 </robot>
