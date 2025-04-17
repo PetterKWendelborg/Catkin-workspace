@@ -20,7 +20,8 @@ V2
 
 Lagt til flere scripts, slik at ROV også kan headde
 Også flere scripts fra Johnny sin branch slik at TMS har en 3D sonar + scripts som lar den fungere
-ArUco mesh er lagt til i meshes og i TMS.xacro
+ArUco mesh er lagt til i meshes og i TMS.xacro, både .png og .dae
 Sonar lagt til på ROV
 Endret mass på sonar og thrusters til veldig lite
 IMU er lagt til TMS + graf på slutten av simulering som viser yaw
+Fjernet ubrukte mapper og filer som nevnt over
