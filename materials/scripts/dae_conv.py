@@ -2,13 +2,16 @@ import bpy
 import os
 from math import sqrt
 
+# To run this file use this in terminal
+# blender --background --python dae_conv.py
+
 # Clear existing objects
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 # Settings
-marker_path = "marker_0.png"  # Change this
-output_dae = "marker_0.dae"  # Change this
-marker_size = 1.0  # Base size in meters (will be applied to the longer dimension)
+marker_path = "marker_3.png"  # Change this
+output_dae = "marker_4x4_3.dae"  # Change this
+marker_size = 0.1  # Base size in meters (will be applied to the longer dimension)
 
 # Load image to get dimensions
 image = bpy.data.images.load(marker_path)

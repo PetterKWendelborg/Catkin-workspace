@@ -2,9 +2,9 @@ import cv2
 import cv2.aruco as aruco
 
 def generate_bulk_markers(aruco_dict):
-    # Prompt the user for input
+    # Size and number of ArUco markers
     marker_size = 300
-    num_markers = 1
+    num_markers = 4
     
     # Initialize list to store generated markers
     marker_imgs = []
@@ -27,7 +27,7 @@ def generate_bulk_markers(aruco_dict):
 
 def main():
     # Use correct dictionary name (DICT_4X4_50, DICT_5X5_50, etc.)
-    aruco_dict = aruco.Dictionary_get(aruco.DICT_5X5_50)
+    aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_50)
     
     # Call the generation function
     generate_bulk_markers(aruco_dict)

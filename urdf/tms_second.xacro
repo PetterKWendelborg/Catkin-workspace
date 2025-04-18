@@ -255,12 +255,12 @@
     </sensor>
   </gazebo>
 
-  <!-- Spawning in ArUco marker -->
+  <!-- Spawning in ArUco 5x5 marker -->
   <link name="$(arg namespace)/aruco_marker">
   <visual>
     <origin xyz="0.25 0 0.41" rpy="${pi/2} 0 ${-pi/2}"/>
     <geometry>
-      <mesh filename="file://$(find deep_ocean)/materials/textures/marker_0.dae" scale="0.6 0.6 0.6"/>
+      <mesh filename="file://$(find deep_ocean)/materials/textures/marker_5x5_0.dae" scale="0.6 0.6 0.6"/>
     </geometry>
   </visual>
   </link>
