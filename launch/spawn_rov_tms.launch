@@ -10,7 +10,7 @@
     <!-- Spawn ROV -->
     <group ns="$(arg namespace_rov)">
         <param name="robot_description" 
-        command="$(find xacro)/xacro '$(find deep_ocean)/urdf/rov.xacro'
+        command="$(find xacro)/xacro '$(find deep_ocean)/robots/rov.xacro'
           namespace:=$(arg namespace_rov)" />
 
         <node name="spawn_rov" pkg="gazebo_ros" type="spawn_model" output="screen"
@@ -27,10 +27,10 @@
 
     </group>
 
-    <!-- Spawn TMS -->
+    <!-- Spawn TMS w/ 3D sonar-->
     <group ns="$(arg namespace_tms)">
         <param name="robot_description"
-        command="$(find xacro)/xacro '$(find deep_ocean)/urdf/tms_second.xacro'
+        command="$(find xacro)/xacro '$(find deep_ocean)/robots/tms_second.xacro'
           namespace:=$(arg namespace_tms)
           visualize:=$(arg visualize)" />
 
@@ -49,9 +49,10 @@
         <node name="z_values" pkg="deep_ocean" type="time_and_angular_velocity_z_values.py" output="screen" />
     </group>
 
-    <!--group ns="$(arg namespace_tms)">
+    <!-- Spawn TMS w/ 2D FLS -->
+    <!-- <group ns="$(arg namespace_tms)">
         <param name="robot_description"
-        command="$(find xacro)/xacro '$(find deep_ocean)/urdf/tms_second.xacro'
+        command="$(find xacro)/xacro '$(find deep_ocean)/robots/tms_second.xacro'
           namespace:=$(arg namespace_tms)
           visualize:=$(arg visualize)" />
 
@@ -66,7 +67,7 @@
         <node name="ls_two_pc" pkg="deep_ocean" type="ls_two_pc.py" output="screen"/>
         
         <node name="pc_converter" pkg="deep_ocean" type="pointcloud_data_conv.py" output="screen"/>
-    </group-->
+    </group> -->
 
   <include file="$(find uuv_assistants)/launch/message_to_tf.launch">
     <arg name="namespace" value="$(arg namespace_tms)"/>
