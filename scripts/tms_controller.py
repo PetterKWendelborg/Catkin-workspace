@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     heading_done_pub = rospy.Publisher("/tms/heading_done", Bool, queue_size = 10)
 
-    rospy.Subscriber("/rov_center", Point, center_call, cmd_vel_pub)
+    rospy.Subscriber("/tms/rov_center", Point, center_call, cmd_vel_pub)
 
     rospy.spin()
 

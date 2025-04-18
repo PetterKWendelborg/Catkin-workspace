@@ -16,7 +16,7 @@ def scan_cb(msg):
 if __name__ == '__main__':
     rospy.init_node("ls_two_pc_rov")
     
-    pc_pub = rospy.Publisher("rov/sonar/pointcloud", PointCloud2, queue_size=10)
+    pc_pub = rospy.Publisher("/rov/sonar/pointcloud", PointCloud2, queue_size=10)
     scan_sub = rospy.Subscriber("/rov/sonar", LaserScan, scan_cb)
 
     rospy.spin()

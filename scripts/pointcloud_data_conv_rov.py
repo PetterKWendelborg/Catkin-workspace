@@ -59,9 +59,9 @@ if __name__ == "__main__":
     rospy.init_node("pointcloud_points")
 
 
-    center_pub = rospy.Publisher("/tms_center", Point, queue_size=10)
+    center_pub = rospy.Publisher("/rov/tms_center", Point, queue_size=10)
 
-    rospy.Subscriber("rov/sonar/pointcloud",PointCloud2,pc_callback, center_pub)
+    rospy.Subscriber("/rov/sonar/pointcloud",PointCloud2,pc_callback, center_pub)
 
     rospy.spin()
 

@@ -42,7 +42,7 @@ def pc_callback(pc_msg, pub):
 
        # rospy.loginfo(f"center point: x= {center_x:.4f} y={center_y:.4f} z={center_z:.4f}")  
        # rospy.loginfo(f"angle to center = {angle_to_center} rad")  
-        #rospy.loginfo(f"angle to center = {math.degrees(angle_to_center)} deg")  
+        rospy.loginfo(f"angle to center = {math.degrees(angle_to_center)} deg")  
 
         center_msg = Point()
         center_msg.x = center_x
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     rospy.init_node("pointcloud_points")
 
 
-    center_pub = rospy.Publisher("/rov_center", Point, queue_size=10)
+    center_pub = rospy.Publisher("/tms/rov_center", Point, queue_size=10)
 
     rospy.Subscriber("/tms/depth_camera/points",PointCloud2,pc_callback, center_pub)
 

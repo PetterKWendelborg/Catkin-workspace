@@ -31,8 +31,8 @@ axis_size = 0.05
 def image_callback(msg):
 
     try:
-        # frame = cv_bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
-        frame = cv_bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")  
+        frame = cv_bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+        # frame = cv_bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")  
         # rospy.loginfo("camera source found") 
             
     except Exception as e:
@@ -51,6 +51,7 @@ def image_callback(msg):
 
     if ids is not None:    
         rospy.loginfo("id found")
+        # rospy.sleep(2)
         aruco.drawDetectedMarkers(frame, corners, ids)
 
 

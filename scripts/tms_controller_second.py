@@ -5,13 +5,15 @@ import time
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Point, Wrench
 
-condition = False
+last_time_in_window = None
 
 def center_call(center_msg, pub):
-
+    global last_time_in_window
     center_x = center_msg.x
     center_z = center_msg.z
-    hyst_window = 3.0
+    hyst_window = 3
+    hysteresis_duration = 4
+    now = rospy.get_time()
 
     if center_z != 0:
         angle_to_center = math.asin(center_x/center_z)
@@ -24,51 +26,42 @@ def center_call(center_msg, pub):
 
     tms_wrench_msg = Wrench()
     boolean = Bool()
-    global condition
+
     if angle_to_center_gaz_deg >= -hyst_window and angle_to_center_gaz_deg <= hyst_window:
         tms_wrench_msg.torque.z = 0
         
-        #setter timer her?
-        condition = True
 
-        if angle_to_center_gaz_deg >= -hyst_window and angle_to_center_gaz_deg <= hyst_window:
-            rospy.loginfo("pls_head_rov")
+        if last_time_in_window is None:
+            last_time_in_window = now
+
+        elif now - last_time_in_window >= hysteresis_duration:
+            # Stayed in window for enough time
+            rospy.loginfo("plz_head_rov")
             boolean.data = True
             condition_pub.publish(boolean)
+            rospy.signal_shutdown("Condition met")
 
     elif angle_to_center_gaz_deg <= -hyst_window:
         tms_wrench_msg.torque.z = 4
-        condition = False
+        
+        last_time_in_window = None
 
     elif angle_to_center_gaz_deg >= hyst_window:
         tms_wrench_msg.torque.z = -4
-        condition = False
+        
+        last_time_in_window = None
 
     else:
         tms_wrench_msg.torque.z = 0
-        condition = False
-
-
-    # tms_twist_msg.angular.z = angle_to_center_gaz
-
+    
+        last_time_in_window = None
     pub.publish(tms_wrench_msg)
-
-    # boolean = Bool()
-    # global condition
-    # if condition == True:
-    #     rospy.loginfo("pls_head_rov")
-    #     boolean.data = True
-    #     condition_pub.publish(boolean)
-
-
 if __name__ == "__main__":
     rospy.init_node("tms_heading")
     
     cmd_vel_pub = rospy.Publisher("/tms/thruster_manager/input", Wrench, queue_size = 10)
 
-    rospy.Subscriber("/rov_center", Point, center_call, cmd_vel_pub)
+    rospy.Subscriber("/tms/rov_center", Point, center_call, cmd_vel_pub)
     condition_pub = rospy.Publisher("/tms/heading_done", Bool, queue_size = 10)
-
-   
 
     rospy.spin()

@@ -4,16 +4,22 @@ import math
 from geometry_msgs.msg import Point, Wrench
 import time
 from std_msgs.msg import Bool
-condition = False
+tms_heading_done = False
+last_time_in_window = None
+
 def center_call(center_msg, pub):
-    global condition
+    # global condition
     center_x = center_msg.x
     center_y = center_msg.y
-    rospy.loginfo(f"{center_x}, {center_y}")
+    # rospy.loginfo(f"{center_x}, {center_y}")
     hyst_window = 3.0
-    if condition == True:
-        
+    hysteresis_duration = 4
+    now = rospy.get_time()
+    global last_time_in_window
+    global tms_heading_done
 
+    if tms_heading_done:
+        # rospy.loginfo("ready to turn")
         if center_y != 0:
             angle_to_center = math.asin(center_y/center_x)
         else:
@@ -22,17 +28,30 @@ def center_call(center_msg, pub):
         angle_to_center_gaz_deg = math.degrees(angle_to_center)
         # rospy.loginfo(f"angle to center = {angle_to_center_gaz} rad")  
         # rospy.loginfo(f"angle to center = {math.degrees(angle_to_center_gaz)} deg") 
-
+        rospy.loginfo(f"ready to turn{math.degrees(angle_to_center)}")
         rov_wrench_msg = Wrench()
+        boolean = Bool()
 
         if angle_to_center_gaz_deg >= -hyst_window and angle_to_center_gaz_deg <= hyst_window:
             rov_wrench_msg.torque.z = 0
 
+
+            if last_time_in_window is None:
+                last_time_in_window = now
+
+            elif now - last_time_in_window >= hysteresis_duration:
+                # Stayed in window for enough time
+                rospy.loginfo("plz_move_forward_rov")
+                boolean.data = True
+                tms_heading_done_pub.publish(boolean)
+                rospy.signal_shutdown("Condition met")
+
         elif angle_to_center_gaz_deg <= -hyst_window:
-            rov_wrench_msg.torque.z = -4
+            rov_wrench_msg.torque.z = -2
 
         elif angle_to_center_gaz_deg >= hyst_window:
-            rov_wrench_msg.torque.z = 4
+            rov_wrench_msg.torque.z = 2
+            rospy.loginfo("turn right")
 
         else:
             rov_wrench_msg.torque.z = 0
@@ -40,16 +59,12 @@ def center_call(center_msg, pub):
         pub.publish(rov_wrench_msg)
     
     else:
-        rospy.loginfo(f"condition is {condition}")
-
-
-    # rov_twist_msg.angular.z = angle_to_center_gaz
-
+        rospy.loginfo(f"condition is {tms_heading_done}")
 
 def condition_call(msg):
-    global condition
+    global tms_heading_done
     if msg.data:
-        condition = msg.data
+        tms_heading_done = msg.data
 
 
 if __name__ == "__main__":
@@ -57,8 +72,9 @@ if __name__ == "__main__":
     
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     
-    rospy.Subscriber("/tms_center", Point, center_call, cmd_vel_pub)
+    rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
     
     rospy.Subscriber("/tms/heading_done", Bool, condition_call)
+    tms_heading_done_pub = rospy.Publisher("/rov/heading_done", Bool, queue_size = 10)
     rospy.spin()
 
