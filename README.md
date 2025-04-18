@@ -30,3 +30,7 @@ La til en Materials mappe, her ligger en scripts mappe for python scripts for å
 og textures mappe som inneholder Aruco og checkerboard pnd og dae filer
 IMU på ROV
 La til ArUco markør og calibration brett i tms og tms_second.xacro
+
+
+Lagd ny mappe som heter robots der tms-ene og rov-en ligger, endret launch filen slik at det fungere med de nye plasseringene
+la til 4 nye 4x4 ArUco markører i materials/textures, men de er ikke i bruk enda
