@@ -37,7 +37,7 @@ def pc_callback(pc_msg, pub):
         center_z  = sum(p[2] for p in points_list)/len(points_list)
 
         #regner ut vinklen til senter punktet, men skal overføre den til annen node
-        angle_to_center = math.asin(center_y/center_x)
+        angle_to_center = math.asin(center_x/center_z)
         # angle_to_center_ros = math.asin(center_y/center_x)
 
 #        rospy.loginfo(f"center point: x= {center_x:.4f} y={center_y:.4f} z={center_z:.4f}")  
@@ -59,8 +59,8 @@ if __name__ == "__main__":
     rospy.init_node("pointcloud_points")
 
     center_pub = rospy.Publisher("/rov/tms_center", Point, queue_size=10)
-
-    rospy.Subscriber("/rov/sonar/pointcloud",PointCloud2,pc_callback, center_pub)
+    
+    rospy.Subscriber("/rov/depth_camera/points",PointCloud2,pc_callback, center_pub)
 
     rospy.spin()
 
