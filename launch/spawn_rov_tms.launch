@@ -1,6 +1,7 @@
 <launch>
     
     <arg name="namespace_tms" default="tms" />
+    <arg name="sonar_type" default="3d" />  <!-- '3d' or '2d' -->
     <arg name="namespace_rov" default="rov" />
     <arg name="visualize" default="true" />
 
@@ -8,69 +9,75 @@
     <include file="$(find uuv_gazebo_worlds)/launch/ocean_waves.launch" />
 
     <!-- Spawn ROV -->
-    <group ns="$(arg namespace_rov)">
-        <param name="robot_description" 
-        command="$(find xacro)/xacro '$(find deep_ocean)/robots/rov_threed.xacro'
-          namespace:=$(arg namespace_rov)" />
-
-        <node name="spawn_rov" pkg="gazebo_ros" type="spawn_model" output="screen"
-              args="-param /$(arg namespace_rov)/robot_description -urdf -model rov -x 1 -y -1 -z -9.9" />
-              
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
-          <remap from="robot_description" to="/$(arg namespace_rov)/robot_description" />
-          <param name="publish_frequency" value="5" />
-        </node>              
-        <!-- 2d sonar-->
-        <!-- <node name="ls_two_pc" pkg="deep_ocean" type="ls_two_pc_rov.py" output="screen"/>
-        <node name="pc_converter" pkg="deep_ocean" type="pointcloud_data_conv_rov.py" output="screen"/> -->
-
-        <!-- 3d sonar -->
-        <node name="pc_converter" pkg="deep_ocean" type="pointcloud_data_conv_rov_threed.py" output="screen"/>
 
 
+  <!-- Spawn ROV (Conditional Selection) -->
+  <group ns="$(arg namespace_rov)">
+    <!-- Load robot description (3D or 2D) -->
+    <param name="robot_description"
+      command="$(find xacro)/xacro '$(find deep_ocean)/robots/rov_$(arg sonar_type)_sonar.xacro'
+        namespace:=$(arg namespace_rov)
+        visualize:=$(arg visualize)" />
+
+    <!-- Spawn model in Gazebo (same for both) -->
+    <node name="spawn_rov" pkg="gazebo_ros" type="spawn_model" output="screen"
+          args="-param /$(arg namespace_rov)/robot_description -urdf -model rov -x 1 -y 1 -z -10" />
+
+    <!-- Robot state publisher (same for both) -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
+      <param name="robot_description" value="/$(arg namespace_rov)/robot_description" />
+      <param name="publish_frequency" value="5" />
+    </node>
+
+    <!-- 3D Sonar Nodes -->
+    <group if="$(eval sonar_type == '3d')">
+      <node name="ls_two_pc" pkg="deep_ocean" type="laserscan_to_pointcloud_rov.py" output="screen"/>
+      <node name="pc_converter" pkg="deep_ocean" type="pointcloud_to_xyz_3d_rov.py" output="screen"/>
+      <node name="z_values" pkg="deep_ocean" type="angular_velocity_z_rov.py" output="screen" />
     </group>
 
-    <!-- Spawn TMS w/ 3D sonar-->
-    <group ns="$(arg namespace_tms)">
-        <param name="robot_description"
-        command="$(find xacro)/xacro '$(find deep_ocean)/robots/tms_threed.xacro'
-          namespace:=$(arg namespace_tms)
-          visualize:=$(arg visualize)" />
+    <!-- 2D FLS Nodes -->
+    <group unless="$(eval sonar_type == '3d')">
+      <node name="ls_two_pc" pkg="deep_ocean" type="laserscan_to_pointcloud_rov.py" output="screen"/>
+      <node name="pc_converter" pkg="deep_ocean" type="pointcloud_to_xyz_2d_rov.py" output="screen"/>
+    </group>
+  </group>
 
-        <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
-              args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 5 -y 0 -z -10" />
 
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
-          <param name="robot_description" value="/$(arg namespace_tms)/robot_description" />
-          <param name="publish_frequency" value="5" />
-        </node>
 
-        <node name="ls_two_pc" pkg="deep_ocean" type="ls_two_pc_tms.py" output="screen"/>
-        
-        <node name="pc_converter" pkg="deep_ocean" type="pointcloud_data_conv_tms_threed.py" output="screen"/>
+  <!-- Spawn TMS (Conditional Selection) -->
+  <group ns="$(arg namespace_tms)">
+    <!-- Load robot description (3D or 2D) -->
+    <param name="robot_description"
+      command="$(find xacro)/xacro '$(find deep_ocean)/robots/tms_$(arg sonar_type)_sonar.xacro'
+        namespace:=$(arg namespace_tms)
+        visualize:=$(arg visualize)" />
 
-        <node name="z_values" pkg="deep_ocean" type="tms_angular_velocity_z.py" output="screen" />
+    <!-- Spawn model in Gazebo (same for both) -->
+    <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
+          args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 5 -y 0 -z -10" />
+
+    <!-- Robot state publisher (same for both) -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
+      <param name="robot_description" value="/$(arg namespace_tms)/robot_description" />
+      <param name="publish_frequency" value="5" />
+    </node>
+
+    <!-- 3D Sonar Nodes -->
+    <group if="$(eval sonar_type == '3d')">
+      <node name="ls_two_pc" pkg="deep_ocean" type="laserscan_to_pointcloud_tms.py" output="screen"/>
+      <node name="pc_converter" pkg="deep_ocean" type="pointcloud_to_xyz_3d_tms.py" output="screen"/>
+      <node name="z_values" pkg="deep_ocean" type="angular_velocity_z_tms.py" output="screen" />
     </group>
 
-    <!-- Spawn TMS w/ 2D FLS -->
-    <!-- <group ns="$(arg namespace_tms)">
-        <param name="robot_description"
-        command="$(find xacro)/xacro '$(find deep_ocean)/robots/tms_second.xacro'
-          namespace:=$(arg namespace_tms)
-          visualize:=$(arg visualize)" />
+    <!-- 2D FLS Nodes -->
+    <group unless="$(eval sonar_type == '3d')">
+      <node name="ls_two_pc" pkg="deep_ocean" type="laserscan_to_pointcloud_tms.py" output="screen"/>
+      <node name="pc_converter" pkg="deep_ocean" type="pointcloud_to_xyz_2d_tms.py" output="screen"/>
+    </group>
+  </group>
 
-        <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
-              args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 5 -y 0 -z -10" />
 
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
-          <param name="robot_description" value="/$(arg namespace_tms)/robot_description" />
-          <param name="publish_frequency" value="5" />
-        </node>
-
-        <node name="ls_two_pc" pkg="deep_ocean" type="ls_two_pc.py" output="screen"/>
-        
-        <node name="pc_converter" pkg="deep_ocean" type="pointcloud_data_conv.py" output="screen"/>
-    </group> -->
 
   <include file="$(find uuv_assistants)/launch/message_to_tf.launch">
     <arg name="namespace" value="$(arg namespace_tms)"/>
