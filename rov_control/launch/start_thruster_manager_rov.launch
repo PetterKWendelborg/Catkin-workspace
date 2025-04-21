@@ -5,6 +5,8 @@
   <arg name="uuv_name" default="$(arg model_name)"/>
   <!-- Name of the base link -->
   <arg name="base_link" default="base_link" />
+
+  <arg name="sonar_type" default="3d" />
   <!--
     Thruster manager timeout.
     If no wrench topic is received in the thruster
@@ -56,8 +58,8 @@
   <node name="rov_approach" pkg="deep_ocean" type="rov_approach_threed.py" output="screen"/> -->
 
 <!-- 3d sonar advanced application -->
-  <node name="rov_controller" pkg="deep_ocean" type="rov_controller_threed_advanced.py" output="screen"/>
-  <node name="rov_approach" pkg="deep_ocean" type="rov_approach_threed_advanced.py" output="screen"/>
+  <node name="rov_controller" pkg="deep_ocean" type="heading_$(arg sonar_type)_rov.py" output="screen"/>
+  <node name="rov_approach" pkg="deep_ocean" type="approach_$(arg sonar_type)_rov.py" output="screen"/>
 
 
 </launch>

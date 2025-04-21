@@ -26,33 +26,6 @@
     </collision>
   </xacro:macro>
 
-
-  <!-- Side scan sonar -->
-  <xacro:macro name="sidescan_sonar" params="namespace parent_link suffix *origin">
-    <xacro:multibeam_sonar
-      namespace="${namespace}"
-      suffix="${suffix}"
-      parent_link="${parent_link}"
-      topic="sss_${suffix}"
-      mass="0.015"
-      update_rate="2"
-      samples="60"
-      fov="${pi/3.0}"
-      range_min="1.0"
-      range_max="200.0"
-      range_stddev="0.027"
-      mesh="">
-      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
-      <xacro:insert_block name="origin" />
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <box size="0.001 0.001 0.001"/>
-        </geometry>
-      </visual>
-    </xacro:multibeam_sonar>
-  </xacro:macro>
-
   <!-- Inspired by m450-130: http://www.blueview.com/products/2d-imaging-sonar/m900-series/ -->
   <xacro:macro name="forward_multibeam_sonar_m450_130" params="namespace parent_link visualize:=true *origin">
     <xacro:multibeam_sonar
@@ -165,23 +138,77 @@
   </gazebo>
   </xacro:macro>
 
-<!-- This is a self defined sonar -->
-  <xacro:macro name="forward_looking_sonar_1" params="namespace parent_link *origin">
-    <xacro:forward_looking_sonar
-      namespace="${namespace}"
-      suffix=""
-      parent_link="${parent_link}"
-      topic="sonar"
-      mass="0.015"
-      update_rate="25"
-      samples="768"
-      fov="2.27"
-      width="5"
-      height="5">
-      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
-      <xacro:insert_block name="origin" />
-    </xacro:forward_looking_sonar>
+  <!-- Macro a 3d depth sonar -->
+  <xacro:macro name="sonar_3d" params="parent_link namespace visualize:=true">
+    
+    <link name="${namespace}/sonar_3d_link">
+      <visual>
+        <geometry>
+          <box size="0.04 0.12 0.08"/>
+        </geometry>
+        <material name="red">
+          <color rgba="1 0 0 1"/>
+        </material>
+      </visual>
+      <inertial>
+        <mass value="0.0"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+      </inertial>
+      <collision>
+        <geometry>
+          <box size="0.04 0.12 0.08"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${namespace}/sonar_3d_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${namespace}/sonar_3d_link"/>
+      <origin xyz="-0.8 0 1.02" rpy="0 0 3.14159"/>
+    </joint>
+
+    <link name="${namespace}/sonar_3d_optical_link"/>
+    <joint name="${namespace}/sonar_3d_optical_joint" type="fixed">
+      <parent link="${namespace}/sonar_3d_link"/>
+      <child link="${namespace}/sonar_3d_optical_link"/>
+      <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
+    </joint>
+
+    <xacro:if value="${visualize}">
+      <gazebo reference="${namespace}/sonar_3d_link">
+        <material>Gazebo/Red</material>
+        <sensor name="sonar_3d_sensor" type="depth">
+          <visualize>true</visualize>
+          <updateRate>10</updateRate>
+          <camera>
+            <horizontal_fov>1.57</horizontal_fov>
+            <vertical_fov>0.698</vertical_fov>
+            <image>
+              <width>160</width>
+              <height>100</height>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>5.0</far>
+            </clip>
+          </camera>
+          <plugin name="sonar_3d_plugin" filename="libgazebo_ros_openni_kinect.so">
+            <cameraName>${namespace}/sonar_3d</cameraName>
+            <frameName>${namespace}/sonar_3d_optical_link</frameName>
+            <alwaysOn>true</alwaysOn>
+            <pointCloudTopicName>points</pointCloudTopicName>
+            <imageTopicName>rgb/image_raw</imageTopicName>
+            <depthImageTopicName>depth/image_raw</depthImageTopicName>
+            <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+            <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+          </plugin>
+        </sensor>
+      </gazebo>
+    </xacro:if>
   </xacro:macro>
+
+
 
   <xacro:macro name="forward_looking_sonar"
     params="namespace suffix parent_link topic mass update_rate

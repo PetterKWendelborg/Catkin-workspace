@@ -5,6 +5,8 @@
   <arg name="uuv_name" default="$(arg model_name)"/>
   <!-- Name of the base link -->
   <arg name="base_link" default="base_link" />
+
+  <arg name="sonar_type" default="3d" />
   <!--
     Thruster manager timeout.
     If no wrench topic is received in the thruster
@@ -49,11 +51,11 @@
    </include>
    
   <!-- 2d sonar -->
-  <!-- <node name="tms_controller" pkg="deep_ocean" type="tms_controller_twod.py" output="screen"/> -->
+  <!-- <node name="tms_controller" pkg="deep_ocean" type="heading_2d_tms.py" output="screen"/> -->
 
   <!-- 3d sonar -->
-  <!-- <node name="tms_controller" pkg="deep_ocean" type="tms_controller_threed.py" output="screen"/> -->
+  <!-- <node name="tms_controller" pkg="deep_ocean" type="heading_3d_tms.py" output="screen"/> -->
 
-  <node name="tms_controller" pkg="deep_ocean" type="tms_controller_threed_advanced.py" output="screen"/>
+  <node name="tms_heading" pkg="deep_ocean" type="heading_$(arg sonar_type)_tms.py" output="screen"/>
   
 </launch>
