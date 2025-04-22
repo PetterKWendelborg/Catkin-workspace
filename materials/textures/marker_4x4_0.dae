@@ -5,22 +5,22 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.82.7</authoring_tool>
     </contributor>
-    <created>2025-04-18T15:51:39</created>
-    <modified>2025-04-18T15:51:39</modified>
+    <created>2025-04-22T14:51:51</created>
+    <modified>2025-04-22T14:51:51</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
   <library_effects>
     <effect id="MarkerMaterial-effect">
       <profile_COMMON>
-        <newparam sid="marker_0_png-surface">
+        <newparam sid="marker_4x4_0_png-surface">
           <surface type="2D">
-            <init_from>marker_0_png</init_from>
+            <init_from>marker_4x4_0_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="marker_0_png-sampler">
+        <newparam sid="marker_4x4_0_png-sampler">
           <sampler2D>
-            <source>marker_0_png-surface</source>
+            <source>marker_4x4_0_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -29,7 +29,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <texture texture="marker_0_png-sampler" texcoord="UVMap"/>
+              <texture texture="marker_4x4_0_png-sampler" texcoord="UVMap"/>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1.45</float>
@@ -40,8 +40,8 @@
     </effect>
   </library_effects>
   <library_images>
-    <image id="marker_0_png" name="marker_0_png">
-      <init_from>marker_0.png</init_from>
+    <image id="marker_4x4_0_png" name="marker_4x4_0_png">
+      <init_from>marker_4x4_0.png</init_from>
     </image>
   </library_images>
   <library_materials>

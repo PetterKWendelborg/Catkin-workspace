@@ -55,7 +55,7 @@
 
     <!-- Spawn model in Gazebo (same for both) -->
     <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 5 -y 0 -z -10" />
+          args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 5 -y 0 -z -10 -R 0 -P 0 -Y -1.57" />
 
     <!-- Robot state publisher (same for both) -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">

@@ -9,8 +9,8 @@ from math import sqrt
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 # Settings
-marker_path = "marker_3.png"  # Change this
-output_dae = "marker_4x4_3.dae"  # Change this
+marker_path = "marker_4x4_0.png"  # Change this
+output_dae = "marker_4x4_0.dae"  # Change this
 marker_size = 0.1  # Base size in meters (will be applied to the longer dimension)
 
 # Load image to get dimensions

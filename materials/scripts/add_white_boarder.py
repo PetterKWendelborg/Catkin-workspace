@@ -2,9 +2,9 @@ from PIL import Image, ImageOps
 import os
 
 # Settings
-input_png = "marker_0.png"    # Input file (no border)
-output_png = "marker_0.png"  # Output file (with border)
-border_ratio = 0.2  # 20% border (adjust as needed)
+input_png = "marker_3.png"    # Input file (no border)
+output_png = "marker_4x4_3.png"  # Output file (with border)
+border_ratio = 0.2  # 20% border
 
 # Load the image
 img = Image.open(input_png)

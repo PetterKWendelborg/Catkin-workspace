@@ -11,12 +11,14 @@
   <xacro:include filename="$(find deep_ocean)/urdf/thruster_snippets.xacro" />
   <!-- Necessary for state publishing -->
   <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
+  <!-- Necessary for ArUco markers and calibration bord -->
+  <xacro:include filename="$(find deep_ocean)/urdf/aruco_macro.xacro" />
 
   <!-- Fluid Density of Water (kg/m³) -->
   <xacro:property name="fluid_density" value="1028"/>
 
   <!-- Scaling Factor for the TMS. Greater size means it's easier to dock -->
-  <xacro:property name="scale_factor" value="1"/> <!-- Change this to scale up/down -->
+  <xacro:property name="scale_factor" value="2"/> <!-- Change this to scale up/down -->
 
   <!-- Original Dimensions of the TMS -->
   <xacro:property name="size_x_orig" value="1.64"/>
@@ -114,25 +116,19 @@
 
   <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
 
-  <!-- Initilizing thruster macro, might use another macro to achieve thrusters -->
-  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0" mesh_scale="1">
-    <origin xyz="0.6650895 0.367385 0.828822" rpy="0 0 ${3*pi/4}"/>
+  <!-- Initilizing thruster macro, found in actuators.xacro -->
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0" mesh_scale="${scale_factor}">
+    <origin xyz="${0.6650895*scale_factor} ${0.367385*scale_factor} ${0.828822*scale_factor}" rpy="0 0 ${3*pi/4}"/>
   </xacro:thruster_macro>
-  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1" mesh_scale="1">
-    <origin xyz="0.665895 -0.367385 0.828822" rpy="0 0 ${-3*pi/4}"/>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1" mesh_scale="${scale_factor}">
+    <origin xyz="${0.665895*scale_factor} ${-0.367385*scale_factor} ${0.828822*scale_factor}" rpy="0 0 ${-3*pi/4}"/>
   </xacro:thruster_macro>
-
-  <!-- initilizing Sonar macro -->
-  <!--xacro:forward_multibeam_sonar_m450_130 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" visualize="$(arg visualize)">
-    <origin xyz="-0.9 0 0.97" rpy="0 0 3.14159"/>
-  </xacro:forward_multibeam_sonar_m450_130-->
 
 <!-- kanskje prøve å etterligne denne https://waterlinked.com/shop/wl-21045-2-sonar-3d-15-689 -->
-
-  <xacro:sonar_3d 
-    parent_link="$(arg namespace)/base_link" 
-    namespace="$(arg namespace)"
-    visualize="$(arg visualize)"/>
+  <!-- Macro from sonar_snippets file -->
+<xacro:sonar_3d parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)" scale_factor="${scale_factor}">
+    <origin xyz="${-0.8*scale_factor} 0 ${0.98*scale_factor}" rpy="0 0 ${pi}"/>
+</xacro:sonar_3d>
 
   <!-- imu sensor -->
 
@@ -162,7 +158,7 @@
       <parent link= "$(arg namespace)/base_link" />
       <child link= "imu_link" />
       <!-- <origin xyz= "0.55 0 3 " rpy= "0 0 0"/> -->
-      <origin xyz="0 0 0.81" rpy="0 0 0"/>
+      <origin xyz="0 0 ${0.81*scale_factor}" rpy="0 0 0"/>
   </joint> 
 
   <gazebo reference="imu_link">
@@ -186,36 +182,31 @@
     </sensor>
   </gazebo>
 
-  <!-- Spawning in ArUco 5x5 marker -->
-  <link name="$(arg namespace)/aruco_marker">
-  <visual>
-    <origin xyz="0.25 0 0.41" rpy="${pi/2} 0 ${-pi/2}"/>
-    <geometry>
-      <mesh filename="file://$(find deep_ocean)/materials/textures/marker_5x5_0.dae" scale="0.6 0.6 0.6"/>
-    </geometry>
-  </visual>
-  </link>
+    <!-- Spawning in ArUco 5x5 marker -->
+  <xacro:aruco_marker_5x5 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="${0.3*scale_factor}">
+    <origin xyz="${0.25*scale_factor} 0 ${0.66*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_5x5>
 
-  <joint name="$(arg namespace)/aruco_joint" type="fixed">
-    <parent link="$(arg namespace)/base_link"/>
-    <child link="$(arg namespace)/aruco_marker"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint>
+    <!-- Spawning in ArUco 4x4 marker -->
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="${scale_factor}">
+    <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} ${0.97*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_4x4>
 
-  <!-- Spawning a calibration board of 7x10 dimension -->
-  <!-- <link name="$(arg namespace)/calibration_board">
-  <visual>
-    <origin xyz="-2 1 0.4" rpy="${pi/2} 0 ${-pi/2}"/>
-    <geometry>
-      <mesh filename="file://$(find deep_ocean)/materials/textures/checkerboard_7x10_bordered.dae" scale="0.6 0.6 0.6"/>
-    </geometry>
-  </visual>
-  </link>
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="1" scale="${scale_factor}">
+    <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_4x4>
 
-  <joint name="$(arg namespace)/checker_joint" type="fixed">
-    <parent link="$(arg namespace)/base_link"/>
-    <child link="$(arg namespace)/calibration_board"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint> -->
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="2" scale="${scale_factor}">
+    <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_4x4>
+
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="3" scale="${scale_factor}">
+    <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} ${0.97*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_4x4>
+
+<!-- Example 3: Calibration board with custom ID -->
+<!-- <xacro:calibration_board namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="1.0">
+  <origin xyz="-2 1 0.4" rpy="${pi/2} 0 ${-pi/2}"/>
+</xacro:calibration_board> -->
 
 </robot>
