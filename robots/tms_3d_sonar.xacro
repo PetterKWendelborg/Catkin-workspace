@@ -5,6 +5,7 @@
   <xacro:arg name="namespace" default="tms"/>
   <xacro:arg name="visualize" default="true"/>
   <xacro:include filename="$(find deep_ocean)/urdf/sonar_snippets.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf/sensor_snippets.xacro" />
   <!-- Necessary for thruster_macro to work -->
   <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
   <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
@@ -18,7 +19,7 @@
   <xacro:property name="fluid_density" value="1028"/>
 
   <!-- Scaling Factor for the TMS. Greater size means it's easier to dock -->
-  <xacro:property name="scale_factor" value="2"/> <!-- Change this to scale up/down -->
+  <xacro:property name="scale_factor" value="1.1"/> <!-- Change this to scale up/down -->
 
   <!-- Original Dimensions of the TMS -->
   <xacro:property name="size_x_orig" value="1.64"/>
@@ -126,81 +127,34 @@
 
 <!-- kanskje prøve å etterligne denne https://waterlinked.com/shop/wl-21045-2-sonar-3d-15-689 -->
   <!-- Macro from sonar_snippets file -->
-<xacro:sonar_3d parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)" scale_factor="${scale_factor}">
-    <origin xyz="${-0.8*scale_factor} 0 ${0.98*scale_factor}" rpy="0 0 ${pi}"/>
-</xacro:sonar_3d>
+  <xacro:sonar_3d parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)" scale_factor="${scale_factor}">
+      <origin xyz="${-0.8*scale_factor} 0 ${0.98*scale_factor}" rpy="0 0 ${pi}"/>
+  </xacro:sonar_3d>
 
   <!-- imu sensor -->
-
-  <link name= "imu_link">
-      <visual>
-          <geometry> 
-              <box size= "0.01 0.01 0.01" />
-          </geometry>
-          <material name= "red" >
-              <color rgba= "1 0 0 1" />
-          </material>
-      </visual>
-      <inertial>
-          <!-- <mass value= "0.39" /> -->
-          <mass value= "0.0" />
-          <origin xyz= "0 0 0" />
-          <inertia ixx= "0.1" ixy= "0.0" ixz= "0.0" iyy= "0.1" iyz= "0.0" izz= "0.1" />
-      </inertial>
-      <collision>
-          <geometry>
-              <box size= "0.01 0.01 0.01" />
-          </geometry>
-      </collision>
-  </link>
-
-  <joint name= "imu_joint" type= "fixed">
-      <parent link= "$(arg namespace)/base_link" />
-      <child link= "imu_link" />
-      <!-- <origin xyz= "0.55 0 3 " rpy= "0 0 0"/> -->
+  <xacro:imu_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
       <origin xyz="0 0 ${0.81*scale_factor}" rpy="0 0 0"/>
-  </joint> 
-
-  <gazebo reference="imu_link">
-    <gravity>true</gravity>
-    <sensor name="imu_sensor" type="imu">
-      <always_on>true</always_on>
-      <update_rate>10</update_rate>
-      <visualize>true</visualize>
-      <topic>__default_topic__</topic>
-      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-        <topicName>imu</topicName>
-        <bodyName>imu_link</bodyName>
-        <updateRateHZ>10.0</updateRateHZ>
-        <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 0 0</xyzOffset>
-        <rpyOffset>0 0 0</rpyOffset>
-        <frameName>imu_link</frameName>
-        <initialOrientationAsReference>false</initialOrientationAsReference>
-      </plugin>
-      <pose>0 0 0 0 0 0</pose>
-    </sensor>
-  </gazebo>
+  </xacro:imu_sensor>
 
     <!-- Spawning in ArUco 5x5 marker -->
-  <xacro:aruco_marker_5x5 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="${0.3*scale_factor}">
+  <xacro:aruco_marker_5x5 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="0.3">
     <origin xyz="${0.25*scale_factor} 0 ${0.66*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_5x5>
 
     <!-- Spawning in ArUco 4x4 marker -->
-  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="${scale_factor}">
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="1">
     <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} ${0.97*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_4x4>
 
-  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="1" scale="${scale_factor}">
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="1" scale="1">
     <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_4x4>
 
-  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="2" scale="${scale_factor}">
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="2" scale="1">
     <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_4x4>
 
-  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="3" scale="${scale_factor}">
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="3" scale="1">
     <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} ${0.97*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_4x4>
 

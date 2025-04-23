@@ -28,7 +28,7 @@ dist = np.array([[ -0.14980668,  0.06914326,  0.00286741, -0.00554665, -0.063937
 x_tvecs = []
 y_tvecs = []
 cv_bridge = CvBridge()
-marker_size = 0.174    
+marker_size = 0.24  
 detector = aruco.DetectorParameters_create()
 
 aruco_dict_old = aruco.Dictionary_get(aruco.DICT_5X5_50)
@@ -85,8 +85,8 @@ def image_callback(msg, pub):
                     # rospy.loginfo(f"R: {np.shape(R)}")
                     # rospy.loginfo(f"R_inv: {np.shape(R_inv)}")
                     # rospy.loginfo(f"tvecs: {tvecs_reshaped}")
-                    # rospy.loginfo(f"tvecs: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
-                    # rospy.loginfo(f"tvecs_inv: {tvecs_inv[0][0]} {tvecs_inv[1][0]} {tvecs_inv[2][0]}")
+                    rospy.loginfo(f"tvecs: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
+                    rospy.loginfo(f"tvecs_inv: {tvecs_inv[0][0]} {tvecs_inv[1][0]} {tvecs_inv[2][0]}")
                     # rospy.loginfo(f"rvecs: {rvecs}")
 
                     #kan kanskje se på Posestaped, men det krever kanskje å se på quaternions
@@ -96,8 +96,8 @@ def image_callback(msg, pub):
                     center_msg.z = tvecs_inv[2][0]
                     pub.publish(center_msg)
 
-        else:
-            rospy.loginfo("id not found")
+            else:
+                rospy.loginfo("id not found")
         
     # Shows each manipulated frames
     cv.imshow("frame",frame)    

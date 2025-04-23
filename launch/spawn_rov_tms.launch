@@ -1,14 +1,15 @@
 <launch>
     
     <arg name="namespace_tms" default="tms" />
-    <arg name="sonar_type" default="3d" />  <!-- '3d' or '2d' -->
     <arg name="namespace_rov" default="rov" />
+
+    <!-- Change these values to spawn the ROV and TMS with 3d or 2d sonar using sonar_type,
+         and change visualize to enable or disable the visualisation of the TMS' 2d sonar -->
     <arg name="visualize" default="true" />
+    <arg name="sonar_type" default="3d" />  <!-- '3d' or '2d' -->
 
     <!-- Start undervannsverden -->
     <include file="$(find uuv_gazebo_worlds)/launch/ocean_waves.launch" />
-
-    <!-- Spawn ROV -->
 
 
   <!-- Spawn ROV (Conditional Selection) -->
@@ -21,7 +22,7 @@
 
     <!-- Spawn model in Gazebo (same for both) -->
     <node name="spawn_rov" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-param /$(arg namespace_rov)/robot_description -urdf -model rov -x 1 -y 1 -z -10" />
+          args="-param /$(arg namespace_rov)/robot_description -urdf -model rov -x 0 -y 0 -z -10" />
 
     <!-- Robot state publisher (same for both) -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
@@ -55,7 +56,7 @@
 
     <!-- Spawn model in Gazebo (same for both) -->
     <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 5 -y 0 -z -10 -R 0 -P 0 -Y -1.57" />
+          args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 4 -y 0 -z -10 -R 0 -P 0 -Y 0" />
 
     <!-- Robot state publisher (same for both) -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
