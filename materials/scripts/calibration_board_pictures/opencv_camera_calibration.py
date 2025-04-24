@@ -13,7 +13,9 @@ criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
  
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
 objp = np.zeros((9*6,3), np.float32)
-objp[:,:2] = np.mgrid[0:9,0:6].T.reshape(-1,2)
+# square_size = 1
+square_size = 0.08
+objp[:,:2] = np.mgrid[0:9,0:6].T.reshape(-1,2)*square_size
  
 # Arrays to store object points and image points from all the images.
 objpoints = [] # 3d point in real world space
@@ -64,12 +66,12 @@ print()
 # dist = np.array([[ -0.14980668,  0.06914326,  0.00286741, -0.00554665, -0.06393792]])
 
 
-print(images)
+# print(images)
 
-print()
+# print()
 
-# print("Current working directory:", os.getcwd())
-print(__file__)
+# # print("Current working directory:", os.getcwd())
+# print(__file__)
 
 
 
