@@ -7,3 +7,7 @@ Lagde ny xacro under URDF mappen som heter sensor_snippets
 her ligger IMU og camera macro
 ROVene og TMSene er oppdatert slik at de bruker macro fra disse filene
 nå er alle ekstra deler til robotene (thrustere, sensorer og ArUco markører) definert i egne URDF filer som TMS og ROV xacro kaller på
+
+Nytt script docking.py
+må fikses på, fungere kun til å få ROV til å kjøre frammover når ArUco er detectert
+små fiks på start_thruster_manager_tms/rov, gjorde default om til "3d_advanced"
