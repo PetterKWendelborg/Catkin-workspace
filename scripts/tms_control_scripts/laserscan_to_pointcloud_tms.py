@@ -6,21 +6,21 @@ import laser_geometry.laser_geometry as lg
 
 # This code recieves LaserScan data from the sonar and converts it to PointCloud2 data
 # Then it publishes the data to the /tms/sonar/pointcloud topic
-# where pcdata_conv_tms_2d/3d.py subscribes and further uses the data
+# where pointcloud_to_xyz_2d_tms.py subscribes and further uses the data
 
 lp = lg.LaserProjection()
 
-def scan_cb(msg):
+def laserscan_to_pointcloud(msg):
     # Convert LaserScan to PointCloud2
     pc2_msg = lp.projectLaser(msg)
-    #rospy.loginfo(pc2_msg)
+
     # Publish the PointCloud2
-    pc_pub.publish(pc2_msg)
+    pointcloud_pub.publish(pc2_msg)
 
 if __name__ == '__main__':
-    rospy.init_node("ls_two_pc_tms")
+    rospy.init_node("ls_to_pc_tms")
     
-    pc_pub = rospy.Publisher("/tms/sonar/pointcloud", PointCloud2, queue_size=10)
-    scan_sub = rospy.Subscriber("/tms/sonar", LaserScan, scan_cb)
+    pointcloud_pub = rospy.Publisher("/tms/sonar/pointcloud", PointCloud2, queue_size=10)
+    laserscan_sub = rospy.Subscriber("/tms/sonar", LaserScan, laserscan_to_pointcloud)
 
     rospy.spin()

@@ -2,7 +2,6 @@
 import rospy
 import math
 from geometry_msgs.msg import Point, Wrench
-import time
 from std_msgs.msg import Bool
 
 # This code subscribes to the /rov/tms_center topic which gets its information from pcdata_conv_rov.py
@@ -18,7 +17,7 @@ def center_call(center_msg, pub):
     # rospy.loginfo(f"{center_z}")
 
     buffer_distance = 0.5
-    desired_distance = 1.5
+    desired_distance = 0.8
     stopping_distance = desired_distance + buffer_distance
     hysteresis_duration = 4
     now = rospy.get_time()
@@ -44,7 +43,7 @@ def center_call(center_msg, pub):
                 rospy.signal_shutdown("Condition met")
 
         elif center_z > stopping_distance:
-            rov_wrench_msg.force.x = 2
+            rov_wrench_msg.force.x = 4
 
         else:
             rov_wrench_msg.force.x = 0

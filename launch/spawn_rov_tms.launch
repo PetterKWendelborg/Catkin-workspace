@@ -22,7 +22,7 @@
 
     <!-- Spawn model in Gazebo (same for both) -->
     <node name="spawn_rov" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-param /$(arg namespace_rov)/robot_description -urdf -model rov -x 0 -y 0 -z -10" />
+          args="-param /$(arg namespace_rov)/robot_description -urdf -model rov -x 0 -y 1.5 -z -9.7" />
 
     <!-- Robot state publisher (same for both) -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
@@ -56,7 +56,7 @@
 
     <!-- Spawn model in Gazebo (same for both) -->
     <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 4 -y 0 -z -10 -R 0 -P 0 -Y 0" />
+          args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 3 -y 0 -z -10 -R 0 -P 0 -Y 0" />
 
     <!-- Robot state publisher (same for both) -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">

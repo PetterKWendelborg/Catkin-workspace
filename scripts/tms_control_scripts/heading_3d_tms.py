@@ -1,11 +1,10 @@
 #!/usr/bin/env python3 
 import rospy
 import math
-import time
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Point, Wrench
 
-# This code subscribes to the /tms/rov_center topic which gets its information from pcdata_conv_tms_3d.py
+# This code subscribes to the /tms/rov_center topic which gets its information from ponitcloud_to_xyz_3d_tms.py
 # here the sonar data is finaly used to adjust the TMS's heading towards the ROV
 
 last_time_in_window = None
@@ -24,8 +23,6 @@ def center_call(center_msg, pub):
         angle_to_center = 0
 
     angle_to_center_gaz_deg = math.degrees(angle_to_center)
-    # rospy.loginfo(f"angle to center = {angle_to_center_gaz} rad")  
-    # rospy.loginfo(f"angle to center = {math.degrees(angle_to_center_gaz)} deg") 
 
     tms_wrench_msg = Wrench()
     boolean = Bool()

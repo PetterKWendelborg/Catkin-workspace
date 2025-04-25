@@ -19,7 +19,7 @@
   <xacro:property name="fluid_density" value="1028"/>
 
   <!-- Scaling Factor for the TMS. Greater size means it's easier to dock -->
-  <xacro:property name="scale_factor" value="1.1"/> <!-- Change this to scale up/down -->
+  <xacro:property name="scale_factor" value="1.4"/> <!-- Change this to scale up/down -->
 
   <!-- Original Dimensions of the TMS -->
   <xacro:property name="size_x_orig" value="1.64"/>
@@ -138,7 +138,7 @@
 
     <!-- Spawning in ArUco 5x5 marker -->
   <xacro:aruco_marker_5x5 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="0.3">
-    <origin xyz="${0.25*scale_factor} 0 ${0.66*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+    <origin xyz="${0.24*scale_factor} 0 ${0.66*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_5x5>
 
     <!-- Spawning in ArUco 4x4 marker -->

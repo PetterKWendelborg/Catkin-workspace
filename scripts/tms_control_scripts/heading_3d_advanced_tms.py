@@ -4,7 +4,7 @@ import math
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Point, Wrench
 
-# This code subscribes to the /tms/rov_center topic which gets its information from pcdata_conv_tms_3d.py
+# This code subscribes to the /tms/rov_center topic which gets its information from ponitcloud_to_xyz_3d_tms.py
 # here the sonar data is finaly used to adjust the TMS's heading towards the ROV
 
 last_time_in_window = None
@@ -13,12 +13,16 @@ def center_call(center_msg, pub):
     global last_time_in_window
     center_x = center_msg.x
     center_z = center_msg.z
+    now = rospy.get_time()
+    tms_wrench_msg = Wrench()
+    boolean = Bool()
+
+    # defining the inner and out hysterisis window in degrees
     inner_hyst_window = 1.5
     outer_hyst_window = 6.0
-    hysteresis_duration = 4
-
-    now = rospy.get_time()
-
+    # defining the time the TMS must be inside the hysterisis window for heading to be considered complete
+    hysteresis_duration = 8
+    # defining the thruster force for when outside the inner and outer hysterisis window
     inner_torque = 1
     outer_torque = 4
 
@@ -28,41 +32,37 @@ def center_call(center_msg, pub):
         angle_to_center = 0
 
     angle_to_center_gaz_deg = math.degrees(angle_to_center)
-    # rospy.loginfo(f"angle to center = {angle_to_center_gaz} rad")  
-    # rospy.loginfo(f"angle to center = {math.degrees(angle_to_center_gaz)} deg") 
-
-    tms_wrench_msg = Wrench()
-    boolean = Bool()
 
     if angle_to_center_gaz_deg >= -inner_hyst_window and angle_to_center_gaz_deg <= inner_hyst_window:
         tms_wrench_msg.torque.z = 0
 
-        if last_time_in_window is None:
+        # checking if this instance is the first time the TMS is within the inner hysterisis window wihtout having been outside
+        if last_time_in_window is None:        
             last_time_in_window = now
 
+        # checking if the TMS has been inside the inner hysterisis window for the desired duration
         elif now - last_time_in_window >= hysteresis_duration:
             # Stayed in window for enough time
-            rospy.loginfo("plz_head_rov")
             boolean.data = True
             condition_pub.publish(boolean)
             rospy.signal_shutdown("Condition met")
 
-    # om vinkel er mindre enn -10
+    # if angle is less than -10
     elif angle_to_center_gaz_deg <= -outer_hyst_window:
         tms_wrench_msg.torque.z = outer_torque
         last_time_in_window = None
 
-    # om vinkel er mer enn -10 og mindre enn -3
+    # if angle is more than -10 and less than -3
     elif angle_to_center_gaz_deg > -outer_hyst_window and angle_to_center_gaz_deg < -inner_hyst_window :
         tms_wrench_msg.torque.z = inner_torque
         last_time_in_window = None
 
-    # om vinkel er mer enn 10
+    # if angle is more than 10
     elif angle_to_center_gaz_deg >= outer_hyst_window:
         tms_wrench_msg.torque.z = -outer_torque
         last_time_in_window = None
 
-    # om vinkel er mindre enn 10 og mer enn 3
+    # if angle is less than 10 and more than 3
     elif angle_to_center_gaz_deg < outer_hyst_window and angle_to_center_gaz_deg > inner_hyst_window :
         tms_wrench_msg.torque.z = -inner_torque
         last_time_in_window = None

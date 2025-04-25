@@ -6,7 +6,7 @@
   <!-- Name of the base link -->
   <arg name="base_link" default="base_link" />
 
-  <arg name="sonar_type" default="3d" />
+  <arg name="sonar_type" default="3d_advanced" />
   <!--
     Thruster manager timeout.
     If no wrench topic is received in the thruster
