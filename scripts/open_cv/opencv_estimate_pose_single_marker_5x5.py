@@ -7,22 +7,18 @@ import cv2 as cv
 import cv2.aruco as aruco
 import time
 from geometry_msgs.msg import Point
+from std_msgs.msg import Bool
 # from matplotlib import pyplot as plt 
 # import os
 # print("Current working directory:", os.getcwd())
+
+last_time_in_window = None
 
 mtx = np.array([[553.81567322,   0,         319.71592178],
                 [  0,         554.03405004, 239.90814897],
                 [  0,           0,           1        ]])
 
-# dist = np.array([[ 0,  0,  0, 0, 0]])
-
-# mtx = np.array([[11427.3501, 0, 284.011600],
-#                 [  0,           11444.4149, 174.604947],
-#                 [  0,           0,         1       ]])
-
 dist = np.array([[ -1.12336404e-04, 5.83416985e-03, -3.92632069e-05, 2.03091756e-05, -4.83095205e-03]])
-
 
 
 x_tvecs = []
@@ -38,7 +34,10 @@ aruco_dict_new = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_5X5_50)
 axis_size = 0.05
 
 def image_callback(msg,pub):
-
+    global last_time_in_window 
+    counter = 4
+    now = rospy.get_time()
+    boolean = Bool()
     try:
         frame = cv_bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
         # frame = cv_bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")  
@@ -51,61 +50,63 @@ def image_callback(msg,pub):
     # Gray scales the video, kanskje vi ikke trenger å grayscale heller.... får bare la den være
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     
-
-
     # detectMarkers er tydelighvis opencv 4.7 og opp
     # corners, ids, rejected = detector.detectMarkers(gray)
 
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict_old, parameters= detector)
 
     if ids is not None:    
-        # rospy.loginfo("id found")
-        # rospy.sleep(2)
+        rospy.loginfo("id found")
+        last_time_in_window = None
         aruco.drawDetectedMarkers(frame, corners, ids)
-
+        boolean.data = True
+        aruco_detected.publish(boolean)
 
         for i in range(len(ids)):
-            
+            # rospy.loginfo("inside_loop")
             rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
 
             cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
 
-            # Predtermined ids/ we had id 0 and id 1
+            # Predtermined ids/ we have id 0
             if ids[i] == 0:
             #     rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
             #     cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
-                if tvecs is not None:
-                    # x_tvecs.append(tvecs[0][0][0]) 
-                    # y_tvecs.append(tvecs[0][0][1]) 
-                    r_mtx, _ = cv.Rodrigues(rvecs) #converts rvecs to a rotation matrix
-                    rvecs_inv = r_mtx.T #transpose
-                    tvecs_reshaped = tvecs.reshape(3,1)
-                    tvecs_inv = -np.dot(rvecs_inv, tvecs_reshaped)
-                    # rospy.loginfo(f"tvecs_inv: {tvecs_inv}")
-                    # rospy.loginfo(f"R: {np.shape(R)}")
-                    # rospy.loginfo(f"R_inv: {np.shape(R_inv)}")
-                    # rospy.loginfo(f"tvecs: {tvecs_reshaped}")
-                    rospy.loginfo(f"tvecs: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
-                    rospy.loginfo(f"tvecs_inv: {tvecs_inv[0][0]} {tvecs_inv[1][0]} {tvecs_inv[2][0]}")
-                    # rospy.loginfo(f"rvecs: {rvecs}")
+                # if tvecs is not None:
+                rospy.loginfo(f"tvecs: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
 
-                    #kan kanskje se på Posestaped, men det krever kanskje å se på quaternions
-                    center_msg = Point()
-                    center_msg.x = tvecs_inv[0][0]
-                    center_msg.y = tvecs_inv[1][0]
-                    center_msg.z = tvecs_inv[2][0]
-                    pub.publish(center_msg)
+                #kan kanskje se på Posestaped, men det krever kanskje å se på quaternions
+                center_msg = Point()
+                center_msg.x = tvecs[0][0][0]
+                center_msg.y = tvecs[0][0][1]
+                center_msg.z = tvecs[0][0][2]
+                pub.publish(center_msg)
 
             else:
                 rospy.loginfo("id not found")
+    
+    elif last_time_in_window is None:
+        last_time_in_window = now
+        rospy.loginfo(f"ids: {ids}")
+    
+    elif now - last_time_in_window >= counter:
+        boolean.data = False
+        aruco_detected.publish(boolean)
+        rospy.loginfo("aruco not in frame")
         
     # Shows each manipulated frames
     cv.imshow("frame",frame)    
     cv.waitKey(1) 
-               
+
+
+
+
+
+    # rospy.loginfo("no frame")     
 if __name__ == "__main__":
     rospy.init_node("view_aruco_marker")
     aruco_pub = rospy.Publisher("/rov/aruco_5x5", Point, queue_size=10)
+    aruco_detected = rospy.Publisher("/rov/aruco_detect", Bool, queue_size = 10)
     rospy.Subscriber("/rov/camera/image_raw", Image, image_callback, aruco_pub)
     rospy.spin()
     cv.destroyAllWindows()
