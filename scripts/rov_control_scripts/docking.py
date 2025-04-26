@@ -13,7 +13,7 @@ def start_docking(aruco_msg, pub):
     # global condition
     distance_rov_to_aruco_5x5 = aruco_msg.z
 
-    stopping_distance = 0.05
+    stopping_distance = 0.2
     rov_wrench_msg = Wrench()
     boolean = Bool()
     global aruco_detected
@@ -23,22 +23,32 @@ def start_docking(aruco_msg, pub):
     if rov_approach_done == True and aruco_detected is not False:
 
         if distance_rov_to_aruco_5x5 <= stopping_distance:
+            rospy.loginfo(f"inside stopping distance")
+            rospy.loginfo(f"{aruco_detected}")
             rov_wrench_msg.force.x = 0
             pub.publish(rov_wrench_msg)
             boolean.data = True
             docking_pub.publish(boolean)
 
         elif distance_rov_to_aruco_5x5 > stopping_distance:
+            rospy.loginfo(f"start thrusting")
             rov_wrench_msg.force.x = 2
             pub.publish(rov_wrench_msg)
 
         else:
             rov_wrench_msg.force.x = 0
+            rospy.loginfo(f"else statement")
             pub.publish(rov_wrench_msg)
 
-    elif rov_approach_done == False and aruco_detected == False:
+    elif not rov_approach_done and not aruco_detected:
+        rospy.loginfo(f"first condition stop")
         rov_wrench_msg.force.x = 0
         pub.publish(rov_wrench_msg)
+
+    elif rov_approach_done and not aruco_detected:
+        rospy.loginfo(f"second condtion stop")
+        rov_wrench_msg.force.x = 0
+        pub.publish(rov_wrench_msg)      
             
     else:
         rospy.loginfo(f"condition is {rov_approach_done}")
@@ -50,8 +60,9 @@ def fancy_docking_call(docking_ready):
 
 def aruco_call(aruco_msg):
     global aruco_detected
-    if aruco_msg.data:
-        aruco_detected = aruco_msg.data
+    aruco_detected = aruco_msg.data
+
+        
 
 if __name__ == "__main__":
     rospy.init_node("rov_docking")

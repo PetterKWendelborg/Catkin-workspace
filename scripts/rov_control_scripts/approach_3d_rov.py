@@ -65,8 +65,7 @@ if __name__ == "__main__":
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     
     rospy.Subscriber("/rov/heading_done", Bool, condition_call)
-
     rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
 
-    approach_pub = rospy.Publisher("/rov/aproach_done", Bool, queue_size = 10)
+    approach_pub = rospy.Publisher("/rov/approach_done", Bool, queue_size = 10)
     rospy.spin()

@@ -76,5 +76,5 @@ if __name__ == "__main__":
 
     rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
 
-    approach_pub = rospy.Publisher("/rov/aproach_done", Bool, queue_size = 10)
+    approach_pub = rospy.Publisher("/rov/approach_done", Bool, queue_size = 10)
     rospy.spin()

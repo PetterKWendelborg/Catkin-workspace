@@ -93,6 +93,11 @@ def image_callback(msg,pub):
         boolean.data = False
         aruco_detected.publish(boolean)
         rospy.loginfo("aruco not in frame")
+        center_msg = Point()
+        center_msg.x = 0.0
+        center_msg.y = 0.0
+        center_msg.z = 0.0
+        pub.publish(center_msg)
         
     # Shows each manipulated frames
     cv.imshow("frame",frame)    
