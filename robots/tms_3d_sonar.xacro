@@ -138,7 +138,7 @@
 
     <!-- Spawning in ArUco 5x5 marker -->
   <xacro:aruco_marker_5x5 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="0.3">
-    <origin xyz="${0.24*scale_factor} 0 ${0.66*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+    <origin xyz="${0.24*scale_factor} 0 ${0.5*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_5x5>
 
     <!-- Spawning in ArUco 4x4 marker -->
