@@ -38,7 +38,7 @@
       samples="100"
       fov="2.27"
       range_min="1.0"
-      range_max="5.0"
+      range_max="10.0"
       range_stddev="0.027"
       mesh=""
       visualize="${visualize}">
@@ -189,8 +189,8 @@
               <height>100</height>
             </image>
             <clip>
-              <near>${scale_factor*0.1}</near>
-              <far>${scale_factor*5.0}</far>
+              <near>0.01</near>
+              <far>10.0</far>     <!-- Change the length of field of view-->
             </clip>
           </camera>
           <plugin name="sonar_3d_plugin" filename="libgazebo_ros_openni_kinect.so">
