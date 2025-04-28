@@ -11,3 +11,6 @@ nå er alle ekstra deler til robotene (thrustere, sensorer og ArUco markører) d
 Nytt script docking.py
 må fikses på, fungere kun til å få ROV til å kjøre frammover når ArUco er detectert
 små fiks på start_thruster_manager_tms/rov, gjorde default om til "3d_advanced"
+
+Nytt script inner_heading_TMS/ROV og et script om høyde korrigering
+ArUco 4x4, kun 2 stykk, id0 og 3 som nå er plasert midt på åpningen på hver side av åpningen.
