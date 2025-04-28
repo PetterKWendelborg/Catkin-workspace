@@ -14,6 +14,7 @@
     <xacro:include filename="$(find deep_ocean)/urdf/thruster_snippets.xacro" />
     <!-- Necessary for state publishing -->
     <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
+    <xacro:include filename="$(find deep_ocean)/urdf/flashlight.xacro" />
 
     <!-- Fluid Density of Water (kg/m³) -->
     <xacro:property name="fluid_density" value="1028"/>
@@ -148,5 +149,9 @@
     <xacro:camera_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
     <origin xyz="0.63 0 0.4" rpy="0 0 0"/>
     </xacro:camera_sensor>
+
+    <xacro:flashlight parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
+    <origin xyz="0.63 0 0.5" rpy="0 -1.57 0"/>
+    </xacro:flashlight>
 
 </robot>

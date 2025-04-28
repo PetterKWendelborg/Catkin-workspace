@@ -5,12 +5,9 @@ from cv_bridge import CvBridge
 import numpy as np
 import cv2 as cv
 import cv2.aruco as aruco
-import time
 from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
 # from matplotlib import pyplot as plt 
-# import os
-# print("Current working directory:", os.getcwd())
 
 last_time_in_window = None
 
@@ -24,7 +21,7 @@ dist = np.array([[ -1.12336404e-04, 5.83416985e-03, -3.92632069e-05, 2.03091756e
 x_tvecs = []
 y_tvecs = []
 cv_bridge = CvBridge()
-marker_size = 0.205
+marker_size = 0.42
 detector = aruco.DetectorParameters_create()
 
 aruco_dict_old = aruco.Dictionary_get(aruco.DICT_5X5_50)
@@ -104,14 +101,11 @@ def image_callback(msg,pub):
     cv.waitKey(1) 
 
 
-
-
-
     # rospy.loginfo("no frame")     
 if __name__ == "__main__":
     rospy.init_node("view_aruco_marker")
     aruco_pub = rospy.Publisher("/rov/aruco_5x5", Point, queue_size=10)
-    aruco_detected = rospy.Publisher("/rov/aruco_detect", Bool, queue_size = 10)
+    aruco_detected = rospy.Publisher("/rov/aruco_detect_5x5", Bool, queue_size = 10)
     rospy.Subscriber("/rov/camera/image_raw", Image, image_callback, aruco_pub)
     rospy.spin()
     cv.destroyAllWindows()

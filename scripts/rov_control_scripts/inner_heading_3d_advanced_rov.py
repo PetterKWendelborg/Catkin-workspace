@@ -8,7 +8,7 @@ from geometry_msgs.msg import Point, Wrench
 # and to the /tms/heading_done topic which gets its information from tms_heading_2d/3d(_new).py
 # here the sonar data is finaly used to adjust the ROV's heading towards the TMS
 
-tms_heading_done = False
+rov_inner_heading_ready = False
 last_time_in_window = None
 
 def center_call(center_msg, pub):
@@ -19,12 +19,12 @@ def center_call(center_msg, pub):
     hysteresis_duration = 4
     now = rospy.get_time()
 
-    inner_torque = 0.2
-    outer_torque = 1.5
+    inner_torque = 0.1
+    outer_torque = 1.0
 
     global last_time_in_window
-    global tms_heading_done
-    if tms_heading_done:
+    global rov_inner_heading_ready
+    if rov_inner_heading_ready:
         
         if center_z != 0:
             angle_to_center = math.asin(center_x/center_z)
@@ -77,10 +77,10 @@ def center_call(center_msg, pub):
 
         pub.publish(tms_wrench_msg)
 
-def condition_call(approach_ready):
-    global tms_heading_done
-    if approach_ready.data:
-        tms_heading_done = approach_ready.data
+def condition_call(tms_inner_heading_done):
+    global rov_inner_heading_ready
+    if tms_inner_heading_done.data:
+        rov_inner_heading_ready = tms_inner_heading_done.data
         
 if __name__ == "__main__":
     rospy.init_node("rov_heading")
@@ -88,8 +88,7 @@ if __name__ == "__main__":
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     
     rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
-
-    rospy.Subscriber("/tms/heading_done", Bool, condition_call)
+    rospy.Subscriber("/tms/inner_heading_done", Bool, condition_call)
 
     condition_pub = rospy.Publisher("/rov/heading_done", Bool, queue_size = 10)
 

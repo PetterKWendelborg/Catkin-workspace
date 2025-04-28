@@ -143,19 +143,19 @@
 
     <!-- Spawning in ArUco 4x4 marker -->
   <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="1">
-    <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} ${0.97*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+    <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} ${0.465*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_4x4>
 
-  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="1" scale="1">
+  <!-- <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="1" scale="1">
     <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_4x4>
 
   <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="2" scale="1">
     <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
-  </xacro:aruco_marker_4x4>
+  </xacro:aruco_marker_4x4> -->
 
   <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="3" scale="1">
-    <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} ${0.97*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+    <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} ${0.465*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_4x4>
 
 <!-- Example 3: Calibration board with custom ID -->

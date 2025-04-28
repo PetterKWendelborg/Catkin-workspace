@@ -70,7 +70,7 @@ if __name__ == "__main__":
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     
     rospy.Subscriber("/rov/approach_done", Bool, fancy_docking_call)
-    rospy.Subscriber("/rov/aruco_detect", Bool, aruco_call)
+    rospy.Subscriber("/rov/aruco_detect_5x5", Bool, aruco_call)
     rospy.Subscriber("/rov/aruco_5x5", Point, start_docking, cmd_vel_pub)
 
     docking_pub = rospy.Publisher("/rov/docking_done", Bool, queue_size = 10)

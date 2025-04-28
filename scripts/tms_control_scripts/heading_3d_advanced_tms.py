@@ -18,7 +18,7 @@ def center_call(center_msg, pub):
     boolean = Bool()
 
     # defining the inner and out hysterisis window in degrees
-    inner_hyst_window = 1.5
+    inner_hyst_window = 0.5
     outer_hyst_window = 6.0
     # defining the time the TMS must be inside the hysterisis window for heading to be considered complete
     hysteresis_duration = 8
