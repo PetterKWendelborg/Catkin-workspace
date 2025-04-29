@@ -9,19 +9,24 @@ from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
 # from matplotlib import pyplot as plt 
 
-last_time_in_window = None
+# mtx = np.array([[553.81567322,   0,         319.71592178],
+#                 [  0,         554.03405004, 239.90814897],
+#                 [  0,           0,           1        ]])
 
-mtx = np.array([[553.81567322,   0,         319.71592178],
-                [  0,         554.03405004, 239.90814897],
+# dist = np.array([[ -1.12336404e-04, 5.83416985e-03, -3.92632069e-05, 2.03091756e-05, -4.83095205e-03]])
+
+
+mtx = np.array([[1.10904780e+03,   0,         6.38431658e+02],
+                [  0,         1.10907114e+03, 3.59179086e+02],
                 [  0,           0,           1        ]])
 
-dist = np.array([[ -1.12336404e-04, 5.83416985e-03, -3.92632069e-05, 2.03091756e-05, -4.83095205e-03]])
+dist = np.array([[ -7.76239086e-04, 6.14575931e-03, -5.54007822e-05, -7.31757780e-05, -1.35769474e-02]])
 
-
+last_time_in_window = None
 x_tvecs = []
 y_tvecs = []
 cv_bridge = CvBridge()
-marker_size = 0.42
+marker_size = 0.23
 detector = aruco.DetectorParameters_create()
 
 aruco_dict_old = aruco.Dictionary_get(aruco.DICT_5X5_50)
@@ -44,11 +49,8 @@ def image_callback(msg,pub):
         rospy.logerr(f"cv bridge error {e}")
         return
     
-    # Gray scales the video, kanskje vi ikke trenger å grayscale heller.... får bare la den være
+    # Gray scales the video
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    
-    # detectMarkers er tydelighvis opencv 4.7 og opp
-    # corners, ids, rejected = detector.detectMarkers(gray)
 
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict_old, parameters= detector)
 
@@ -84,7 +86,7 @@ def image_callback(msg,pub):
     
     elif last_time_in_window is None:
         last_time_in_window = now
-        rospy.loginfo(f"ids: {ids}")
+        rospy.loginfo(f"last_time_in_window: {last_time_in_window}")
     
     elif now - last_time_in_window >= counter:
         boolean.data = False
@@ -103,7 +105,7 @@ def image_callback(msg,pub):
 
     # rospy.loginfo("no frame")     
 if __name__ == "__main__":
-    rospy.init_node("view_aruco_marker")
+    rospy.init_node("view_aruco_marker_5x5")
     aruco_pub = rospy.Publisher("/rov/aruco_5x5", Point, queue_size=10)
     aruco_detected = rospy.Publisher("/rov/aruco_detect_5x5", Bool, queue_size = 10)
     rospy.Subscriber("/rov/camera/image_raw", Image, image_callback, aruco_pub)

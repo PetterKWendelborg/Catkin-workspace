@@ -50,12 +50,8 @@
     <arg name="tam_file" value="$(arg tam_file)"/>
    </include>
    
-  <!-- 2d sonar -->
-  <!-- <node name="tms_controller" pkg="deep_ocean" type="heading_2d_tms.py" output="screen"/> -->
+  <!-- Heading using sonar -->  
+  <node name="outer_tms_heading" pkg="deep_ocean" type="heading_$(arg sonar_type)_tms.py" output="screen"/>
+  <node name="inner_tms_heading" pkg="deep_ocean" type="inner_heading_3d_advanced_tms.py" output="screen"/>
 
-  <!-- 3d sonar -->
-  <!-- <node name="tms_controller" pkg="deep_ocean" type="heading_3d_tms.py" output="screen"/> -->
-
-  <node name="tms_heading" pkg="deep_ocean" type="heading_$(arg sonar_type)_tms.py" output="screen"/>
-  
 </launch>

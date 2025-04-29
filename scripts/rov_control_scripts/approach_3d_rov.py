@@ -69,3 +69,4 @@ if __name__ == "__main__":
 
     approach_pub = rospy.Publisher("/rov/approach_done", Bool, queue_size = 10)
     rospy.spin()
+    

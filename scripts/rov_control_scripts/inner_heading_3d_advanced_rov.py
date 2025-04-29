@@ -90,6 +90,6 @@ if __name__ == "__main__":
     rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
     rospy.Subscriber("/tms/inner_heading_done", Bool, condition_call)
 
-    condition_pub = rospy.Publisher("/rov/heading_done", Bool, queue_size = 10)
+    condition_pub = rospy.Publisher("/rov/inner_heading_done", Bool, queue_size = 10)
 
     rospy.spin()

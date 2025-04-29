@@ -8,17 +8,24 @@ import cv2.aruco as aruco
 from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
 
-mtx = np.array([[554.31537017,   0,         319.86790386],
-    [  0,         554.27617968, 239.29069902],
-    [  0,           0,           1        ]])
+# mtx = np.array([[554.31537017,   0,         319.86790386],
+#     [  0,         554.27617968, 239.29069902],
+#     [  0,           0,           1        ]])
 
-dist = np.array([[ -1.12336404e-04, 5.83416985e-03, -3.92632069e-05, 2.03091756e-05, -4.83095205e-03]])
+# dist = np.array([[ -1.12336404e-04, 5.83416985e-03, -3.92632069e-05, 2.03091756e-05, -4.83095205e-03]])
+
+mtx = np.array([[1.10904780e+03,   0,         6.38431658e+02],
+                [  0,         1.10907114e+03, 3.59179086e+02],
+                [  0,           0,           1        ]])
+
+dist = np.array([[ -7.76239086e-04, 6.14575931e-03, -5.54007822e-05, -7.31757780e-05, -1.35769474e-02]])
+
 
 last_time_in_window = None
 x_tvecs = []
 y_tvecs = []
 cv_bridge = CvBridge()
-marker_size = 0.04207
+marker_size = 0.08
 detector = aruco.DetectorParameters_create()
 
 aruco_dict_old = aruco.Dictionary_get(aruco.DICT_4X4_250)
@@ -47,11 +54,13 @@ def image_callback(msg, pub):
 
     if ids is not None:    
         # rospy.loginfo("id found")
+        last_time_in_window = None
         aruco.drawDetectedMarkers(frame, corners, ids)
         boolean.data = True
         aruco_detected.publish(boolean)
 
         for i in range(len(ids)):
+            rospy.loginfo(f"ids: {last_time_in_window}")
             # rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
             # cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
             # Predtermined ids/ we had id 0 and id 1
@@ -80,12 +89,13 @@ def image_callback(msg, pub):
 
     elif last_time_in_window is None:
         last_time_in_window = now
-        rospy.loginfo(f"ids: {ids}")
+        rospy.loginfo(f"last_time_in_window: {last_time_in_window}")
     
     elif now - last_time_in_window >= counter:
         boolean.data = False
         aruco_detected.publish(boolean)
         rospy.loginfo("aruco not in frame")
+        rospy.loginfo(f"last_time_in_window: {last_time_in_window}")
         center_msg = Point()
         center_msg.x = 0.0
         center_msg.y = 0.0
@@ -97,7 +107,7 @@ def image_callback(msg, pub):
     cv.waitKey(1) 
                
 if __name__ == "__main__":
-    rospy.init_node("view_aruco_marker")
+    rospy.init_node("view_aruco_marker_4x4")
     aruco_0 = rospy.Publisher("/rov/aruco_4x4", Point, queue_size=10)
     aruco_detected = rospy.Publisher("/rov/aruco_detect_4x4", Bool, queue_size = 10)
     rospy.Subscriber("/rov/camera/image_raw", Image, image_callback, aruco_0)

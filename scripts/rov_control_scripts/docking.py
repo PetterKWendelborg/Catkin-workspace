@@ -4,7 +4,7 @@ import math
 from geometry_msgs.msg import Point, Wrench
 from std_msgs.msg import Bool
 
-rov_approach_done = False
+docking_ready = False
 last_time_in_window = None
 
 aruco_detected = False
@@ -18,9 +18,9 @@ def start_docking(aruco_msg, pub):
     boolean = Bool()
     global aruco_detected
     global last_time_in_window
-    global rov_approach_done
+    global docking_ready
 
-    if rov_approach_done == True and aruco_detected is not False:
+    if  docking_ready and aruco_detected:
 
         if distance_rov_to_aruco_5x5 <= stopping_distance:
             rospy.loginfo(f"inside stopping distance")
@@ -37,26 +37,26 @@ def start_docking(aruco_msg, pub):
 
         else:
             rov_wrench_msg.force.x = 0
-            rospy.loginfo(f"else statement")
+            rospy.loginfo(f"stop thrusting")
             pub.publish(rov_wrench_msg)
 
-    elif not rov_approach_done and not aruco_detected:
-        rospy.loginfo(f"first condition stop")
+    elif not docking_ready and not aruco_detected:
+        rospy.loginfo(f"1 - start_condition: {docking_ready} aruco_detected_5x5: {aruco_detected}")
         rov_wrench_msg.force.x = 0
         pub.publish(rov_wrench_msg)
 
-    elif rov_approach_done and not aruco_detected:
-        rospy.loginfo(f"second condtion stop")
+    elif docking_ready and not aruco_detected:
+        rospy.loginfo(f"2 - start_condition: {docking_ready} aruco_detected_5x5: {aruco_detected}")
         rov_wrench_msg.force.x = 0
         pub.publish(rov_wrench_msg)      
             
     else:
-        rospy.loginfo(f"condition is {rov_approach_done}")
+        rospy.loginfo(f"3 - start_condition: {docking_ready} aruco_detected_5x5: {aruco_detected}")
 
-def fancy_docking_call(docking_ready):
-    global rov_approach_done
-    if docking_ready.data:
-        rov_approach_done = docking_ready.data
+def fancy_docking_call(position_alignment_done):
+    global docking_ready
+    if position_alignment_done.data:
+        docking_ready = position_alignment_done.data
 
 def aruco_call(aruco_msg):
     global aruco_detected
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     
-    rospy.Subscriber("/rov/approach_done", Bool, fancy_docking_call)
+    rospy.Subscriber("/rov/alignment_done", Bool, fancy_docking_call)
     rospy.Subscriber("/rov/aruco_detect_5x5", Bool, aruco_call)
     rospy.Subscriber("/rov/aruco_5x5", Point, start_docking, cmd_vel_pub)
 

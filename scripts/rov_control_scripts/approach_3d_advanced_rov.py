@@ -17,8 +17,8 @@ def center_call(center_msg, pub):
     center_z = center_msg.z
     # rospy.loginfo(f"{center_z}")
 
-    buffer_distance = 0.5
-    desired_distance = 1.5
+    buffer_distance = 0.28
+    desired_distance = 2.8
     stopping_distance_outer = desired_distance
     stopping_distance_inner = desired_distance + buffer_distance
     outer_force = 5
@@ -68,7 +68,7 @@ def condition_call(approach_ready):
         rov_heading_done = approach_ready.data
 
 if __name__ == "__main__":
-    rospy.init_node("rov_heading")
+    rospy.init_node("rov_approach")
     
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     

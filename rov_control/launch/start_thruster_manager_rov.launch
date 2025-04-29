@@ -53,13 +53,11 @@
   <!-- <node name="rov_controller" pkg="deep_ocean" type="rov_controller_twod.py" output="screen"/>
   <node name="rov_approach" pkg="deep_ocean" type="rov_approach_twod.py" output="screen"/> -->
 
-<!-- 3d sonar application -->
-  <!-- <node name="rov_controller" pkg="deep_ocean" type="rov_controller_threed.py" output="screen"/>
-  <node name="rov_approach" pkg="deep_ocean" type="rov_approach_threed.py" output="screen"/> -->
-
-<!-- 3d sonar advanced application -->
-  <node name="rov_controller" pkg="deep_ocean" type="heading_$(arg sonar_type)_rov.py" output="screen"/>
+<!--  -->
+  <node name="outer_rov_heading" pkg="deep_ocean" type="heading_$(arg sonar_type)_rov.py" output="screen"/>
   <node name="rov_approach" pkg="deep_ocean" type="approach_$(arg sonar_type)_rov.py" output="screen"/>
-
+  <node name="inner_rov_heading" pkg="deep_ocean" type="inner_heading_3d_advanced_rov.py" output="screen"/>  
+  <node name="terminal_alignment" pkg="deep_ocean" type="close_height_alignement.py" output="screen"/>
+  <node name="rov_terminal_docking" pkg="deep_ocean" type="docking.py" output="screen"/>
 
 </launch>
