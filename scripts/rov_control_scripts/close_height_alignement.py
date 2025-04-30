@@ -14,7 +14,7 @@ def start_docking(aruco_msg, pub):
     # global condition
     distance_y_rov_to_aruco_4x4 = aruco_msg.y
     hysteresis_duration = 4
-    terminal_center = 0.05
+    terminal_center_hysterisis = 0.04
     force_y = 1
     rov_wrench_msg = Wrench()
     boolean = Bool()
@@ -28,7 +28,7 @@ def start_docking(aruco_msg, pub):
 
         # aruco_msg uses NED(North East Down) frame, whilst rov_wrench_msg uses normal frame
         # If ths ROV is above the TMS opening
-        if distance_y_rov_to_aruco_4x4 >= -terminal_center and distance_y_rov_to_aruco_4x4 < terminal_center:
+        if distance_y_rov_to_aruco_4x4 >= -terminal_center_hysterisis and distance_y_rov_to_aruco_4x4 < terminal_center_hysterisis:
             rov_wrench_msg.force.z = 0 
 
             if last_time_in_window is None:
@@ -41,11 +41,11 @@ def start_docking(aruco_msg, pub):
                 docking_pub.publish(boolean)
                 rospy.signal_shutdown("Condition met")
                 
-        elif distance_y_rov_to_aruco_4x4 < -terminal_center:
+        elif distance_y_rov_to_aruco_4x4 < -terminal_center_hysterisis:
             rov_wrench_msg.force.z = force_y     # Go downwards
 
         # If the ROV is below the TMS opening
-        elif distance_y_rov_to_aruco_4x4 > terminal_center:
+        elif distance_y_rov_to_aruco_4x4 > terminal_center_hysterisis:
             rov_wrench_msg.force.z = -force_y      # Go upwards
 
         # If the ROV is in position to continue docking

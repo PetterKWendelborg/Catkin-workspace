@@ -68,7 +68,7 @@
     <group if="$(eval sonar_type == '3d')">
       <node name="ls_two_pc" pkg="deep_ocean" type="laserscan_to_pointcloud_tms.py" output="screen"/>
       <node name="pc_converter" pkg="deep_ocean" type="pointcloud_to_xyz_3d_tms.py" output="screen"/>
-      <!-- <node name="z_values" pkg="deep_ocean" type="angular_velocity_z_tms.py" output="screen" /> -->
+      <node name="z_values" pkg="deep_ocean" type="angular_velocity_z_tms.py" output="screen" />
     </group>
 
     <!-- 2D FLS Nodes -->
