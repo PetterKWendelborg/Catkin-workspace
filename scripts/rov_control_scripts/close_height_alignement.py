@@ -20,9 +20,9 @@ def start_docking(aruco_msg, pub):
     boolean = Bool()
     now = rospy.get_time()
     global aruco_detected
-    global last_time_in_window #denne brukes ikke enda, men legger den vel inn en timer slik at den står stille før den starter docking
+    global last_time_in_window
     global inner_rov_heading_done
-
+ 
     if height_alignment_ready and aruco_detected:
         # rospy.loginfo("aruco detected")
 
@@ -30,6 +30,7 @@ def start_docking(aruco_msg, pub):
         # If ths ROV is above the TMS opening
         if distance_y_rov_to_aruco_4x4 >= -terminal_center_hysterisis and distance_y_rov_to_aruco_4x4 < terminal_center_hysterisis:
             rov_wrench_msg.force.z = 0 
+            pub.publish(rov_wrench_msg) 
 
             if last_time_in_window is None:
                 last_time_in_window = now
@@ -43,27 +44,31 @@ def start_docking(aruco_msg, pub):
                 
         elif distance_y_rov_to_aruco_4x4 < -terminal_center_hysterisis:
             rov_wrench_msg.force.z = force_y     # Go downwards
+            pub.publish(rov_wrench_msg) 
 
         # If the ROV is below the TMS opening
         elif distance_y_rov_to_aruco_4x4 > terminal_center_hysterisis:
             rov_wrench_msg.force.z = -force_y      # Go upwards
+            pub.publish(rov_wrench_msg) 
 
         # If the ROV is in position to continue docking
         else:
             rov_wrench_msg.force.z = 0       # Stand still
+            pub.publish(rov_wrench_msg) 
+        # pub.publish(rov_wrench_msg) 
 
     elif not height_alignment_ready and not aruco_detected:
         rov_wrench_msg.force.z = 0  
         rospy.loginfo(f"1 - start_condition: {height_alignment_ready} aruco_detected_4x4: {aruco_detected}")
+        pub.publish(rov_wrench_msg) 
+
     elif height_alignment_ready and  not aruco_detected:
         rov_wrench_msg.force.z = 0  
         rospy.loginfo(f"2 - start_condition: {height_alignment_ready} aruco_detected_4x4: {aruco_detected}")
+        pub.publish(rov_wrench_msg) 
 
     else:
         rospy.loginfo(f"3 - start_condition: {height_alignment_ready} aruco_detected_4x4: {aruco_detected}")
-
-    pub.publish(rov_wrench_msg) 
-
 
 def condition_call(inner_rov_heading_done):
     global height_alignment_ready

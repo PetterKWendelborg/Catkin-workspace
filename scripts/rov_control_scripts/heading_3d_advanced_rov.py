@@ -19,7 +19,7 @@ def center_call(center_msg, pub):
     hysteresis_duration = 4
     now = rospy.get_time()
 
-    inner_torque = 0.2
+    inner_torque = 0.1
     outer_torque = 1.5
 
     global last_time_in_window

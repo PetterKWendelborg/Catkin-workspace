@@ -105,7 +105,7 @@ def image_callback(msg, pub):
     # Shows each manipulated frames
     cv.imshow("frame",frame)    
     cv.waitKey(1) 
-               
+            
 if __name__ == "__main__":
     rospy.init_node("view_aruco_marker_4x4")
     aruco_0 = rospy.Publisher("/rov/aruco_4x4", Point, queue_size=10)

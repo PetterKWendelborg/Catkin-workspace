@@ -64,7 +64,7 @@ def plot_data():
     # fig, ax = plt.subplots(figsize= (8,6))
 
     fig, ax = plt.subplots(2,1, figsize= (14,10), sharey = False)
-    fig.suptitle("Sharing both axes")
+    fig.suptitle("")
     ax[0].set_title("First itteration of TMS heading - angular velocity in z axis")
     ax[0].set_ylabel("angular velocity (rad/sec)")
     ax[0].set_xlabel("simulation time (sec)")
@@ -95,7 +95,7 @@ def stop_inner_heading_call(inner_tms_heading_stop):
     stop_plotting_inner_tms_heading = inner_tms_heading_stop.data
 
 if __name__ == "__main__":
-    rospy.init_node("time_and_angular_velocity_z")
+    rospy.init_node("tms_time_and_angular_velocity_z")
 
     # rospy.Subscriber("/clock", Clock, time_callback)
 
