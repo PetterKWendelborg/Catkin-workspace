@@ -4,14 +4,18 @@
   <!-- Necessary for sonar to work -->
   <xacro:arg name="namespace" default="tms"/>
   <xacro:arg name="visualize" default="true"/>
+
   <xacro:include filename="$(find deep_ocean)/urdf/sonar_snippets.xacro" />
   <xacro:include filename="$(find deep_ocean)/urdf/sensor_snippets.xacro" />
+
   <!-- Necessary for thruster_macro to work -->
   <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
   <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
   <xacro:include filename="$(find deep_ocean)/urdf/thruster_snippets.xacro" />
+
   <!-- Necessary for state publishing -->
   <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
+
   <!-- Necessary for ArUco markers and calibration bord -->
   <xacro:include filename="$(find deep_ocean)/urdf/aruco_macro.xacro" />
 
@@ -32,7 +36,7 @@
   <xacro:property name="size_z" value="${size_z_orig * scale_factor}"/>
 
   <!-- Mass (Scaled) -->
-  <xacro:property name="mass" value="${550 * (scale_factor * scale_factor * scale_factor)}"/>
+  <xacro:property name="mass" value="${550 * scale_factor}"/>
 
   <!-- Volume (to ensure neutral buoyancy) -->
   <xacro:property name="volume" value="${mass / fluid_density}"/>
@@ -135,6 +139,10 @@
   <xacro:imu_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
       <origin xyz="0 0 ${0.81*scale_factor}" rpy="0 0 0"/>
   </xacro:imu_sensor>
+
+
+
+
 
     <!-- Spawning in ArUco 5x5 marker -->
   <xacro:aruco_marker_5x5 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="0.3">

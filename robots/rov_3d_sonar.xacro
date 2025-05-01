@@ -3,64 +3,66 @@
 <robot name="rov" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <xacro:arg name="namespace" default="rov"/>
+  <xacro:arg name="inertial_reference_frame" default="world"/>
 
-    <!-- Necessary for sensors -->
-    <xacro:include filename="$(find deep_ocean)/urdf/sonar_snippets.xacro" />
-    <xacro:include filename="$(find deep_ocean)/urdf/sensor_snippets.xacro" />
-    <!-- <xacro:include filename="$(find uuv_sensor_ros_plugins)/urdf/sensor_snippets.xacro"/> -->
-    <!-- Necessary for thrusters -->
-    <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
-    <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
-    <xacro:include filename="$(find deep_ocean)/urdf/thruster_snippets.xacro" />
-    <!-- Necessary for state publishing -->
-    <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
-    <xacro:include filename="$(find deep_ocean)/urdf/flashlight.xacro" />
+  <!-- Necessary for sensors -->
+  <xacro:include filename="$(find deep_ocean)/urdf/sonar_snippets.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf/sensor_snippets.xacro" />
+  <xacro:include filename="$(find uuv_sensor_ros_plugins)/urdf/dvl_snippets.xacro" />
 
-    <!-- Fluid Density of Water (kg/m³) -->
-    <xacro:property name="fluid_density" value="1028"/>
+  <!-- Necessary for thrusters -->
+  <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
+  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf/thruster_snippets.xacro" />
 
-    <!-- Hardcoded Dimensions from the Collision Mesh -->
-    <xacro:property name="size_y" value="0.833"/> <!-- Width -->
-    <xacro:property name="size_x" value="1.25"/>  <!-- Length -->
-    <xacro:property name="size_z" value="0.77"/>  <!-- Height -->
+  <!-- Necessary for state publishing -->
+  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
 
-    <!-- Mass of the ROV -->
-    <xacro:property name="mass" value="326"/>
+  <!-- Fluid Density of Water (kg/m³) -->
+  <xacro:property name="fluid_density" value="1028"/>
 
-    <!-- Compute Volume to Ensure Neutral Buoyancy -->
-    <xacro:property name="volume" value="${mass / fluid_density}"/>
+  <!-- Hardcoded Dimensions from the Collision Mesh -->
+  <xacro:property name="size_y" value="0.833"/> <!-- Width -->
+  <xacro:property name="size_x" value="1.25"/>  <!-- Length -->
+  <xacro:property name="size_z" value="0.77"/>  <!-- Height -->
 
-    <!-- Center of Buoyancy Adjusted -->
-    <xacro:property name="cob_z" value="${0.5 * size_z}"/>
+  <!-- Mass of the ROV -->
+  <xacro:property name="mass" value="326"/>
 
-    <!-- Inertia Calculation -->
-    <xacro:property name="ixx" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
-    <xacro:property name="iyy" value="${(1/12) * mass * (size_y * size_y + size_z * size_z)}"/>
-    <xacro:property name="izz" value="${(1/12) * mass * (size_y * size_y + size_x * size_x)}"/>
+  <!-- Compute Volume to Ensure Neutral Buoyancy -->
+  <xacro:property name="volume" value="${mass / fluid_density}"/>
 
-    <!-- Define Base Link -->
-    <link name="$(arg namespace)/base_link">
-        <inertial>
-            <mass value="${mass}"/>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <inertia ixx="${ixx}" ixy="0.0" ixz="0.0" iyy="${iyy}" iyz="0.0" izz="${izz}"/>
-        </inertial>
+  <!-- Center of Buoyancy Adjusted -->
+  <xacro:property name="cob_z" value="${0.5 * size_z}"/>
 
-        <!-- Visual Representation -->
-        <visual>
-            <geometry>
-                <mesh filename="package://deep_ocean/meshes/rov_visual.dae" scale="1 1 1"/>
-            </geometry>
-        </visual>
+  <!-- Inertia Calculation -->
+  <xacro:property name="ixx" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
+  <xacro:property name="iyy" value="${(1/12) * mass * (size_y * size_y + size_z * size_z)}"/>
+  <xacro:property name="izz" value="${(1/12) * mass * (size_y * size_y + size_x * size_x)}"/>
 
-        <!-- Collision Geometry -->
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <mesh filename="package://deep_ocean/meshes/rov_collision.stl" scale="1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
+  <!-- Define Base Link -->
+  <link name="$(arg namespace)/base_link">
+      <inertial>
+          <mass value="${mass}"/>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <inertia ixx="${ixx}" ixy="0.0" ixz="0.0" iyy="${iyy}" iyz="0.0" izz="${izz}"/>
+      </inertial>
+
+      <!-- Visual Representation -->
+      <visual>
+          <geometry>
+              <mesh filename="package://deep_ocean/meshes/rov_visual.dae" scale="1 1 1"/>
+          </geometry>
+      </visual>
+
+      <!-- Collision Geometry -->
+      <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+              <mesh filename="package://deep_ocean/meshes/rov_collision.stl" scale="1 1 1"/>
+          </geometry>
+      </collision>
+  </link>
 
     <!-- Initiating thrusters from UUV -->
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0">
@@ -87,71 +89,83 @@
 
   <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
 
-    <gazebo>
-        <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
-            <fluid_density>${fluid_density}</fluid_density>
-            <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
-            <debug>0</debug>      
-            <link name="$(arg namespace)/base_link">
-                <neutrally_buoyant>1</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
-                <volume>${volume}</volume>  
-                <box>
-                    <width>${size_y}</width>
-                    <length>${size_x}</length>
-                    <height>${size_z}</height>
-                </box>
-                <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
+  <gazebo>
+      <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+          <fluid_density>${fluid_density}</fluid_density>
+          <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
+          <debug>0</debug>      
+          <link name="$(arg namespace)/base_link">
+              <neutrally_buoyant>1</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
+              <volume>${volume}</volume>  
+              <box>
+                  <width>${size_y}</width>
+                  <length>${size_x}</length>
+                  <height>${size_z}</height>
+              </box>
+              <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
 
-                <!-- Hydrodynamic Model using Fossen type -->
-                <hydrodynamic_model>
-                    <type>fossen</type>
+              <!-- Hydrodynamic Model using Fossen type -->
+              <hydrodynamic_model>
+                  <type>fossen</type>
 
-                    <!-- Rough Added Mass Estimation -->
-                    <added_mass>
-                        ${0.1 * mass}  0  0  0  0  0
-                        0  ${0.1 * mass}  0  0  0  0  
-                        0  0  ${0.1 * mass}  0  0  0
-                        0  0  0  ${0.05 * mass}  0  0
-                        0  0  0  0  ${0.05 * mass}  0
-                        0  0  0  0  0  ${0.05 * mass}
-                    </added_mass>
+                  <!-- Rough Added Mass Estimation -->
+                  <added_mass>
+                      ${0.1 * mass}  0  0  0  0  0
+                      0  ${0.1 * mass}  0  0  0  0  
+                      0  0  ${0.1 * mass}  0  0  0
+                      0  0  0  ${0.05 * mass}  0  0
+                      0  0  0  0  ${0.05 * mass}  0
+                      0  0  0  0  0  ${0.05 * mass}
+                  </added_mass>
 
-                    <!-- Rough Linear Damping Estimation -->
-                    <linear_damping>
-                        ${-100 * size_y} ${-100 * size_x} ${-100 * size_z} 
-                        ${-40 * size_z} ${-40 * size_x} ${-40 * size_y}
-                    </linear_damping>
+                  <!-- Rough Linear Damping Estimation -->
+                  <linear_damping>
+                      ${-100 * size_y} ${-100 * size_x} ${-100 * size_z} 
+                      ${-40 * size_z} ${-40 * size_x} ${-40 * size_y}
+                  </linear_damping>
 
-                    <!-- Rough Quadratic Damping Estimation -->
-                    <quadratic_damping>
-                        ${-120 * size_y} ${-120 * size_x} ${-120 * size_z} 
-                        ${-50 * size_z} ${-50 * size_x} ${-50 * size_y}
-                    </quadratic_damping>
+                  <!-- Rough Quadratic Damping Estimation -->
+                  <quadratic_damping>
+                      ${-120 * size_y} ${-120 * size_x} ${-120 * size_z} 
+                      ${-50 * size_z} ${-50 * size_x} ${-50 * size_y}
+                  </quadratic_damping>
 
-                </hydrodynamic_model>
+              </hydrodynamic_model>
 
-            </link>    
-        </plugin>
-    </gazebo>  
+          </link>    
+      </plugin>
+      <!-- Odometry for the PID -->
+      <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+        <robotNamespace>/$(arg namespace)</robotNamespace>
+        <bodyName>$(arg namespace)/base_link</bodyName>
+        <topicName>pose_gt</topicName>
+        <frameName>world</frameName>  <!-- or "odom" if using a local frame -->
+        <updateRate>30</updateRate>
+      </plugin>
+  </gazebo>  
 
 
     <!-- kanskje prøve å etterligne denne https://waterlinked.com/shop/wl-21045-2-sonar-3d-15-689 -->
-    <xacro:sonar_3d parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)" scale_factor="1">
-        <origin xyz="0.63 0 0.63" rpy="0 0 0"/>
-    </xacro:sonar_3d>
+  <xacro:sonar_3d parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)" scale_factor="1">
+    <origin xyz="0.63 0 0.63" rpy="0 0 0"/>
+  </xacro:sonar_3d>
 
-  <!-- imu sensor -->
-    <xacro:imu_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
-        <origin xyz="0 0 0.63" rpy="0 0 0"/>
-    </xacro:imu_sensor>
+<!-- imu sensor -->
+  <xacro:imu_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
+    <origin xyz="0 0 0.63" rpy="0 0 0"/>
+  </xacro:imu_sensor>
 
-      <!-- camera -->
-    <xacro:camera_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
+    <!-- camera -->
+  <xacro:camera_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
     <origin xyz="0.63 0 0.4" rpy="0 0 0"/>
-    </xacro:camera_sensor>
+  </xacro:camera_sensor>
 
-    <xacro:flashlight parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
-    <origin xyz="0.63 0 0.5" rpy="0 -1.57 0"/>
-    </xacro:flashlight>
+  <!-- DVL from UUV simulator -->
+  <!-- <xacro:default_dvl_macro
+    namespace="$(arg namespace)"
+    parent_link="$(arg namespace)/base_link"
+    inertial_reference_frame="$(arg inertial_reference_frame)">
+    <origin xyz="-0.6 0 0" rpy="0 ${0.5*pi} 0"/>
+  </xacro:default_dvl_macro>  -->
 
 </robot>
