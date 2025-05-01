@@ -60,4 +60,7 @@
   <node name="terminal_alignment" pkg="deep_ocean" type="close_height_alignement.py" output="screen"/>
   <node name="rov_terminal_docking" pkg="deep_ocean" type="docking.py" output="screen"/>
 
+  <!-- plot -->
+  <node name="z_values" pkg="deep_ocean" type="angular_velocity_z_rov.py" output="screen" />
+
 </launch>

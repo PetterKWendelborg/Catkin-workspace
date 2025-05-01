@@ -5,13 +5,13 @@ from sensor_msgs.msg import Imu
 from rosgraph_msgs.msg import Clock
 from matplotlib import pyplot as plt
 from std_msgs.msg import Bool
-
+from geometry_msgs.msg import Point
 
 time_list_first = []
-angular_velocity_z_list_first = []
+distance_to_5x5_aruco_marker_first= []
 
 time_list_second = []
-angular_velocity_z_list_second = []
+distance_to_5x5_aruco_marker_second = []
 
 start_plotting_outer_rov_heading = False
 stop_plotting_outer_rov_heading = False
@@ -21,14 +21,27 @@ display_plot = False
 
 def time_and_angular_velocity_callback(msg):
     global time_list_first
-    global angular_velocity_z_list_first
     global time_list_second
-    global angular_velocity_z_list_second
 
     imu_time = msg.header.stamp.to_sec()
     angular_velocity_z = msg.angular_velocity.z
 
     if not stop_plotting_outer_rov_heading:
+        time_list_first.append(imu_time)
+
+    if start_plotting_inner_rov_heading and not stop_plotting_inner_rov_heading:
+        time_list_second.append(imu_time)
+
+    if display_plot:
+        plot_data()
+        rospy.signal_shutdown("Condition met")
+
+def distance_to_5x5_aruco_marker_callback(msg):
+
+    if not stop_plotting_outer_rov_heading:
+
+        global distance_to_5x5_aruco_marker_first
+        global distance_to_5x5_aruco_marker_second
         time_list_first.append(imu_time)
         angular_velocity_z_list_first.append(angular_velocity_z)
 
@@ -36,9 +49,6 @@ def time_and_angular_velocity_callback(msg):
         time_list_second.append(imu_time)
         angular_velocity_z_list_second.append(angular_velocity_z)
 
-    if display_plot:
-        plot_data()
-        rospy.signal_shutdown("Condition met")
 
 def plot_data():
 
@@ -55,8 +65,8 @@ def plot_data():
     ax[1].grid()
     ax[1].legend(loc = "upper left")
 
-    ax[0].plot(time_list_first, angular_velocity_z_list_first, color = "black", marker = "." , label = "")
-    ax[1].plot(time_list_second, angular_velocity_z_list_second, color = "green", marker = "." , label = "")
+    ax[0].plot(time_list_first, distance_to_5x5_aruco_marker_first, color = "black", marker = "." , label = "")
+    ax[1].plot(time_list_second, distance_to_5x5_aruco_marker_second, color = "green", marker = "." , label = "")
     fig.tight_layout()
 
     plt.show()
@@ -85,7 +95,7 @@ if __name__ == "__main__":
     rospy.init_node("rov_angular_velocity_yaw")
 
     rospy.Subscriber("/rov/imu", Imu, time_and_angular_velocity_callback)
-
+    rospy.Subscriber("/rov/aruco_5x5", Point, time_and_angular_velocity_callback)
     rospy.Subscriber("/tms/heading_done", Bool, start_outer_heading_call)
     rospy.Subscriber("/rov/heading_done", Bool, stop_outer_heading_call)
     rospy.Subscriber("/tms/inner_heading_done", Bool, start_inner_heading_call)

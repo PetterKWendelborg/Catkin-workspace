@@ -54,4 +54,7 @@
   <node name="outer_tms_heading" pkg="deep_ocean" type="heading_$(arg sonar_type)_tms.py" output="screen"/>
   <node name="inner_tms_heading" pkg="deep_ocean" type="inner_heading_3d_advanced_tms.py" output="screen"/>
 
+  <!-- plots -->
+  <node name="angular_velocity_z_tms" pkg="deep_ocean" type="angular_velocity_z_tms.py" output="screen" />
+
 </launch>

@@ -22,15 +22,13 @@ angular_velocity_z_list_second = []
 stop_plotting_outer_tms_heading = False
 start_plotting_inner_tms_heading = False
 stop_plotting_inner_tms_heading = False
-start_plot = False
+display_plot = False
 
 def time_and_angular_velocity_callback(msg):
     global time_list_first
     global angular_velocity_z_list_first
     global time_list_second
     global angular_velocity_z_list_second
-
-    global interrupt
 
     imu_time = msg.header.stamp.to_sec()
     angular_velocity_z = msg.angular_velocity.z
@@ -57,22 +55,11 @@ def time_and_angular_velocity_callback(msg):
     #     plot_data()
     #     rospy.signal_shutdown("Condition met")
 
-    if start_plot:
+    if display_plot:
         plot_data()
         rospy.signal_shutdown("Condition met")
 
 def plot_data():
-    # rospy.loginfo("Plotting data")
-    # plt.figure(figsize= (12,8))
-    # plt.plot(time_list_first, angular_velocity_z_list_first, color = "black", marker = "." , label = "")
-    # plt.title("TMS angular velocity in z axis")
-    # plt.xlabel("simulation time (sec)")
-    # plt.ylabel("angular velocity (rad/sec)")
-    # plt.grid()
-    # plt.legend(loc = "upper left")
-    # plt.show()
-
-    # fig, ax = plt.subplots(figsize= (8,6))
 
     fig, ax = plt.subplots(2,1, figsize= (14,10), sharey = False)
     fig.suptitle("")
@@ -106,11 +93,11 @@ def stop_inner_heading_call(inner_tms_heading_stop):
     stop_plotting_inner_tms_heading = inner_tms_heading_stop.data
 
 def plot_call(docking_done):
-    global start_plot
-    start_plot = docking_done.data
+    global display_plot
+    display_plot = docking_done.data
 
 if __name__ == "__main__":
-    rospy.init_node("tms_time_and_angular_velocity_z")
+    rospy.init_node("tms_angular_velocity_yaw ")
 
     # rospy.Subscriber("/clock", Clock, time_callback)
 
