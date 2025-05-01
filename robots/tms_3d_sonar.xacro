@@ -32,7 +32,7 @@
   <xacro:property name="size_z" value="${size_z_orig * scale_factor}"/>
 
   <!-- Mass (Scaled) -->
-  <xacro:property name="mass" value="${550 * (scale_factor * scale_factor * scale_factor)}"/>
+  <xacro:property name="mass" value="${550}"/>
 
   <!-- Volume (to ensure neutral buoyancy) -->
   <xacro:property name="volume" value="${mass / fluid_density}"/>
