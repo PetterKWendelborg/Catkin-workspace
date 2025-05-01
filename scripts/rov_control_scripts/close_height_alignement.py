@@ -69,7 +69,7 @@ def start_docking(aruco_msg, pub):
 
     else:
         rospy.loginfo(f"3 - start_condition: {height_alignment_ready} aruco_detected_4x4: {aruco_detected}")
-
+    
 def condition_call(inner_rov_heading_done):
     global height_alignment_ready
     if inner_rov_heading_done.data:

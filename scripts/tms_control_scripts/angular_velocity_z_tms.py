@@ -22,33 +22,44 @@ angular_velocity_z_list_second = []
 stop_plotting_outer_tms_heading = False
 start_plotting_inner_tms_heading = False
 stop_plotting_inner_tms_heading = False
+start_plot = False
 
 def time_and_angular_velocity_callback(msg):
     global time_list_first
     global angular_velocity_z_list_first
     global time_list_second
     global angular_velocity_z_list_second
-    outer_start_stop_initiator = 2
-    inner_start_stop_initiator = 2
-    start_stop_limit = 4
+
+    global interrupt
 
     imu_time = msg.header.stamp.to_sec()
     angular_velocity_z = msg.angular_velocity.z
 
     # rospy.loginfo(f"runtime and torque: {imu_time: .1f}, {angular_velocity_z: .5f} ")
-    if not stop_plotting_outer_tms_heading and outer_start_stop_initiator < start_stop_limit:
+    if not stop_plotting_outer_tms_heading:
         time_list_first.append(imu_time)
         angular_velocity_z_list_first.append(angular_velocity_z)
-    
-    elif stop_plotting_outer_tms_heading:
-        outer_start_stop_initiator = 8
 
-    if start_plotting_inner_tms_heading and inner_start_stop_initiator < start_stop_limit:
+    if start_plotting_inner_tms_heading and not stop_plotting_inner_tms_heading:
         time_list_second.append(imu_time)
         angular_velocity_z_list_second.append(angular_velocity_z)
+    
 
-    elif stop_plotting_inner_tms_heading:
-        inner_start_stop_initiator = 8
+    # if stop_plotting_outer_tms_heading:
+    #     plot_data()
+    #     rospy.signal_shutdown("Condition met")  
+
+    # if start_plotting_inner_tms_heading:
+    #     plot_data()
+    #     rospy.signal_shutdown("Condition met")
+
+    # if stop_plotting_inner_tms_heading:
+    #     plot_data()
+    #     rospy.signal_shutdown("Condition met")
+
+    if start_plot:
+        plot_data()
+        rospy.signal_shutdown("Condition met")
 
 def plot_data():
     # rospy.loginfo("Plotting data")
@@ -94,6 +105,10 @@ def stop_inner_heading_call(inner_tms_heading_stop):
     global stop_plotting_inner_tms_heading
     stop_plotting_inner_tms_heading = inner_tms_heading_stop.data
 
+def plot_call(docking_done):
+    global start_plot
+    start_plot = docking_done.data
+
 if __name__ == "__main__":
     rospy.init_node("tms_time_and_angular_velocity_z")
 
@@ -107,9 +122,14 @@ if __name__ == "__main__":
     rospy.Subscriber("/rov/approach_done", Bool, start_inner_heading_call)
     rospy.Subscriber("/tms/inner_heading_done", Bool, stop_inner_heading_call)
 
+    rospy.Subscriber("/rov/docking_done", Bool, plot_call)
+
+    # rospy.spin()
+
     try:
         rospy.spin()
     except KeyboardInterrupt:
+        # interrupt = True
         pass
     finally:
         plot_data()
