@@ -1,8 +1,6 @@
 #!/usr/bin/env python3 
 import rospy
-import math
-from geometry_msgs.msg import Point, Wrench
-import time
+from geometry_msgs.msg import Point, Wrench, Twist
 from std_msgs.msg import Bool
 
 # This code subscribes to the /rov/tms_center topic which gets its information from pcdata_conv_rov.py
@@ -17,12 +15,12 @@ def center_call(center_msg, pub):
     center_z = center_msg.z
     # rospy.loginfo(f"{center_z}")
 
-    buffer_distance = 0.28
-    desired_distance = 2.8
+    buffer_distance = 0.5
+    desired_distance = 1.5
     stopping_distance_outer = desired_distance
     stopping_distance_inner = desired_distance + buffer_distance
-    outer_force = 5
-    inner_force = 1.5
+    outer_force = 1
+    inner_force = 0.5
     hysteresis_duration = 4
     now = rospy.get_time()
     global last_time_in_window
@@ -30,11 +28,11 @@ def center_call(center_msg, pub):
 
     if rov_heading_done:
 
-        rov_wrench_msg = Wrench()
+        rov_wrench_msg = Twist()
         boolean = Bool()
 
         if center_z <= stopping_distance_inner:
-            rov_wrench_msg.force.x = 0
+            rov_wrench_msg.linear.x = 0
 
             if last_time_in_window is None:
                 last_time_in_window = now
@@ -48,13 +46,13 @@ def center_call(center_msg, pub):
 
         # If the rov are outside the outer distance window
         elif center_z >= stopping_distance_outer:
-            rov_wrench_msg.force.x = outer_force
+            rov_wrench_msg.linear.x = outer_force
 
         # If the rov are between the outer and inner distance window
         elif center_z > stopping_distance_inner and center_z < stopping_distance_outer:
-            rov_wrench_msg.force.x = inner_force
+            rov_wrench_msg.linear.x = inner_force
         else:
-            rov_wrench_msg.force.x = 0
+            rov_wrench_msg.linear.x = 0
 
         pub.publish(rov_wrench_msg)
             
@@ -68,12 +66,11 @@ def condition_call(approach_ready):
         rov_heading_done = approach_ready.data
 
 if __name__ == "__main__":
-    rospy.init_node("rov_approach")
+    rospy.init_node("rov_heading")
     
-    cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
+    cmd_vel_pub = rospy.Publisher("/rov/cmd_vel", Twist, queue_size = 10)
     
     rospy.Subscriber("/rov/heading_done", Bool, condition_call)
-
     rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
 
     approach_pub = rospy.Publisher("/rov/approach_done", Bool, queue_size = 10)
