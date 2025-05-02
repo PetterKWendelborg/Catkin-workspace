@@ -5,7 +5,7 @@ from cv_bridge import CvBridge
 import numpy as np
 import cv2 as cv
 import cv2.aruco as aruco
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PointStamped
 from std_msgs.msg import Bool
 
 # from matplotlib import pyplot as plt 
@@ -75,11 +75,17 @@ def image_callback(msg,pub):
                 # if tvecs is not None:
                 rospy.loginfo(f"tvecs: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
 
-                #kan kanskje se på Posestaped, men det krever kanskje å se på quaternions
-                center_msg = Point()
-                center_msg.x = tvecs[0][0][0]
-                center_msg.y = tvecs[0][0][1]
-                center_msg.z = tvecs[0][0][2]
+                # center_msg = Point()
+                # center_msg.x = tvecs[0][0][0]
+                # center_msg.y = tvecs[0][0][1]
+                # center_msg.z = tvecs[0][0][2]
+                center_msg = PointStamped()
+                center_msg.header.stamp =  msg.header.stamp
+                center_msg.header.frame_id= "camera_frame"
+                center_msg.point.x = tvecs[0][0][0]
+                center_msg.point.y = tvecs[0][0][1]
+                center_msg.point.z = tvecs[0][0][2]
+
                 pub.publish(center_msg)
 
             else:
@@ -93,10 +99,10 @@ def image_callback(msg,pub):
         boolean.data = False
         aruco_detected.publish(boolean)
         rospy.loginfo("aruco not in frame")
-        center_msg = Point()
-        center_msg.x = 0.0
-        center_msg.y = 0.0
-        center_msg.z = 0.0
+        # center_msg = Point()
+        center_msg.point.x = 0.0
+        center_msg.point.y = 0.0
+        center_msg.point.z = 0.0
         pub.publish(center_msg)
         
     # Shows each manipulated frames
@@ -107,7 +113,10 @@ def image_callback(msg,pub):
     # rospy.loginfo("no frame")     
 if __name__ == "__main__":
     rospy.init_node("view_aruco_marker_5x5")
-    aruco_pub = rospy.Publisher("/rov/aruco_5x5", Point, queue_size=10)
+
+    # aruco_pub = rospy.Publisher("/rov/aruco_5x5", Point, queue_size=10)
+
+    aruco_pub = rospy.Publisher("/rov/aruco_5x5", PointStamped, queue_size=10)
     aruco_detected = rospy.Publisher("/rov/aruco_detect_5x5", Bool, queue_size = 10)
     rospy.Subscriber("/rov/camera/image_raw", Image, image_callback, aruco_pub)
     rospy.spin()

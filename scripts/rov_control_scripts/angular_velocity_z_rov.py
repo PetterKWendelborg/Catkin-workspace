@@ -36,10 +36,6 @@ def time_and_angular_velocity_callback(msg):
         time_list_second.append(imu_time)
         angular_velocity_z_list_second.append(angular_velocity_z)
 
-    if display_plot:
-        plot_data()
-        rospy.signal_shutdown("Condition met")
-
 def plot_data():
 
     fig, ax = plt.subplots(2,1, figsize= (14,10), sharey = False)
@@ -80,6 +76,9 @@ def stop_inner_heading_call(inner_rov_heading_stop):
 def plot_call(docking_done):
     global display_plot
     display_plot = docking_done.data
+    if display_plot:
+        plot_data()
+        rospy.signal_shutdown("Condition met")
 
 if __name__ == "__main__":
     rospy.init_node("rov_angular_velocity_yaw")

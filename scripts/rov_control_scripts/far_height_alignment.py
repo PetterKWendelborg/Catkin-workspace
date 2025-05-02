@@ -24,6 +24,7 @@ def center_call(center_msg, pub):
 
     global last_time_in_window
     global tms_heading_done
+    
     if tms_heading_done:
         
         if center_z != 0:

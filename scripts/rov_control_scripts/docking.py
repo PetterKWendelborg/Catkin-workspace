@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 
 import rospy
 import math
-from geometry_msgs.msg import Point, Wrench
+from geometry_msgs.msg import Point, Wrench, PointStamped
 from std_msgs.msg import Bool
 
 docking_ready = False
@@ -11,7 +11,9 @@ aruco_detected = False
 
 def start_docking(aruco_msg, pub):
     # global condition
-    distance_rov_to_aruco_5x5 = aruco_msg.z
+    # distance_rov_to_aruco_5x5 = aruco_msg.z
+
+    distance_rov_to_aruco_5x5 = aruco_msg.point.z
 
     #stopping distance må nok byttes ut senere bare setter den høy for testing
     stopping_distance = 0.55
@@ -74,7 +76,8 @@ if __name__ == "__main__":
     
     rospy.Subscriber("/rov/alignment_done", Bool, fancy_docking_call)
     rospy.Subscriber("/rov/aruco_detect_5x5", Bool, aruco_call)
-    rospy.Subscriber("/rov/aruco_5x5", Point, start_docking, cmd_vel_pub)
+    # rospy.Subscriber("/rov/aruco_5x5", Point, start_docking, cmd_vel_pub)
+    rospy.Subscriber("/rov/aruco_5x5", PointStamped, start_docking, cmd_vel_pub)
 
     docking_pub = rospy.Publisher("/rov/docking_done", Bool, queue_size = 10)
 

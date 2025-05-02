@@ -2,11 +2,13 @@
 import rospy
 import math
 from sensor_msgs.msg import Imu
-from rosgraph_msgs.msg import Clock
 from matplotlib import pyplot as plt
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PointStamped
+
 import time
+from rosgraph_msgs.msg import Clock
+from sensor_msgs.msg import Image
 
 time_list_first = []
 distance_to_5x5_aruco_marker_first= []
@@ -20,49 +22,22 @@ start_plotting_docking = False
 stop_plotting_docking = False
 display_plot = False
 
-aruco_update_time = 0
-
-
-# def time_and_angular_velocity_callback(msg):
-#     global time_list_first
-#     global time_list_second
-    
-#     # imu_time = msg.header.stamp.to_sec()
-#     imu_time = msg.Clock()
-#     time_list_first.append(imu_time)
-
-
-def time_and_angular_velocity_callback(msg):
-    global time_list_first
-    global time_list_second
-    
-    imu_time = msg.header.stamp.to_sec()
-    time_list_first.append(imu_time)
-    # if start_plotting_approach and not stop_plotting_approach:
-    #     time_list_first.append(imu_time)
-
-    # if start_plotting_docking and not stop_plotting_docking:
-    #     time_list_second.append(imu_time)
-
-    # if stop_plotting_approach:
-    #     plot_data()
-    #     rospy.signal_shutdown("Condition met")
-
-def distance_to_5x5_aruco_marker_callback(aruco_msg):
+def distance_to_5x5_aruco_marker_and_time_callback(msg):
     global distance_to_5x5_aruco_marker_first
     global distance_to_5x5_aruco_marker_second
-    global aruco_update_time
+    global time_list_first
+    global time_list_second
 
+    distance = msg.point.z
+    aruco_marker_time_stamp = msg.header.stamp.to_sec()
 
-    distance = aruco_msg.z
-    distance_to_5x5_aruco_marker_first.append(distance)
+    if start_plotting_approach and not stop_plotting_approach:
+        time_list_first.append(aruco_marker_time_stamp)
+        distance_to_5x5_aruco_marker_first.append(distance)
 
-    # if start_plotting_approach and not stop_plotting_approach:
-    #     distance_to_5x5_aruco_marker_first.append(distance)
-
-    # if start_plotting_docking and not stop_plotting_docking:
-    #     distance_to_5x5_aruco_marker_second.append(distance)
-
+    if start_plotting_docking and not stop_plotting_docking:
+        time_list_second.append(aruco_marker_time_stamp)
+        distance_to_5x5_aruco_marker_second.append(distance)
 
 def plot_data():
 
@@ -106,34 +81,15 @@ def stop_docking_call(docking_stop):
         plot_data()
         rospy.signal_shutdown("Condition met")
 
-# def plot_call(docking_done):
-#     global display_plot
-#     display_plot = docking_done.data
-#     if display_plot:
-#         plot_data()
-#         rospy.signal_shutdown("Condition met")
-
-# def plot_call(docking_done):
-#     global display_plot
-#     display_plot = docking_done.data
-
 if __name__ == "__main__":
     rospy.init_node("distance_from_camera_to_acuco_5x5")
-
-    rospy.Subscriber("/rov/imu", Clock, time_and_angular_velocity_callback)
-    # rospy.Subscriber("/rov/imu", Imu, time_and_angular_velocity_callback)
     
-    rospy.Subscriber("/rov/aruco_5x5", Point, distance_to_5x5_aruco_marker_callback)
+    rospy.Subscriber("/rov/aruco_5x5", PointStamped, distance_to_5x5_aruco_marker_and_time_callback)
 
     rospy.Subscriber("/rov/heading_done", Bool, start_approach_call)
     rospy.Subscriber("/rov/approach_done", Bool, stop_approach_call)
     rospy.Subscriber("/rov/alignment_done", Bool, start_docking_call)
     rospy.Subscriber("/rov/docking_done", Bool, stop_docking_call)
-    # rospy.Subscriber("/rov/docking_done", Bool, plot_call)
-
-    # rospy.Subscriber("/rov/docking_done", Bool, plot_call)
-
-    # rospy.spin()
 
     try:
         rospy.spin()
@@ -141,44 +97,3 @@ if __name__ == "__main__":
         pass
     finally:
         plot_data()
-
-
-
-
-
-# time_list = []
-# angular_velocity_z_list = []
-
-# def time_and_angular_velocity_callback(msg):
-#     global time_list
-#     global angular_velocity_z_list 
-
-#     imu_time = msg.header.stamp.to_sec()
-#     angular_velocity_z = msg.angular_velocity.z
-    
-#     # rospy.loginfo(f"runtime and torque: {imu_time: .1f}, {angular_velocity_z: .5f} ")
-#     time_list.append(imu_time)
-#     angular_velocity_z_list.append(angular_velocity_z)
-
-# def plot_data():
-
-#     plt.figure(figsize= (12,8))
-#     plt.plot(time_list, angular_velocity_z_list, color = "black", marker = "." , label = "")
-#     plt.title("ROV angular velocity in z axis")
-#     plt.xlabel("simulation time (sec)")
-#     plt.ylabel("angular velocity (rad/sec)")
-#     plt.grid()
-#     plt.legend(loc = "upper left")
-#     plt.show()
-
-# if __name__ == "__main__":
-#     rospy.init_node("ROV_angular_velocity_z")
-
-#     rospy.Subscriber("/rov/imu", Imu, time_and_angular_velocity_callback)
-
-#     try:
-#         rospy.spin()
-#     except KeyboardInterrupt:
-#         pass
-#     finally:
-#         plot_data()

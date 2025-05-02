@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 
 import rospy
 import math
-from geometry_msgs.msg import Point, Wrench
+from geometry_msgs.msg import Point, Wrench, PointStamped
 import time
 from std_msgs.msg import Bool
 
@@ -15,6 +15,7 @@ last_time_in_window = None
 def center_call(center_msg, pub):
     # global condition
     center_z = center_msg.z
+    
     # rospy.loginfo(f"{center_z}")
 
     buffer_distance = 0.28
