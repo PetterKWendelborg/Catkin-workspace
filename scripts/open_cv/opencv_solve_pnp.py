@@ -52,7 +52,6 @@ def image_callback(msg):
         rospy.logerr(f"cv bridge error {e}")
         return
     
-    # Gray scales the video, kanskje vi ikke trenger å grayscale heller.... får bare la den være
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     corners, ids, rejected = aruco.detectMarkers(gray, aruco_dict_old, parameters= detector)
@@ -60,7 +59,6 @@ def image_callback(msg):
     if ids is not None:    
         # rospy.loginfo("id found")
         aruco.drawDetectedMarkers(frame, corners, ids)
-
 
         for i in range(len(ids)):
             
@@ -73,27 +71,6 @@ def image_callback(msg):
 
                     if tvecs is not None:
                         rospy.loginfo(f"tvecs: {tvecs[0][0]} {tvecs[1][0]} {tvecs[2][0]}")
-                        rospy.loginfo(f"rvecs: {rvecs[0][0]} {rvecs[1][0]} {rvecs[2][0]}")
-                        # x_tvecs.append(tvecs[0][0][0]) 
-                        # y_tvecs.append(tvecs[0][0][1]) 
-                        # r_mtx, _ = cv.Rodrigues(rvecs) #converts rvecs to a rotation matrix
-                        # rvecs_inv = r_mtx.T #transpose
-                        # tvecs_reshaped = tvecs.reshape(3,1)
-                        # tvecs_inv = -np.dot(rvecs_inv, tvecs_reshaped)
-                        # rospy.loginfo(f"tvecs_inv: {tvecs_inv}")
-                        # rospy.loginfo(f"R: {np.shape(R)}")
-                        # rospy.loginfo(f"R_inv: {np.shape(R_inv)}")
-                        # rospy.loginfo(f"tvecs: {tvecs_reshaped}")
-                        # rospy.loginfo(f"tvecs: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
-                        # rospy.loginfo(f"tvecs_inv: {tvecs_inv[0][0]} {tvecs_inv[1][0]} {tvecs_inv[2][0]}")
-                        # rospy.loginfo(f"rvecs: {rvecs}")
-
-                        #kan kanskje se på Posestaped, men det krever kanskje å se på quaternions
-                        # center_msg = Point()
-                        # center_msg.x = tvecs_inv[0][0]
-                        # center_msg.y = tvecs_inv[1][0]
-                        # center_msg.z = tvecs_inv[2][0]
-                        # pub.publish(center_msg)
 
                 else:
                     rospy.loginfo("id not found")

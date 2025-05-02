@@ -27,7 +27,7 @@ last_time_in_window = None
 x_tvecs = []
 y_tvecs = []
 cv_bridge = CvBridge()
-marker_size = 0.23
+marker_size = 0.20
 detector = aruco.DetectorParameters_create()
 
 aruco_dict_old = aruco.Dictionary_get(aruco.DICT_5X5_50)

@@ -55,9 +55,9 @@ def time_and_angular_velocity_callback(msg):
     #     plot_data()
     #     rospy.signal_shutdown("Condition met")
 
-    if display_plot:
-        plot_data()
-        rospy.signal_shutdown("Condition met")
+    # if display_plot:
+    #     plot_data()
+    #     rospy.signal_shutdown("Condition met")
 
 def plot_data():
 
@@ -95,6 +95,9 @@ def stop_inner_heading_call(inner_tms_heading_stop):
 def plot_call(docking_done):
     global display_plot
     display_plot = docking_done.data
+    if display_plot:
+        plot_data()
+        rospy.signal_shutdown("Condition met")
 
 if __name__ == "__main__":
     rospy.init_node("tms_angular_velocity_yaw ")

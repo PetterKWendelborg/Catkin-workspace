@@ -28,7 +28,7 @@ def time_and_angular_velocity_callback(msg):
     imu_time = msg.header.stamp.to_sec()
     angular_velocity_z = msg.angular_velocity.z
 
-    if not stop_plotting_outer_rov_heading:
+    if start_plotting_outer_rov_heading and not stop_plotting_outer_rov_heading:
         time_list_first.append(imu_time)
         angular_velocity_z_list_first.append(angular_velocity_z)
 
