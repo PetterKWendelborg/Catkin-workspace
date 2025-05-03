@@ -41,7 +41,8 @@ def distance_to_5x5_aruco_marker_and_time_callback(msg):
 
 def plot_data():
 
-    fig, ax = plt.subplots(2,1, figsize= (14,10), sharey = False)
+    fig, ax = plt.subplots(2,1, figsize= (12,8), sharey = False)
+    fig.canvas.set_window_title("distance.py")
     fig.suptitle("")
     ax[0].set_title("distance from camera to aruco marker - approach")
     ax[0].set_ylabel("distance (m)")

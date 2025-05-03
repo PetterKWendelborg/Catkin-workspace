@@ -56,7 +56,7 @@ def image_callback(msg,pub):
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict_old, parameters= detector)
 
     if ids is not None:    
-        rospy.loginfo("id found")
+        rospy.loginfo("5x5_marker id found")
         last_time_in_window = None
         aruco.drawDetectedMarkers(frame, corners, ids)
         boolean.data = True
@@ -104,9 +104,9 @@ def image_callback(msg,pub):
         center_msg.point.y = 0.0
         center_msg.point.z = 0.0
         pub.publish(center_msg)
-        
-    # Shows each manipulated frames
-    cv.imshow("frame",frame)    
+    # Shows each manipulated frames and resized from camera resolution to the value below
+    frame = cv.resize(frame, (640, 480))   
+    cv.imshow("frame_5x5_ArUco_marker",frame)    
     cv.waitKey(1) 
 
 

@@ -12,11 +12,6 @@ angular_velocity_z_list_first = []
 time_list_second = []
 angular_velocity_z_list_second = []
 
-#Det blir nok motsatt logikk, dette er fordi den boolean verdien som hentes fra de forskjellige prosodyrene
-#sender en TRUE statement som skal stoppe hentingen av verdier til listene
-#Faktisk kanskje ikke, jeg har 2 valg. Hver script i docking prossodyren 
-#"henter" en boolean verdi for å starte, 
-#og "sender" en boolean verdi for å starte en ny prosess. Deretter terminater den seg selv.
 
 #Det jeg trenger er å vite når den tms heading starter og når den slutter. Som er når den får en verdi til å starte, og sender en ny verdi
 stop_plotting_outer_tms_heading = False
@@ -41,27 +36,11 @@ def time_and_angular_velocity_callback(msg):
     if start_plotting_inner_tms_heading and not stop_plotting_inner_tms_heading:
         time_list_second.append(imu_time)
         angular_velocity_z_list_second.append(angular_velocity_z)
-    
-
-    # if stop_plotting_outer_tms_heading:
-    #     plot_data()
-    #     rospy.signal_shutdown("Condition met")  
-
-    # if start_plotting_inner_tms_heading:
-    #     plot_data()
-    #     rospy.signal_shutdown("Condition met")
-
-    # if stop_plotting_inner_tms_heading:
-    #     plot_data()
-    #     rospy.signal_shutdown("Condition met")
-
-    # if display_plot:
-    #     plot_data()
-    #     rospy.signal_shutdown("Condition met")
 
 def plot_data():
 
-    fig, ax = plt.subplots(2,1, figsize= (14,10), sharey = False)
+    fig, ax = plt.subplots(2,1, figsize= (12,8), sharey = False)
+    fig.canvas.set_window_title("angular_velocity_z_tms.py")
     fig.suptitle("")
     ax[0].set_title("First itteration of TMS heading - angular velocity in z axis")
     ax[0].set_ylabel("angular velocity (rad/sec)")
@@ -102,10 +81,6 @@ def plot_call(docking_done):
 if __name__ == "__main__":
     rospy.init_node("tms_angular_velocity_yaw ")
 
-    # rospy.Subscriber("/clock", Clock, time_callback)
-
-    # rospy.Subscriber("/tms/imu", Imu, time_callback)
-    # rospy.Subscriber("/tms/imu", Imu, angular_velocity_z_callback)
     rospy.Subscriber("/tms/imu", Imu, time_and_angular_velocity_callback)
 
     rospy.Subscriber("/tms/heading_done", Bool, stop_outer_heading_call)
@@ -114,12 +89,9 @@ if __name__ == "__main__":
 
     rospy.Subscriber("/rov/docking_done", Bool, plot_call)
 
-    # rospy.spin()
-
     try:
         rospy.spin()
     except KeyboardInterrupt:
-        # interrupt = True
         pass
     finally:
         plot_data()

@@ -37,8 +37,10 @@ def time_and_angular_velocity_callback(msg):
         angular_velocity_z_list_second.append(angular_velocity_z)
 
 def plot_data():
-
-    fig, ax = plt.subplots(2,1, figsize= (14,10), sharey = False)
+    
+    fig, ax = plt.subplots(2,1, figsize= (12,8), sharey = False)
+    fig.canvas.set_window_title("angular_velocuty_z_rov.py")
+    fig.set_canvas
     fig.suptitle("")
     ax[0].set_title("First itteration of ROV heading - angular velocity in z axis")
     ax[0].set_ylabel("angular velocity (rad/sec)")
