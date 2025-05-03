@@ -13,8 +13,8 @@ last_time_in_window = None
 def start_docking(aruco_msg, pub):
     # global condition
     distance_y_rov_to_aruco_4x4 = aruco_msg.y
-    hysteresis_duration = 4
-    terminal_center_hysterisis = 0.04
+    hysteresis_duration = 6
+    terminal_center_hysterisis = 0.020
     force_y = 1
     rov_wrench_msg = Wrench()
     boolean = Bool()

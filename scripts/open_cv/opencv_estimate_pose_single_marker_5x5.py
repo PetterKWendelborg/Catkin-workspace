@@ -27,7 +27,7 @@ last_time_in_window = None
 x_tvecs = []
 y_tvecs = []
 cv_bridge = CvBridge()
-marker_size = 0.20
+marker_size = 0.23
 detector = aruco.DetectorParameters_create()
 
 aruco_dict_old = aruco.Dictionary_get(aruco.DICT_5X5_50)
@@ -100,12 +100,15 @@ def image_callback(msg,pub):
         aruco_detected.publish(boolean)
         rospy.loginfo("aruco not in frame")
         # center_msg = Point()
+        center_msg = PointStamped()
+        center_msg.header.stamp =  msg.header.stamp
+        center_msg.header.frame_id= "camera_frame"
         center_msg.point.x = 0.0
         center_msg.point.y = 0.0
         center_msg.point.z = 0.0
         pub.publish(center_msg)
     # Shows each manipulated frames and resized from camera resolution to the value below
-    frame = cv.resize(frame, (640, 480))   
+    # frame = cv.resize(frame, (640, 480))   
     cv.imshow("frame_5x5_ArUco_marker",frame)    
     cv.waitKey(1) 
 

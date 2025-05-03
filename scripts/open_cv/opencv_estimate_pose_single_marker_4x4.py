@@ -65,7 +65,7 @@ def image_callback(msg, pub):
             # cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
             # Predtermined ids/ we had id 0 and id 1
             if ids[i] == 0:
-                rospy.loginfo("5x5_marker id0 found")
+                rospy.loginfo("4x4_marker id0 found")
                 rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
                 cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
                 rospy.loginfo(f"tvecs_0: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
@@ -76,7 +76,7 @@ def image_callback(msg, pub):
                 pub.publish(aruco_0)
 
             elif ids[i] == 3:
-                rospy.loginfo("5x5_marker id3 found")
+                rospy.loginfo("4x4_marker id3 found")
                 rvecs1, tvecs1, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
                 cv.drawFrameAxes(frame, mtx, dist, rvecs1, tvecs1, axis_size)
                 rospy.loginfo(f"tvecs_1: {tvecs1[0][0][0]} {tvecs1[0][0][1]} {tvecs1[0][0][2]}")
@@ -104,7 +104,7 @@ def image_callback(msg, pub):
         center_msg.z = 0.0
         pub.publish(center_msg)
     # Shows each manipulated frames and resized from camera resolution to the value below
-    frame = cv.resize(frame, (640, 480))   
+    # frame = cv.resize(frame, (640, 480))   
     cv.imshow("frame_4x4_ArUco_marker",frame)    
     cv.waitKey(1) 
             

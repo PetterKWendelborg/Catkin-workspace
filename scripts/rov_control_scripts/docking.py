@@ -16,7 +16,7 @@ def start_docking(aruco_msg, pub):
     distance_rov_to_aruco_5x5 = aruco_msg.point.z
 
     #stopping distance må nok byttes ut senere bare setter den høy for testing
-    stopping_distance = 0.55
+    stopping_distance = 0.54
     rov_wrench_msg = Wrench()
     boolean = Bool()
     global aruco_detected
