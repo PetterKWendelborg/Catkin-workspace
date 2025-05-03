@@ -9,7 +9,7 @@ from std_msgs.msg import Bool
 # and to the /rov/heading_done topic which gets its information from rov_heading.py
 # here the sonar data is used to make the ROV approach the TMS
 
-rov_heading_done = False
+approach_ready = False
 last_time_in_window = None
 
 def center_call(center_msg, pub):
@@ -27,9 +27,9 @@ def center_call(center_msg, pub):
     hysteresis_duration = 4
     now = rospy.get_time()
     global last_time_in_window
-    global rov_heading_done
+    global approach_ready
 
-    if rov_heading_done:
+    if approach_ready:
 
         rov_wrench_msg = Wrench()
         boolean = Bool()
@@ -60,20 +60,20 @@ def center_call(center_msg, pub):
         pub.publish(rov_wrench_msg)
             
     else:
-        rospy.loginfo(f"condition is {rov_heading_done}")
+        rospy.loginfo(f"condition is {approach_ready}")
     
 
-def condition_call(approach_ready):
-    global rov_heading_done
-    if approach_ready.data:
-        rov_heading_done = approach_ready.data
+def condition_call(far_alignment_done):
+    global approach_ready
+    if far_alignment_done.data:
+        approach_ready = far_alignment_done.data
 
 if __name__ == "__main__":
     rospy.init_node("rov_approach")
     
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     
-    rospy.Subscriber("/rov/heading_done", Bool, condition_call)
+    rospy.Subscriber("/rov/far_alignment_done", Bool, condition_call)
 
     rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
 

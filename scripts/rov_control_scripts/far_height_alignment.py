@@ -8,39 +8,35 @@ from geometry_msgs.msg import Point, Wrench
 # and to the /tms/heading_done topic which gets its information from tms_heading_2d/3d(_new).py
 # here the sonar data is finaly used to adjust the ROV's heading towards the TMS
 
-tms_heading_done = False
+height_alignment_ready = False
 last_time_in_window = None
 
 def center_call(center_msg, pub):
-    center_x = center_msg.x
-    center_z = center_msg.z
-    inner_hyst_window = 0.5
-    outer_hyst_window = 15.0
+    center_y = center_msg.y
+
+    upper_hyst_window = 0
+    bottom_hyst_window = -0.3
+
+    high_hyst_window = 0.2
+    low_hyst_window = -0.5
+
     hysteresis_duration = 4
+
     now = rospy.get_time()
 
-    inner_torque = 0.1
-    outer_torque = 1.5
+    inner_force = 1.5
+    outer_force = 2.5
 
     global last_time_in_window
-    global tms_heading_done
+    global height_alignment_ready
     
-    if tms_heading_done:
-        
-        if center_z != 0:
-            angle_to_center = math.asin(center_x/center_z)
-        else:
-            angle_to_center = 0
+    if height_alignment_ready:
 
-        angle_to_center_gaz_deg = math.degrees(angle_to_center)
-        # rospy.loginfo(f"angle to center = {angle_to_center_gaz} rad")  
-        # rospy.loginfo(f"angle to center = {math.degrees(angle_to_center_gaz)} deg") 
-
-        tms_wrench_msg = Wrench()
+        rov_wrench_msg= Wrench()
         boolean = Bool()
 
-        if angle_to_center_gaz_deg >= -inner_hyst_window and angle_to_center_gaz_deg <= inner_hyst_window:
-            tms_wrench_msg.torque.z = 0
+        if center_y <= upper_hyst_window and center_y >= bottom_hyst_window:
+            rov_wrench_msg.force.z = 0
 
             if last_time_in_window is None:
                 last_time_in_window = now
@@ -52,36 +48,37 @@ def center_call(center_msg, pub):
                 condition_pub.publish(boolean)
                 rospy.signal_shutdown("Condition met")
 
-        # om vinkel er mindre enn -10
-        elif angle_to_center_gaz_deg <= -outer_hyst_window:
-            tms_wrench_msg.torque.z = outer_torque
+        # om høyden er høyere enn 0.5
+        elif center_y > high_hyst_window:
+            rov_wrench_msg.force.z = -outer_force
             last_time_in_window = None
 
-        # om vinkel er mer enn -10 og mindre enn -3
-        elif angle_to_center_gaz_deg > -outer_hyst_window and angle_to_center_gaz_deg < -inner_hyst_window :
-            tms_wrench_msg.torque.z = inner_torque
+        # om høyden er mellom 0 og 0.5
+        elif center_y < high_hyst_window and center_y > upper_hyst_window :
+            rov_wrench_msg.force.z = -inner_force
             last_time_in_window = None
 
-        # om vinkel er mer enn 10
-        elif angle_to_center_gaz_deg >= outer_hyst_window:
-            tms_wrench_msg.torque.z = -outer_torque
+        # om høyden er lavere enn -1
+        elif center_y < low_hyst_window:
+            rov_wrench_msg.force.z = outer_force
             last_time_in_window = None
 
-        # om vinkel er mindre enn 10 og mer enn 3
-        elif angle_to_center_gaz_deg < outer_hyst_window and angle_to_center_gaz_deg > inner_hyst_window :
-            tms_wrench_msg.torque.z = -inner_torque
+        # om høyden er mellom -1 og -0.5
+        elif center_y > low_hyst_window and center_y < bottom_hyst_window :
+            rov_wrench_msg.force.z = inner_force
             last_time_in_window = None
 
         else:
             rospy.loginfo("else statement")
-            tms_wrench_msg.torque.z = 0
+            rov_wrench_msg.force.y = 0
 
-        pub.publish(tms_wrench_msg)
+        rospy.loginfo(center_y)
+        pub.publish(rov_wrench_msg)
 
-def condition_call(approach_ready):
-    global tms_heading_done
-    if approach_ready.data:
-        tms_heading_done = approach_ready.data
+def condition_call(rov_heading_done):
+    global height_alignment_ready
+    if rov_heading_done.data:
+        height_alignment_ready = rov_heading_done.data
         
 if __name__ == "__main__":
     rospy.init_node("rov_heading")
@@ -90,8 +87,8 @@ if __name__ == "__main__":
     
     rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
 
-    rospy.Subscriber("/tms/heading_done", Bool, condition_call)
+    rospy.Subscriber("/rov/heading_done", Bool, condition_call)
 
-    condition_pub = rospy.Publisher("/rov/heading_done", Bool, queue_size = 10)
+    condition_pub = rospy.Publisher("/rov/far_alignment_done", Bool, queue_size = 10)
 
     rospy.spin()
