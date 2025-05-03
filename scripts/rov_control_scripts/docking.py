@@ -37,7 +37,7 @@ def start_docking(aruco_msg, pub):
 
         elif distance_rov_to_aruco_5x5 > stopping_distance:
             rospy.loginfo(f"start thrusting")
-            rov_wrench_msg.force.x = 2
+            rov_wrench_msg.force.x = 3
             pub.publish(rov_wrench_msg)
 
         else:

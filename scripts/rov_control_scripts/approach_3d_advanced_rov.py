@@ -14,7 +14,7 @@ last_time_in_window = None
 
 def center_call(center_msg, pub):
     # global condition
-    center_z = center_msg.z
+    center_z = center_msg.point.z
     
     # rospy.loginfo(f"{center_z}")
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     
     rospy.Subscriber("/rov/far_alignment_done", Bool, condition_call)
 
-    rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
+    rospy.Subscriber("/rov/tms_center", PointStamped, center_call, cmd_vel_pub)
 
     approach_pub = rospy.Publisher("/rov/approach_done", Bool, queue_size = 10)
     rospy.spin()

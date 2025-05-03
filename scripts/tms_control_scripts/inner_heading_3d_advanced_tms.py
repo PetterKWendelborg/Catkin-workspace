@@ -2,7 +2,7 @@
 import rospy
 import math
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Point, Wrench
+from geometry_msgs.msg import Point, Wrench, PointStamped
 
 # This code subscribes to the /tms/rov_center topic which gets its information from ponitcloud_to_xyz_3d_tms.py
 # here the sonar data is finaly used to adjust the TMS's heading towards the ROV
@@ -11,8 +11,8 @@ tms_inner_heading_ready = False
 last_time_in_window = None
 
 def center_call(center_msg, pub):
-    center_x = center_msg.x
-    center_z = center_msg.z
+    center_x = center_msg.point.x
+    center_z = center_msg.point.z
     inner_hyst_window = 0.5
     outer_hyst_window = 10.0
     hysteresis_duration = 4
@@ -75,7 +75,7 @@ def center_call(center_msg, pub):
             tms_wrench_msg.torque.z = 0
 
         pub.publish(tms_wrench_msg)
-
+    
 def condition_call(approach_done):
     global tms_inner_heading_ready
     if approach_done.data:
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     
     cmd_vel_pub = rospy.Publisher("/tms/thruster_manager/input", Wrench, queue_size = 10)
 
-    rospy.Subscriber("/tms/rov_center", Point, center_call, cmd_vel_pub)
+    rospy.Subscriber("/tms/rov_center", PointStamped, center_call, cmd_vel_pub)
     rospy.Subscriber("/rov/approach_done", Bool, condition_call)
 
     condition_pub = rospy.Publisher("/tms/inner_heading_done", Bool, queue_size = 10)

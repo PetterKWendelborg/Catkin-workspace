@@ -2,7 +2,7 @@
 import rospy
 import math
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Point, Wrench
+from geometry_msgs.msg import Point, Wrench, PointStamped
 
 # This code subscribes to the /rov/tms_center topic which gets its information from pcdata_conv_rov.py
 # and to the /tms/heading_done topic which gets its information from tms_heading_2d/3d(_new).py
@@ -12,7 +12,7 @@ height_alignment_ready = False
 last_time_in_window = None
 
 def center_call(center_msg, pub):
-    center_y = center_msg.y
+    center_y = center_msg.point.y
 
     upper_hyst_window = 0
     bottom_hyst_window = -0.3
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     
-    rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
+    rospy.Subscriber("/rov/tms_center", PointStamped, center_call, cmd_vel_pub)
 
     rospy.Subscriber("/rov/heading_done", Bool, condition_call)
 
