@@ -40,7 +40,7 @@ def plot_data():
     
     fig, ax = plt.subplots(2,1, figsize= (12,8), sharey = False)
     fig.canvas.set_window_title("plot_angular_velocity_z_rov.py")
-    fig.set_canvas
+    # fig.set_canvas
     fig.suptitle("")
     ax[0].set_title("First itteration of ROV heading - angular velocity in z axis")
     ax[0].set_ylabel("angular velocity (rad/sec)")

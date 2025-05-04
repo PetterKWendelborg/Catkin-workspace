@@ -19,7 +19,7 @@ def center_call(center_msg, pub):
     # rospy.loginfo(f"{center_z}")
 
     buffer_distance = 0.28
-    desired_distance = 2.8
+    desired_distance = 2.4
     stopping_distance_outer = desired_distance
     stopping_distance_inner = desired_distance + buffer_distance
     outer_force = 5
