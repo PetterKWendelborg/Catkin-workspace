@@ -17,34 +17,35 @@ heading_angle_list_first = []
 heading_angle_list_second = []
 
 #Det jeg trenger er å vite når den tms heading starter og når den slutter. Som er når den får en verdi til å starte, og sender en ny verdi
-start_plotting_outer_rov_heading = False
-stop_plotting_outer_rov_heading = False
-start_plotting_inner_rov_heading = False
-stop_plotting_inner_rov_heading = False
+start_plotting_outer_tms_heading = False
+stop_plotting_outer_tms_heading = False
+start_plotting_inner_tms_heading = False
+stop_plotting_inner_tms_heading = False
 display_plot = False
 
 def heading_angular_velocity_callback(msg):
     global time_list_first_angular_velocity
-    global angular_velocity_z_list_first
     global time_list_second_angular_velocity
+    global angular_velocity_z_list_first
     global angular_velocity_z_list_second
 
     imu_time = msg.header.stamp.to_sec()
     angular_velocity_z = msg.angular_velocity.z
+    angular_velocity_z_deg = math.degrees(angular_velocity_z)
 
     # rospy.loginfo(f"runtime and torque: {imu_time: .1f}, {angular_velocity_z: .5f} ")
     if not stop_plotting_outer_tms_heading:
         time_list_first_angular_velocity.append(imu_time)
-        angular_velocity_z_list_first.append(angular_velocity_z)
+        angular_velocity_z_list_first.append(angular_velocity_z_deg)
 
     if start_plotting_inner_tms_heading and not stop_plotting_inner_tms_heading:
         time_list_second_angular_velocity.append(imu_time)
-        angular_velocity_z_list_second.append(angular_velocity_z)
+        angular_velocity_z_list_second.append(angular_velocity_z_deg)
 
 def heading_angle_callback(msg):
     global time_list_first_heading_angle
-    global heading_angle_list_first
     global time_list_second_heading_angle
+    global heading_angle_list_first
     global heading_angle_list_second
     
     heading_angle_time = msg.header.stamp.to_sec()
@@ -66,32 +67,29 @@ def plot_data():
     fig.canvas.set_window_title("plot_heading_angle_yaw_tms.py")
     fig.suptitle("")
 
-    ax[0,0].set_title("First TMS heading - angular velocity yaw")
-    ax[0,0].set_ylabel("angular velocity (rad/sec)")
+    ax[0,0].set_title("TMS alignment heading - angular velocity yaw")
+    ax[0,0].set_ylabel("angular velocity (deg/sec)")
     ax[0,0].set_xlabel("simulation time (sec)")
     ax[0,0].grid()
     ax[0,0].legend(loc = "upper left")
 
-    ax[1,0].set_title("Second TMS heading -  angular velocity yaw")
-    ax[1,0].set_ylabel("angular velocity (rad/sec)")
+    ax[1,0].set_title("TMS alignment heading - angular velocity yaw")
+    ax[1,0].set_ylabel("angular velocity (deg/sec)")
     ax[1,0].set_xlabel("simulation time (sec)")
     ax[1,0].grid()
     ax[1,0].legend(loc = "upper left")
 
-
-    ax[0,1].set_title("First TMS heading yaw - heading angle")
+    ax[0,1].set_title("TMS correction heading yaw - heading angle")
     ax[0,1].set_ylabel("angle (deg)")
     ax[0,1].set_xlabel("simulation time (sec)")
     ax[0,1].grid()
     ax[0,1].legend(loc = "upper left")
 
-    ax[1,1].set_title("Second TMS heading - heading angle")
+    ax[1,1].set_title("TMS correction heading - heading angle")
     ax[1,1].set_ylabel("angle (deg)")
     ax[1,1].set_xlabel("simulation time (sec)")
     ax[1,1].grid()
     ax[1,1].legend(loc = "upper left")
-
-
 
     ax[0,0].plot(time_list_first_angular_velocity, angular_velocity_z_list_first, color = "blue", marker = "." , label = "")
     ax[1,0].plot(time_list_second_angular_velocity, angular_velocity_z_list_second, color = "red", marker = "." , label = "")

@@ -32,14 +32,15 @@ def heading_angular_velocity_callback(msg):
 
     imu_time = msg.header.stamp.to_sec()
     angular_velocity_z = msg.angular_velocity.z
+    angular_velocity_z_deg = math.degrees(angular_velocity_z)
 
     if start_plotting_outer_rov_heading and not stop_plotting_outer_rov_heading:
         time_list_first_angular_velocity.append(imu_time)
-        angular_velocity_z_list_first.append(angular_velocity_z)
+        angular_velocity_z_list_first.append(angular_velocity_z_deg)
 
     if start_plotting_inner_rov_heading and not stop_plotting_inner_rov_heading:
         time_list_second_angular_velocity.append(imu_time)
-        angular_velocity_z_list_second.append(angular_velocity_z)
+        angular_velocity_z_list_second.append(angular_velocity_z_deg)
 
 
 def heading_angle_callback(msg):
@@ -63,30 +64,30 @@ def heading_angle_callback(msg):
 
 def plot_data():
 
-    fig, ax = plt.subplots(2,2, figsize= (12,8), sharey = False)
+    fig, ax = plt.subplots(2,2, figsize= (14,8), sharey = False)
     fig.canvas.set_window_title("plot_heading_angle_yaw_rov.py")
     fig.suptitle("")
 
-    ax[0,0].set_title("First ROV heading - angular velocity in yaw")
-    ax[0,0].set_ylabel("angular velocity (rad/sec)")
+    ax[0,0].set_title("ROV alignment heading - angular velocity in yaw")
+    ax[0,0].set_ylabel("angular velocity (deg/sec)")
     ax[0,0].set_xlabel("simulation time (sec)")
     ax[0,0].grid()
     ax[0,0].legend(loc = "upper left")
 
-    ax[1,0].set_title("Second ROV heading - angular velocity in yaw")
-    ax[1,0].set_ylabel("angular velocity (rad/sec)")
+    ax[1,0].set_title("ROV alignment heading - angular velocity in yaw")
+    ax[1,0].set_ylabel("angular velocity (deg/sec)")
     ax[1,0].set_xlabel("simulation time (sec)")
     ax[1,0].grid()
     ax[1,0].legend(loc = "upper left")
 
 
-    ax[0,1].set_title("First ROV heading yaw - heading angle")
+    ax[0,1].set_title("ROV correction heading yaw - heading angle")
     ax[0,1].set_ylabel("angle (deg)")
     ax[0,1].set_xlabel("simulation time (sec)")
     ax[0,1].grid()
     ax[0,1].legend(loc = "upper left")
 
-    ax[1,1].set_title("Second ROV heading - heading angle")
+    ax[1,1].set_title("ROV correction heading - heading angle")
     ax[1,1].set_ylabel("angle (deg)")
     ax[1,1].set_xlabel("simulation time (sec)")
     ax[1,1].grid()
