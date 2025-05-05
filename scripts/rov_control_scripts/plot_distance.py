@@ -10,11 +10,11 @@ import time
 from rosgraph_msgs.msg import Clock
 from sensor_msgs.msg import Image
 
-time_list_first = []
-distance_to_5x5_aruco_marker_first= []
+time_list_approach = []
+distance_to_5x5_aruco_marker_approach= []
 
-time_list_second = []
-distance_to_5x5_aruco_marker_second = []
+time_list_dock = []
+distance_to_5x5_aruco_marker_dock = []
 
 start_plotting_approach = False
 stop_plotting_approach = False
@@ -23,21 +23,22 @@ stop_plotting_docking = False
 display_plot = False
 
 def distance_to_5x5_aruco_marker_and_time_callback(msg):
-    global distance_to_5x5_aruco_marker_first
-    global distance_to_5x5_aruco_marker_second
-    global time_list_first
-    global time_list_second
+    global time_list_approach
+    global time_list_dock
+    global distance_to_5x5_aruco_marker_approach
+    global distance_to_5x5_aruco_marker_dock
+    
 
     distance = msg.point.z
     aruco_marker_time_stamp = msg.header.stamp.to_sec()
 
     if start_plotting_approach and not stop_plotting_approach:
-        time_list_first.append(aruco_marker_time_stamp)
-        distance_to_5x5_aruco_marker_first.append(distance)
+        time_list_approach.append(aruco_marker_time_stamp)
+        distance_to_5x5_aruco_marker_approach.append(distance)
 
     if start_plotting_docking and not stop_plotting_docking:
-        time_list_second.append(aruco_marker_time_stamp)
-        distance_to_5x5_aruco_marker_second.append(distance)
+        time_list_dock.append(aruco_marker_time_stamp)
+        distance_to_5x5_aruco_marker_dock.append(distance)
 
 def plot_data():
 
@@ -55,8 +56,8 @@ def plot_data():
     ax[1].grid()
     ax[1].legend(loc = "upper left")
 
-    ax[0].plot(time_list_first, distance_to_5x5_aruco_marker_first, color = "black", marker = "." , label = "")
-    ax[1].plot(time_list_second, distance_to_5x5_aruco_marker_second, color = "red", marker = "." , label = "")
+    ax[0].plot(time_list_approach, distance_to_5x5_aruco_marker_approach, color = "black", marker = "." , label = "")
+    ax[1].plot(time_list_dock, distance_to_5x5_aruco_marker_dock, color = "red", marker = "." , label = "")
     fig.tight_layout()
 
     plt.show()

@@ -6,18 +6,16 @@ from matplotlib import pyplot as plt
 from std_msgs.msg import Bool
 from geometry_msgs.msg import PointStamped
 
-time_list_first_angular_velocity = []
-time_list_second_angular_velocity  = []
-angular_velocity_z_list_first = []
-angular_velocity_z_list_second = []
+alignment_heading_time_list_angular_velocity = []
+correction_heading_time_list_angular_velocity = []
+alignment_heading_angular_velocity_yaw_list = []
+correction_heading_angular_velocity_yaw_list = []
 
-time_list_first_heading_angle = []
-time_list_second_heading_angle  = []
-heading_angle_list_second = []
-heading_angle_list_first = []
+alignment_heading_time_list_heading_angle = []
+correction_heading_time_list_heading_angle = []
+alignment_heading_angle_yaw_list= []
+correction_heading_angle_yaw_list = []
 
-
-#Det jeg trenger er å vite når den tms heading starter og når den slutter. Som er når den får en verdi til å starte, og sender en ny verdi
 start_plotting_outer_rov_heading = False
 stop_plotting_outer_rov_heading = False
 start_plotting_inner_rov_heading = False
@@ -25,42 +23,40 @@ stop_plotting_inner_rov_heading = False
 display_plot = False
 
 def heading_angular_velocity_callback(msg):
-    global time_list_first_angular_velocity
-    global time_list_second_angular_velocity
-    global angular_velocity_z_list_first
-    global angular_velocity_z_list_second
+    global alignment_heading_time_list_angular_velocity
+    global correction_heading_time_list_angular_velocity
+    global alignment_heading_angular_velocity_yaw_list
+    global correction_heading_angular_velocity_yaw_list
 
     imu_time = msg.header.stamp.to_sec()
     angular_velocity_z = msg.angular_velocity.z
     angular_velocity_z_deg = math.degrees(angular_velocity_z)
 
     if start_plotting_outer_rov_heading and not stop_plotting_outer_rov_heading:
-        time_list_first_angular_velocity.append(imu_time)
-        angular_velocity_z_list_first.append(angular_velocity_z_deg)
+        alignment_heading_time_list_angular_velocity.append(imu_time)
+        alignment_heading_angular_velocity_yaw_list.append(angular_velocity_z_deg)
 
     if start_plotting_inner_rov_heading and not stop_plotting_inner_rov_heading:
-        time_list_second_angular_velocity.append(imu_time)
-        angular_velocity_z_list_second.append(angular_velocity_z_deg)
+        correction_heading_time_list_angular_velocity.append(imu_time)
+        correction_heading_angular_velocity_yaw_list.append(angular_velocity_z_deg)
 
 
 def heading_angle_callback(msg):
-    global time_list_first_heading_angle
-    global time_list_second_heading_angle
-    global heading_angle_list_first
-    global heading_angle_list_second
+    global alignment_heading_time_list_heading_angle
+    global correction_heading_time_list_heading_angle
+    global alignment_heading_angle_yaw_list
+    global correction_heading_angle_yaw_list
     
     heading_angle_time = msg.header.stamp.to_sec()
     heading_angle_value = msg.point.z
     
-    # rospy.loginfo(f"haeding time and angle value: {heading_angle_time}, {heading_angle_value} ")
     if start_plotting_outer_rov_heading and not stop_plotting_outer_rov_heading:
-        # rospy.loginfo(heading_angle_value)
-        time_list_first_heading_angle.append(heading_angle_time)
-        heading_angle_list_first.append(heading_angle_value)
+        alignment_heading_time_list_heading_angle.append(heading_angle_time)
+        alignment_heading_angle_yaw_list.append(heading_angle_value)
 
     if start_plotting_inner_rov_heading and not stop_plotting_inner_rov_heading:
-        time_list_second_heading_angle.append(heading_angle_time)
-        heading_angle_list_second.append(heading_angle_value)
+        correction_heading_time_list_heading_angle.append(heading_angle_time)
+        correction_heading_angle_yaw_list.append(heading_angle_value)
 
 def plot_data():
 
@@ -74,14 +70,14 @@ def plot_data():
     ax[0,0].grid()
     ax[0,0].legend(loc = "upper left")
 
-    ax[1,0].set_title("ROV alignment heading - angular velocity in yaw")
+    ax[1,0].set_title("ROV correction heading - angular velocity in yaw")
     ax[1,0].set_ylabel("angular velocity (deg/sec)")
     ax[1,0].set_xlabel("simulation time (sec)")
     ax[1,0].grid()
     ax[1,0].legend(loc = "upper left")
 
 
-    ax[0,1].set_title("ROV correction heading yaw - heading angle")
+    ax[0,1].set_title("ROV alignment heading yaw - heading angle")
     ax[0,1].set_ylabel("angle (deg)")
     ax[0,1].set_xlabel("simulation time (sec)")
     ax[0,1].grid()
@@ -93,13 +89,11 @@ def plot_data():
     ax[1,1].grid()
     ax[1,1].legend(loc = "upper left")
 
+    ax[0,0].plot(alignment_heading_time_list_angular_velocity, alignment_heading_angular_velocity_yaw_list, color = "black", marker = "." , label = "")
+    ax[1,0].plot(correction_heading_time_list_angular_velocity, correction_heading_angular_velocity_yaw_list, color = "green", marker = "." , label = "")
 
-
-    ax[0,0].plot(time_list_first_angular_velocity, angular_velocity_z_list_first, color = "black", marker = "." , label = "")
-    ax[1,0].plot(time_list_second_angular_velocity, angular_velocity_z_list_second, color = "green", marker = "." , label = "")
-
-    ax[0,1].plot(time_list_first_heading_angle, heading_angle_list_first, color = "black", marker = "." , label = "")
-    ax[1,1].plot(time_list_second_heading_angle, heading_angle_list_second, color = "green", marker = "." , label = "")
+    ax[0,1].plot(alignment_heading_time_list_heading_angle, alignment_heading_angle_yaw_list, color = "black", marker = "." , label = "")
+    ax[1,1].plot(correction_heading_time_list_heading_angle, correction_heading_angle_yaw_list, color = "green", marker = "." , label = "")
     fig.tight_layout()
 
     plt.show()
