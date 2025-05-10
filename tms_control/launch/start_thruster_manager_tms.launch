@@ -55,9 +55,6 @@
   <node name="inner_tms_heading" pkg="deep_ocean" type="inner_heading_3d_advanced_tms.py" output="screen"/>
 
   <!-- plots -->
-  <!-- <node name="plot_angular_velocity_z_tms" pkg="deep_ocean" type="plot_angular_velocity_z_tms.py" output="screen" /> -->
-  <!-- <node name="plot_heading_yaw_angle_tms" pkg="deep_ocean" type="plot_heading_yaw_angle_tms.py" output="screen" /> -->
-
   <node name="plot_heading_angle_yaw_tms" pkg="deep_ocean" type="plot_heading_angle_yaw_tms.py" output="screen" />
 
 </launch>

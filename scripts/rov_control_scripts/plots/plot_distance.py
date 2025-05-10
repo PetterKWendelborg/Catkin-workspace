@@ -88,7 +88,7 @@ if __name__ == "__main__":
     
     rospy.Subscriber("/rov/aruco_5x5", PointStamped, distance_to_5x5_aruco_marker_and_time_callback)
 
-    rospy.Subscriber("/rov/heading_done", Bool, start_approach_call)
+    rospy.Subscriber("/rov/far_alignment_done", Bool, start_approach_call)
     rospy.Subscriber("/rov/approach_done", Bool, stop_approach_call)
     rospy.Subscriber("/rov/alignment_done", Bool, start_docking_call)
     rospy.Subscriber("/rov/docking_done", Bool, stop_docking_call)

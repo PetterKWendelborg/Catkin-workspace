@@ -50,22 +50,22 @@ def center_call(center_msg, pub):
                 condition_pub.publish(boolean)
                 rospy.signal_shutdown("Condition met")
 
-        # om vinkel er mindre enn -10
+        # If the angle is less than -outer_hyst_window
         elif angle_to_center_gaz_deg <= -outer_hyst_window:
             tms_wrench_msg.torque.z = outer_torque
             last_time_in_window = None
 
-        # om vinkel er mer enn -10 og mindre enn -3
+        # If the angle is betweem -outer_hyst_window and -inner_hyst_window 
         elif angle_to_center_gaz_deg > -outer_hyst_window and angle_to_center_gaz_deg < -inner_hyst_window :
             tms_wrench_msg.torque.z = inner_torque
             last_time_in_window = None
 
-        # om vinkel er mer enn 10
+        # If the angle is higher than outer_hyst_window
         elif angle_to_center_gaz_deg >= outer_hyst_window:
             tms_wrench_msg.torque.z = -outer_torque
             last_time_in_window = None
 
-        # om vinkel er mindre enn 10 og mer enn 3
+        # If the angle is betweem outer_hyst_window and inner_hyst_window 
         elif angle_to_center_gaz_deg < outer_hyst_window and angle_to_center_gaz_deg > inner_hyst_window :
             tms_wrench_msg.torque.z = -inner_torque
             last_time_in_window = None
