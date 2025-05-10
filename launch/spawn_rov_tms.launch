@@ -16,7 +16,7 @@
   <group ns="$(arg namespace_rov)">
     <!-- Load robot description (3D or 2D) -->
     <param name="robot_description"
-      command="$(find xacro)/xacro '$(find deep_ocean)/robots/rov_$(arg sonar_type)_sonar.xacro'
+      command="$(find xacro)/xacro '$(find deep_ocean)/urdf_xacro_files/robots/rov_$(arg sonar_type)_sonar.xacro'
         namespace:=$(arg namespace_rov)
         visualize:=$(arg visualize)" />
 
@@ -49,7 +49,7 @@
   <group ns="$(arg namespace_tms)">
     <!-- Load robot description (3D or 2D) -->
     <param name="robot_description"
-      command="$(find xacro)/xacro '$(find deep_ocean)/robots/tms_$(arg sonar_type)_sonar.xacro'
+      command="$(find xacro)/xacro '$(find deep_ocean)/urdf_xacro_files/robots/tms_$(arg sonar_type)_sonar.xacro'
         namespace:=$(arg namespace_tms)
         visualize:=$(arg visualize)" />
 

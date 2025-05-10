@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<robot name="tms" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Necessary for sonar to work -->
+  <xacro:arg name="namespace" default="tms"/>
+  <xacro:arg name="visualize" default="true"/>
+  <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/sonar_snippets.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/sensor_snippets.xacro" />
+  <!-- Necessary for thruster_macro to work -->
+  <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/actuators.xacro" />
+  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
+  <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/thruster_snippets.xacro" />
+  <!-- Necessary for state publishing -->
+  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
+  <!-- Necessary for ArUco markers and calibration bord -->
+  <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/aruco_macro.xacro" />
+
+  <!-- Fluid Density of Water (kg/m³) -->
+  <xacro:property name="fluid_density" value="1028"/>
+
+  <!-- Scaling Factor for the TMS. Greater size means it's easier to dock -->
+  <xacro:property name="scale_factor" value="1.3"/> <!-- Change this to scale up/down -->
+
+  <!-- Original Dimensions of the TMS -->
+  <xacro:property name="size_x_orig" value="1.64"/>
+  <xacro:property name="size_y_orig" value="1.07"/>
+  <xacro:property name="size_z_orig" value="1.62"/>
+
+  <!-- Scaled Dimensions -->
+  <xacro:property name="size_x" value="${size_x_orig * scale_factor}"/>
+  <xacro:property name="size_y" value="${size_y_orig * scale_factor}"/>
+  <xacro:property name="size_z" value="${size_z_orig * scale_factor}"/>
+
+  <!-- Mass (Scaled) -->
+  <xacro:property name="mass" value="${550}"/>
+
+  <!-- Volume (to ensure neutral buoyancy) -->
+  <xacro:property name="volume" value="${mass / fluid_density}"/>
+
+  <!-- Center of Buoyancy (adjusted based on height) -->
+  <xacro:property name="cob_z" value="${0.6 * size_z}"/>
+
+  <!-- Inertia Calculation -->
+  <xacro:property name="ixx" value="${(1/12) * mass * (size_y * size_y + size_z * size_z)}"/>
+  <xacro:property name="iyy" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
+  <xacro:property name="izz" value="${(1/12) * mass * (size_x * size_x + size_y * size_y)}"/>
+
+  <link name="$(arg namespace)/base_link">
+    <inertial>
+      <mass value="${mass}"/>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
+      <inertia ixx="${ixx}" ixy="0.0" ixz="0.0" iyy="${iyy}" iyz="0.0" izz="${izz}"/>
+    </inertial>
+
+    <!-- Visual Representation -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://deep_ocean/meshes/tms_visual.dae" scale="${scale_factor} ${scale_factor} ${scale_factor}"/>
+      </geometry>
+    </visual>
+
+    <!-- Collision Geometry -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://deep_ocean/meshes/tms_collision.stl" scale="${scale_factor} ${scale_factor} ${scale_factor}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo>
+    <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+      <fluid_density>${fluid_density}</fluid_density>
+      <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
+      <debug>0</debug>      
+      <link name="$(arg namespace)/base_link">
+        <neutrally_buoyant>1</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
+        <volume>${volume}</volume>  
+        <box>
+          <width>${size_x}</width>
+          <length>${size_y}</length>
+          <height>${size_z}</height>
+        </box>
+        <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
+
+        <!-- Hydrodynamic Model using Fossen type -->
+        <hydrodynamic_model>
+          <type>fossen</type>
+
+          <!-- Rough Added Mass Estimation -->
+          <added_mass>
+              ${0.1 * mass}  0  0  0  0  0
+              0  ${0.1 * mass}  0  0  0  0  
+              0  0  ${0.1 * mass}  0  0  0
+              0  0  0  ${0.05 * mass}  0  0
+              0  0  0  0  ${0.05 * mass}  0
+              0  0  0  0  0  ${0.05 * mass}
+          </added_mass>
+
+          <!-- Rough Linear Damping Estimation -->
+          <linear_damping>
+              ${-150 * size_x} ${-150 * size_y} ${-150 * size_z} 
+              ${-50 * size_z} ${-50 * size_y} ${-50 * size_x}
+          </linear_damping>
+
+          <quadratic_damping>
+              ${-200 * size_x} ${-200 * size_y} ${-200 * size_z} 
+              ${-75 * size_z} ${-75 * size_y} ${-75 * size_x}
+          </quadratic_damping>
+
+        </hydrodynamic_model>
+
+      </link>    
+    </plugin>
+  </gazebo>  
+
+  <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
+
+  <!-- Initilizing thruster macro, found in actuators.xacro -->
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0" mesh_scale="${scale_factor}">
+    <origin xyz="${0.6650895*scale_factor} ${0.367385*scale_factor} ${0.828822*scale_factor}" rpy="0 0 ${3*pi/4}"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1" mesh_scale="${scale_factor}">
+    <origin xyz="${0.665895*scale_factor} ${-0.367385*scale_factor} ${0.828822*scale_factor}" rpy="0 0 ${-3*pi/4}"/>
+  </xacro:thruster_macro>
+
+<!-- kanskje prøve å etterligne denne https://waterlinked.com/shop/wl-21045-2-sonar-3d-15-689 -->
+  <!-- Macro from sonar_snippets file -->
+  <xacro:sonar_3d parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)" scale_factor="${scale_factor}">
+      <origin xyz="${-0.8*scale_factor} 0 ${0.98*scale_factor}" rpy="0 0 ${pi}"/>
+  </xacro:sonar_3d>
+
+  <!-- imu sensor -->
+  <xacro:imu_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
+      <origin xyz="0 0 ${0.81*scale_factor}" rpy="0 0 0"/>
+  </xacro:imu_sensor>
+
+    <!-- Spawning in ArUco 5x5 marker -->
+  <xacro:aruco_marker_5x5 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="0.30">
+    <origin xyz="${0.24*scale_factor} 0 ${0.48*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_5x5>
+
+    <!-- Spawning in ArUco 4x4 marker -->
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="1">
+    <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} ${0.485*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_4x4>
+
+  <!-- <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="1" scale="1">
+    <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_4x4>
+
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="2" scale="1">
+    <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} ${0.465*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_4x4> -->
+
+  <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="3" scale="1">
+    <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} ${0.485*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
+  </xacro:aruco_marker_4x4>
+
+<!-- Example 3: Calibration board with custom ID -->
+<!-- <xacro:calibration_board namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="1.0">
+  <origin xyz="-2 1 0.4" rpy="${pi/2} 0 ${-pi/2}"/>
+</xacro:calibration_board> -->
+
+</robot>

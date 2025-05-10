@@ -1,0 +1,273 @@
+<?xml version="1.0"?>
+<robot name="tms" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Necessary for sonar to work -->
+  <xacro:arg name="namespace" default="tms"/>
+
+  <!-- Necessary for thruster_macro to work -->
+  <xacro:include filename="$(find deep_ocean)/urdf/actuators.xacro" />
+  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro" />
+  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/thruster_snippets.xacro" />
+  <!-- Necessary for state publishing -->
+  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/misc.xacro" />
+
+  <!-- Fluid Density of Water (kg/m³) -->
+  <xacro:property name="fluid_density" value="1028"/>
+
+  <!-- Scaling Factor for the TMS. Greater size means it's easier to dock -->
+  <xacro:property name="scale_factor" value="1.0"/> <!-- Change this to scale up/down -->
+
+  <!-- Original Dimensions of the TMS -->
+  <xacro:property name="size_x_orig" value="1.64"/>
+  <xacro:property name="size_y_orig" value="1.07"/>
+  <xacro:property name="size_z_orig" value="1.62"/>
+
+  <!-- Scaled Dimensions -->
+  <xacro:property name="size_x" value="${size_x_orig * scale_factor}"/>
+  <xacro:property name="size_y" value="${size_y_orig * scale_factor}"/>
+  <xacro:property name="size_z" value="${size_z_orig * scale_factor}"/>
+
+  <!-- Mass (Scaled) -->
+  <xacro:property name="mass" value="${550.0 * (scale_factor * scale_factor * scale_factor)}"/>
+
+  <!-- Volume (to ensure neutral buoyancy) -->
+  <xacro:property name="volume" value="${mass / fluid_density}"/>
+
+  <!-- Center of Buoyancy (adjusted based on height) -->
+  <xacro:property name="cob_z" value="${0.5 * size_z}"/>
+
+  <!-- Inertia Calculation -->
+  <xacro:property name="ixx" value="${(1/12) * mass * (size_y * size_y + size_z * size_z)}"/>
+  <xacro:property name="iyy" value="${(1/12) * mass * (size_x * size_x + size_z * size_z)}"/>
+  <xacro:property name="izz" value="${(1/12) * mass * (size_x * size_x + size_y * size_y)}"/>
+
+  <link name="$(arg namespace)/base_link">
+    <inertial>
+      <mass value="${mass}"/>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
+      <inertia ixx="${ixx}" ixy="0.0" ixz="0.0" iyy="${iyy}" iyz="0.0" izz="${izz}"/>
+    </inertial>
+
+    <!-- Visual Representation -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://deep_ocean/meshes/tms_visual.dae" scale="${scale_factor} ${scale_factor} ${scale_factor}"/>
+      </geometry>
+    </visual>
+
+    <!-- Collision Geometry -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://deep_ocean/meshes/tms_collision.stl" scale="${scale_factor} ${scale_factor} ${scale_factor}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- An attempt to restrict movement in z axis -->
+  <!--joint name="xy_plane_joint" type="planar">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <axis xyz="1 0 0"/>
+    <axis2 xyz="0 1 0"/>
+  </joint>
+
+  <joint name="yaw_joint" type="continuous">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <axis xyz="0 0 1"/>
+  </joint-->
+
+  <gazebo>
+    <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+      <fluid_density>${fluid_density}</fluid_density>
+      <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
+      <debug>0</debug>      
+      <link name="$(arg namespace)/base_link">
+        <neutrally_buoyant>0</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
+        <volume>${volume}</volume>  
+        <box>
+          <width>${size_x}</width>
+          <length>${size_y}</length>
+          <height>${size_z}</height>
+        </box>
+        <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
+
+        <!-- Hydrodynamic Model using Fossen type -->
+        <hydrodynamic_model>
+          <type>fossen</type>
+
+          <!-- Rough Added Mass Estimation -->
+          <added_mass>
+              ${0.1 * mass}  0  0  0  0  0
+              0  ${0.1 * mass}  0  0  0  0  
+              0  0  ${0.1 * mass}  0  0  0
+              0  0  0  ${0.05 * mass}  0  0
+              0  0  0  0  ${0.05 * mass}  0
+              0  0  0  0  0  ${0.05 * mass}
+          </added_mass>
+
+          <!-- Rough Linear Damping Estimation -->
+          <linear_damping>
+              ${-150 * size_x} ${-150 * size_y} ${-150 * size_z} 
+              ${-50 * size_z} ${-50 * size_y} ${-50 * size_x}
+          </linear_damping>
+
+          <quadratic_damping>
+              ${-200 * size_x} ${-200 * size_y} ${-200 * size_z} 
+              ${-75 * size_z} ${-75 * size_y} ${-75 * size_x}
+          </quadratic_damping>
+
+        </hydrodynamic_model>
+
+      </link>    
+    </plugin>
+  </gazebo>  
+
+  <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
+
+  <!-- Initilizing thruster macro, might use another macro to achieve thrusters -->
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0">
+    <origin xyz="0.6650895 0.367385 0.828822" rpy="0 0 ${3*pi/4}"/>
+  </xacro:thruster_macro>
+  <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="1">
+    <origin xyz="0.665895 -0.367385 0.828822" rpy="0 0 ${-3*pi/4}"/>
+  </xacro:thruster_macro>
+
+  <!-- initilizing Sonar macro -->
+  <!-- bruker denne som referanse til hjemmebygd sonar -->
+  <!-- <xacro:forward_multibeam_sonar_m450_130 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link">
+    <origin xyz="-0.9 0 1.02" rpy="0 0 3.14159"/>
+  </xacro:forward_multibeam_sonar_m450_130> -->
+
+
+<!-- kanskje prøve å etterligne denne https://waterlinked.com/shop/wl-21045-2-sonar-3d-15-689 -->
+
+  <link name= "depth_camera_link">
+      <visual>
+          <geometry> 
+              <box size= "0.04 0.12 0.08" />
+          </geometry>
+          <material name= "red" >
+              <color rgba= "1 0 0 1" />
+          </material>
+      </visual>
+      <inertial>
+          <!-- <mass value= "0.39" /> -->
+          <mass value= "0.0" />
+          <origin xyz= "0 0 0" />
+          <inertia ixx= "0.1" ixy= "0.0" ixz= "0.0" iyy= "0.1" iyz= "0.0" izz= "0.1" />
+      </inertial>
+      <collision>
+          <geometry>
+              <box size= "0.04 0.12 0.08" />
+          </geometry>
+      </collision>
+  </link>
+
+    <joint name= "depth_camera_joint" type= "fixed">
+        <parent link= "$(arg namespace)/base_link" />
+        <child link= "depth_camera_link" />
+        <!-- <origin xyz= "0.55 0 3 " rpy= "0 0 0"/> -->
+        <origin xyz="-0.8 0 1.02" rpy="0 0 3.14159"/>
+    </joint> 
+
+  <!-- optical link and joint for rviz -->
+  <link name= "depth_camera_optical_link"></link>
+
+  <joint name= "depth_camera_optical_joint" type= "fixed">
+      <parent link= "depth_camera_link" />
+      <child link= "depth_camera_optical_link" />
+      <origin xyz= "0 0 0 " rpy= "-1.57 0 -1.57"/>
+  </joint>
+
+  <gazebo reference= "depth_camera_link">
+      <material>Gazebo/Red</material>
+      <sensor name= "depth_camera_link" type= "depth">
+          <visualize>true</visualize>
+          <updateRate>10</updateRate>
+          <camera>
+              <horizontal_fov>1.57</horizontal_fov> 
+              <vertical_fov>0.698</vertical_fov>   
+              <image>
+                  <width>160</width>
+                  <height>100</height>
+              </image>
+              <clip>
+                  <near>0.1</near>
+                  <far>5.0</far>
+              </clip>
+          </camera>
+          <plugin name="depth_camera_sensor" filename="libgazebo_ros_openni_kinect.so">
+              <cameraName>depth_camera</cameraName>
+              <frameName>$(arg namespace)/depth_camera_optical_link</frameName>
+              <alwaysOn>true</alwaysOn>
+              <pointCloudTopicName>points</pointCloudTopicName>
+              
+              <imageTopicName>rgb/image_raw</imageTopicName>
+              <depthImageTopicName>depth/image_raw</depthImageTopicName>
+              <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+              <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>              
+              <!-- <baseline>0.1</baseline> -->
+
+          </plugin>
+      </sensor>
+  </gazebo>  
+
+
+
+
+  <!-- imu sensor -->
+
+  <link name= "imu_link">
+      <visual>
+          <geometry> 
+              <box size= "0.01 0.01 0.01" />
+          </geometry>
+          <material name= "red" >
+              <color rgba= "1 0 0 1" />
+          </material>
+      </visual>
+      <inertial>
+          <!-- <mass value= "0.39" /> -->
+          <mass value= "0.0" />
+          <origin xyz= "0 0 0" />
+          <inertia ixx= "0.1" ixy= "0.0" ixz= "0.0" iyy= "0.1" iyz= "0.0" izz= "0.1" />
+      </inertial>
+      <collision>
+          <geometry>
+              <box size= "0.01 0.01 0.01" />
+          </geometry>
+      </collision>
+  </link>
+
+  <joint name= "imu_joint" type= "fixed">
+      <parent link= "$(arg namespace)/base_link" />
+      <child link= "imu_link" />
+      <!-- <origin xyz= "0.55 0 3 " rpy= "0 0 0"/> -->
+      <origin xyz="0 0 0.81" rpy="0 0 0"/>
+  </joint> 
+
+  <gazebo reference="imu_link">
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>__default_topic__</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>imu_link</bodyName>
+        <updateRateHZ>10.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link</frameName>
+        <initialOrientationAsReference>false</initialOrientationAsReference>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+</robot>
