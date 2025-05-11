@@ -34,6 +34,7 @@ linear_velocity_x_list_terminal_docking = []
 last_time = None
 linear_velocity_x = 0.0
 
+time_display_plot = None
 
 # terminal docking protocoll distance and time using camera
 def camera_distance_to_5x5_aruco_marker_and_time_callback(msg):
@@ -142,7 +143,6 @@ def plot_data():
     fig.tight_layout()
 
     plt.show()
-    plt.show()
 
 def start_approach_call(approach_start):
     global start_plotting_approach
@@ -159,11 +159,22 @@ def start_docking_call(docking_start):
 def stop_docking_call(docking_stop):
     global stop_plotting_docking
     global display_plot
-    stop_plotting_docking = docking_stop.data
+    global time_display_plot
+
+    time_display_plot_duration = 8
+
+    
     display_plot = docking_stop.data
+    now = rospy.get_time()
+
     if display_plot:
-        plot_data()
-        rospy.signal_shutdown("Condition met")
+        if time_display_plot == None:
+            time_display_plot = now
+
+        elif now - time_display_plot >= time_display_plot_duration:
+            stop_plotting_docking = docking_stop.data
+            plot_data()
+            rospy.signal_shutdown("Condition met")
 
 if __name__ == "__main__":
     rospy.init_node("distance_and_linear_velocit_x")

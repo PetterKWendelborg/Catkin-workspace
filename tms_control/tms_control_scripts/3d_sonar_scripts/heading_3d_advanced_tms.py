@@ -33,7 +33,7 @@ def center_call(center_msg, pub_wrench):
         angle_to_center = 0
 
     angle_to_center_gaz_deg = math.degrees(angle_to_center)
-    rospy.loginfo(angle_to_center_gaz_deg)
+    # rospy.loginfo(angle_to_center_gaz_deg)
 
     if angle_to_center_gaz_deg >= -inner_hyst_window and angle_to_center_gaz_deg <= inner_hyst_window:
         tms_wrench_msg.torque.z = 0

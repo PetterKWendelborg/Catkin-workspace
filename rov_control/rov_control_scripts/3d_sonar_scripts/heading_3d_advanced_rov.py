@@ -14,8 +14,8 @@ last_time_in_window = None
 def center_call(center_msg, pub):
     center_x = center_msg.point.x
     center_z = center_msg.point.z
-    inner_hyst_window = 0.5
-    outer_hyst_window = 15.0
+    inner_hyst_window = 1
+    outer_hyst_window = 10.0
     hysteresis_duration = 4
     now = rospy.get_time()
 
@@ -52,22 +52,22 @@ def center_call(center_msg, pub):
                 condition_pub.publish(boolean)
                 rospy.signal_shutdown("Condition met")
 
-        # om vinkel er mindre enn -10
+        # om vinkel er mindre enn -15
         elif angle_to_center_gaz_deg <= -outer_hyst_window:
             tms_wrench_msg.torque.z = outer_torque
             last_time_in_window = None
 
-        # om vinkel er mer enn -10 og mindre enn -3
+        # om vinkel er mer enn -15 og mindre enn -0.5
         elif angle_to_center_gaz_deg > -outer_hyst_window and angle_to_center_gaz_deg < -inner_hyst_window :
             tms_wrench_msg.torque.z = inner_torque
             last_time_in_window = None
 
-        # om vinkel er mer enn 10
+        # om vinkel er mer enn 15
         elif angle_to_center_gaz_deg >= outer_hyst_window:
             tms_wrench_msg.torque.z = -outer_torque
             last_time_in_window = None
 
-        # om vinkel er mindre enn 10 og mer enn 3
+        # om vinkel er mindre enn 15 og mer enn 0.3
         elif angle_to_center_gaz_deg < outer_hyst_window and angle_to_center_gaz_deg > inner_hyst_window :
             tms_wrench_msg.torque.z = -inner_torque
             last_time_in_window = None

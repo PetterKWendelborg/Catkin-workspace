@@ -54,8 +54,8 @@ def pc_callback(pc_msg, pub):
 
         rov_center_angle.publish(angle_to_center_msg)  
 
-    else:
-        rospy.loginfo("TMS stands still, rov not detected")
+    # else:
+        # rospy.loginfo("TMS stands still, rov not detected")
 
 if __name__ == "__main__":
     rospy.init_node("pointcloud_points")

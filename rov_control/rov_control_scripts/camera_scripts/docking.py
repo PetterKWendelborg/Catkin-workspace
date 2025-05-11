@@ -47,8 +47,6 @@ def start_docking(aruco_msg, pub):
 
     elif not docking_ready and not aruco_detected:
         rospy.loginfo(f"1 - start_condition: {docking_ready} aruco_detected_5x5: {aruco_detected}")
-        rov_wrench_msg.force.x = 0
-        pub.publish(rov_wrench_msg)
 
     elif docking_ready and not aruco_detected:
         rospy.loginfo(f"2 - start_condition: {docking_ready} aruco_detected_5x5: {aruco_detected}")

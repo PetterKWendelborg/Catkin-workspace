@@ -29,6 +29,7 @@ def start_docking(aruco_msg, pub):
         # aruco_msg uses NED(North East Down) frame, whilst rov_wrench_msg uses normal frame
         # If ths ROV is above the TMS opening
         if distance_y_rov_to_aruco_4x4 >= -terminal_center_hysterisis and distance_y_rov_to_aruco_4x4 < terminal_center_hysterisis:
+            rospy.loginfo("inside_hyst_window")
             rov_wrench_msg.force.z = 0 
             pub.publish(rov_wrench_msg) 
 
@@ -58,9 +59,7 @@ def start_docking(aruco_msg, pub):
         # pub.publish(rov_wrench_msg) 
 
     elif not height_alignment_ready and not aruco_detected:
-        rov_wrench_msg.force.z = 0  
         rospy.loginfo(f"1 - start_condition: {height_alignment_ready} aruco_detected_4x4: {aruco_detected}")
-        pub.publish(rov_wrench_msg) 
 
     elif height_alignment_ready and  not aruco_detected:
         rov_wrench_msg.force.z = 0  
