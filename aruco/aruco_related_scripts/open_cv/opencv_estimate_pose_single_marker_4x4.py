@@ -8,17 +8,26 @@ import cv2.aruco as aruco
 from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
 
+#480p
 # mtx = np.array([[554.31537017,   0,         319.86790386],
 #     [  0,         554.27617968, 239.29069902],
 #     [  0,           0,           1        ]])
 
 # dist = np.array([[ -1.12336404e-04, 5.83416985e-03, -3.92632069e-05, 2.03091756e-05, -4.83095205e-03]])
 
-mtx = np.array([[1.10904780e+03,   0,         6.38431658e+02],
-                [  0,         1.10907114e+03, 3.59179086e+02],
+#720p
+# mtx = np.array([[1.10904780e+03,   0,         6.38431658e+02],
+#                 [  0,         1.10907114e+03, 3.59179086e+02],
+#                 [  0,           0,           1        ]])
+
+# dist = np.array([[ -7.76239086e-04, 6.14575931e-03, -5.54007822e-05, -7.31757780e-05, -1.35769474e-02]])
+
+#1080p
+mtx = np.array([[1.64614350e+03,   0,         9.60427325e+02],
+                [  0,         1.64617729e+03, 5.43311747e+02],
                 [  0,           0,           1        ]])
 
-dist = np.array([[ -7.76239086e-04, 6.14575931e-03, -5.54007822e-05, -7.31757780e-05, -1.35769474e-02]])
+dist = np.array([[  0.00170305, -0.01617161, -0.00014003, -0.00015102, 0.03311364]])
 
 
 last_time_in_window = None
@@ -104,7 +113,7 @@ def image_callback(msg, pub):
         center_msg.z = 0.0
         pub.publish(center_msg)
     # Shows each manipulated frames and resized from camera resolution to the value below
-    # frame = cv.resize(frame, (640, 480))   
+    frame = cv.resize(frame, (1280, 720))   
     cv.imshow("frame_4x4_ArUco_marker",frame)    
     cv.waitKey(1) 
             
