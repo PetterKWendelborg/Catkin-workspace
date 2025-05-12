@@ -155,7 +155,7 @@
       <material>Gazebo/Red</material>
       <sensor name="sonar_3d_sensor" type="depth">
         <visualize>true</visualize>
-        <updateRate>10</updateRate>
+        <updateRate>5</updateRate>
         <camera>
           <horizontal_fov>1.57</horizontal_fov>
           <vertical_fov>0.698</vertical_fov>
@@ -164,8 +164,8 @@
             <height>100</height>
           </image>
           <clip>
-            <near>0.01</near>
-            <far>10.0</far>     <!-- Change the length of field of view-->
+            <near>0.02</near>
+            <far>15.0</far>     <!-- Change the length of field of view-->
           </clip>
         </camera>
         <plugin name="sonar_3d_plugin" filename="libgazebo_ros_openni_kinect.so">

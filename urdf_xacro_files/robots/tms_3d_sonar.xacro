@@ -160,7 +160,7 @@
 
 <!-- Example 3: Calibration board with custom ID -->
 <!-- <xacro:calibration_board namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="1.0">
-  <origin xyz="-2 1 0.4" rpy="${pi/2} 0 ${-pi/2}"/>
+  <origin xyz="-2 -8 0.4" rpy="1.37 0.15 -1.44"/>
 </xacro:calibration_board> -->
 
 </robot>
