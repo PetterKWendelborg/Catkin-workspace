@@ -111,7 +111,7 @@ def image_callback(msg,pub):
         # center_msg = Point()
         center_msg = PointStamped()
         center_msg.header.stamp =  msg.header.stamp
-        center_msg.header.frame_id= "camera_frame"
+        center_msg.header.frame_id= "camera_frame_5x5"
         center_msg.point.x = 0.0
         center_msg.point.y = 0.0
         center_msg.point.z = 0.0

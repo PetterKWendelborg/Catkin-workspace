@@ -5,7 +5,7 @@ from cv_bridge import CvBridge
 import numpy as np
 import cv2 as cv
 import cv2.aruco as aruco
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PointStamped
 from std_msgs.msg import Bool
 
 #480p
@@ -78,21 +78,34 @@ def image_callback(msg, pub):
                 rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
                 cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
                 rospy.loginfo(f"tvecs_0: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
-                aruco_0 = Point()
-                aruco_0.x = tvecs[0][0][0]
-                aruco_0.y = tvecs[0][0][1]
-                aruco_0.z = tvecs[0][0][2]
+                # aruco_0 = Point()
+                # aruco_0.x = tvecs[0][0][0]
+                # aruco_0.y = tvecs[0][0][1]
+                # aruco_0.z = tvecs[0][0][2]
+                # pub.publish(aruco_0)
+                aruco_0 = PointStamped()
+                aruco_0.header.stamp =  msg.header.stamp
+                aruco_0.header.frame_id= "camera_frame_4x4_id0"
+                aruco_0.point.x = tvecs[0][0][0]
+                aruco_0.point.y = tvecs[0][0][1]
+                aruco_0.point.z = tvecs[0][0][2]
                 pub.publish(aruco_0)
-
             elif ids[i] == 3:
                 rospy.loginfo("4x4_marker id3 found")
                 rvecs1, tvecs1, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
                 cv.drawFrameAxes(frame, mtx, dist, rvecs1, tvecs1, axis_size)
                 rospy.loginfo(f"tvecs_1: {tvecs1[0][0][0]} {tvecs1[0][0][1]} {tvecs1[0][0][2]}")
-                aruco_1 = Point()
-                aruco_1.x = tvecs1[0][0][0]
-                aruco_1.y = tvecs1[0][0][1]
-                aruco_1.z = tvecs1[0][0][2]
+                # aruco_1 = Point()
+                # aruco_1.x = tvecs1[0][0][0]
+                # aruco_1.y = tvecs1[0][0][1]
+                # aruco_1.z = tvecs1[0][0][2]
+                # 
+                aruco_1 = PointStamped()
+                aruco_1.header.stamp =  msg.header.stamp
+                aruco_1.header.frame_id= "camera_frame_4x4_id1"
+                aruco_1.point.x = tvecs1[0][0][0]
+                aruco_1.point.y = tvecs1[0][0][1]
+                aruco_1.point.z = tvecs1[0][0][2]
                 pub.publish(aruco_1)
 
             # else:
@@ -107,11 +120,19 @@ def image_callback(msg, pub):
         aruco_detected.publish(boolean)
         rospy.loginfo("aruco not in frame")
         rospy.loginfo(f"last_time_in_window: {last_time_in_window}")
-        center_msg = Point()
-        center_msg.x = 0.0
-        center_msg.y = 0.0
-        center_msg.z = 0.0
+        # center_msg = Point()
+        # center_msg.x = 0.0
+        # center_msg.y = 0.0
+        # center_msg.z = 0.0
+        # pub.publish(center_msg)
+        center_msg = PointStamped()
+        center_msg.header.stamp =  msg.header.stamp
+        center_msg.header.frame_id= "camera_frame_4x4"
+        center_msg.point.x = 0.0
+        center_msg.point.y = 0.0
+        center_msg.point.z = 0.0
         pub.publish(center_msg)
+
     # Shows each manipulated frames and resized from camera resolution to the value below
     frame = cv.resize(frame, (1280, 720))   
     cv.imshow("frame_4x4_ArUco_marker",frame)    
@@ -119,7 +140,7 @@ def image_callback(msg, pub):
             
 if __name__ == "__main__":
     rospy.init_node("view_aruco_marker_4x4")
-    aruco_0 = rospy.Publisher("/rov/aruco_4x4", Point, queue_size=10)
+    aruco_0 = rospy.Publisher("/rov/aruco_4x4", PointStamped, queue_size=10)
     aruco_detected = rospy.Publisher("/rov/aruco_detect_4x4", Bool, queue_size = 10)
     rospy.Subscriber("/rov/camera/image_raw", Image, image_callback, aruco_0)
     rospy.spin()
