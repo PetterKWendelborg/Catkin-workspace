@@ -3,11 +3,11 @@ import rospy
 import math
 import time
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Point, Wrench
+from geometry_msgs.msg import PointStamped, Wrench
 
 def center_call(center_msg, pub):
-    center_x = center_msg.x
-    center_y = center_msg.y
+    center_x = center_msg.point.x
+    center_y = center_msg.point.y
     hyst_window = 3.0
     tms_wrench_msg = Wrench()
     boolean = Bool()
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     
     cmd_vel_pub = rospy.Publisher("/tms/thruster_manager/input", Wrench, queue_size = 10)
     heading_done_pub = rospy.Publisher("/tms/heading_done", Bool, queue_size = 10)
-    rospy.Subscriber("/tms/rov_center", Point, center_call, cmd_vel_pub)
-
+    rospy.Subscriber("/tms/rov_center_angle", PointStamped, center_call, cmd_vel_pub)
+    
     rospy.spin()
 

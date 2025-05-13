@@ -19,19 +19,15 @@ def pc_callback(pc_msg, pub):
     
     tms = 1
     if len(points_list) >= tms:
-        #regner ut hele punktet
         center_x  = sum(p[0] for p in points_list)/len(points_list)
         center_y  = sum(p[1] for p in points_list)/len(points_list)
         center_z  = sum(p[2] for p in points_list)/len(points_list)
 
-        angle_to_center = math.asin(center_x/center_z)
-        # rospy.loginfo(f"angle to center = {math.degrees(angle_to_center)} deg")  
-
-        # center_msg = Point()
-        # center_msg.x = center_x
-        # center_msg.y = center_y
-        # center_msg.z = center_z
-        # pub.publish(center_msg)
+        if center_z != 0:
+            angle_to_center = math.asin(center_x/center_z)
+            # rospy.loginfo(f"angle to center = {math.degrees(angle_to_center)} deg")  
+        else:
+            angle_to_center = 0
 
         center_msg = PointStamped()
         center_msg.header.stamp =  pc_msg.header.stamp

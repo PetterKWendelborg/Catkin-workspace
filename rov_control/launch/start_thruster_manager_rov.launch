@@ -64,8 +64,8 @@
   <node name="rov_terminal_docking" pkg="deep_ocean" type="terminal_docking.py" output="screen"/>
 
   <!-- plot -->
-  <node name="plot_distance_from_camera_to_aruco_marker_5x5" pkg="deep_ocean" type="plot_distance.py" output="screen" />
+  <!-- <node name="plot_distance_from_camera_to_aruco_marker_5x5" pkg="deep_ocean" type="plot_distance.py" output="screen" />
   <node name="plot_linear_velocity_x_and_distance" pkg="deep_ocean" type="plot_linear_velocity_x_and_distance.py" output="screen" />
   <node name="plot_heading_angle_yaw_rov" pkg="deep_ocean" type="plot_heading_angle_yaw_rov.py" output="screen" />
-  <node name="plot_linear_velocity_z_and_height" pkg="deep_ocean" type="plot_linear_velocity_z_and_height.py" output="screen" />
+  <node name="plot_linear_velocity_z_and_height" pkg="deep_ocean" type="plot_linear_velocity_z_and_height.py" output="screen" /> -->
 </launch>

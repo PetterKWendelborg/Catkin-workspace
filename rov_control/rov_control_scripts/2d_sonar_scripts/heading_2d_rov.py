@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 
 import rospy
 import math
-from geometry_msgs.msg import Point, Wrench
+from geometry_msgs.msg import PointStamped, Wrench
 import time
 from std_msgs.msg import Bool
 
@@ -14,8 +14,8 @@ last_time_in_window = None
 
 def center_call(center_msg, pub):
     # global condition
-    center_x = center_msg.x
-    center_y = center_msg.y
+    center_x = center_msg.point.x
+    center_y = center_msg.point.y
     # rospy.loginfo(f"{center_x}, {center_y}")
     hyst_window = 3.0
     hysteresis_duration = 4
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     
     cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
     
-    rospy.Subscriber("/rov/tms_center", Point, center_call, cmd_vel_pub)
+    rospy.Subscriber("/rov/tms_center", PointStamped, center_call, cmd_vel_pub)
     
     rospy.Subscriber("/tms/heading_done", Bool, condition_call)
     tms_heading_done_pub = rospy.Publisher("/rov/heading_done", Bool, queue_size = 10)
