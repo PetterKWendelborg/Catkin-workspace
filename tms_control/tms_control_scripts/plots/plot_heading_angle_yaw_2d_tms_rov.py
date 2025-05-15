@@ -97,7 +97,7 @@ def plot_data():
     ax[0,1].grid()
     ax[0,1].legend(loc = "upper left")
 
-    ax[1,1].set_title("TMS heading - heading angle")
+    ax[1,1].set_title("ROV heading - heading angle")
     ax[1,1].set_ylabel("angle (deg)")
     ax[1,1].set_xlabel("simulation time (sec)")
     ax[1,1].grid()
@@ -107,7 +107,7 @@ def plot_data():
     ax[0,1].plot(tms_heading_time_list_heading_angle, tms_heading_angle_yaw_list, color = "blue", marker = "." , label = "")
 
     ax[1,0].plot(rov_heading_time_list_angular_velocity, rov_heading_angular_velocity_yaw_list, color = "black", marker = "." , label = "")
-    ax[1,1].plot(rov_heading_time_list_heading_angle, rov_heading_angle_yaw_list, color = "black", marker = "." , label = "")
+    ax[1,1].plot(rov_heading_time_list_heading_angle, rov_heading_angle_yaw_list, color = "green", marker = "." , label = "")
     fig.tight_layout()
 
     plt.show()
@@ -124,9 +124,9 @@ def stop_rov_heading_call(rov_heading_stop):
     global stop_plotting_rov_heading
     stop_plotting_rov_heading = rov_heading_stop.data
 
-def plot_call(heading_done):
+def plot_call(approach_done):
     global display_plot
-    display_plot = heading_done.data
+    display_plot = approach_done.data
     if display_plot:
         plot_data()
         rospy.signal_shutdown("Condition met")
@@ -138,13 +138,13 @@ if __name__ == "__main__":
     rospy.Subscriber("/tms/rov_center_angle", PointStamped, tms_heading_angle_callback)
 
     rospy.Subscriber("/rov/imu", Imu, rov_heading_angular_velocity_callback)
-    rospy.Subscriber("/rov/tms_center_angle", PointStamped, rov_heading_angle_callback)
+    rospy.Subscriber("/rov/rov_center_angle", PointStamped, rov_heading_angle_callback)
 
     rospy.Subscriber("/tms/heading_done", Bool, stop_tms_heading_call)
     # rospy.Subscriber("/tms/heading_done", Bool, start_rov_heading_call)
     rospy.Subscriber("/rov/heading_done", Bool, stop_rov_heading_call)
 
-    rospy.Subscriber("/rov/approach_done", Bool, plot_call)
+    rospy.Subscriber("/rov/aproach_done", Bool, plot_call)
 
     try:
         rospy.spin()

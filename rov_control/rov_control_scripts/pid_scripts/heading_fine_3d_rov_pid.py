@@ -2,7 +2,7 @@
 import rospy
 import math
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Point, Wrench, PointStamped
+from geometry_msgs.msg import Twist, PointStamped
 
 # This code subscribes to the /rov/tms_center topic which gets its information from pcdata_conv_rov.py
 # and to the /tms/heading_done topic which gets its information from tms_heading_2d/3d(_new).py
@@ -35,47 +35,46 @@ def center_call(center_msg, pub):
         # rospy.loginfo(f"angle to center = {angle_to_center_gaz} rad")  
         # rospy.loginfo(f"angle to center = {math.degrees(angle_to_center_gaz)} deg") 
 
-        tms_wrench_msg = Wrench()
+        rov_twist_msg = Twist()
         boolean = Bool()
 
         if angle_to_center_gaz_deg >= -inner_hyst_window and angle_to_center_gaz_deg <= inner_hyst_window:
-            tms_wrench_msg.torque.z = 0
+            rov_twist_msg.angular.z = 0
 
             if last_time_in_window is None:
                 last_time_in_window = now
 
             elif now - last_time_in_window >= hysteresis_duration:
                 # Stayed in window for enough time
-                rospy.loginfo("plz_move_forward_rov")
                 boolean.data = True
                 condition_pub.publish(boolean)
                 rospy.signal_shutdown("Condition met")
 
         # om vinkel er mindre enn -10
         elif angle_to_center_gaz_deg <= -outer_hyst_window:
-            tms_wrench_msg.torque.z = outer_torque
+            rov_twist_msg.angular.z = outer_torque
             last_time_in_window = None
 
         # om vinkel er mer enn -10 og mindre enn -3
         elif angle_to_center_gaz_deg > -outer_hyst_window and angle_to_center_gaz_deg < -inner_hyst_window :
-            tms_wrench_msg.torque.z = inner_torque
+            rov_twist_msg.angular.z = inner_torque
             last_time_in_window = None
 
         # om vinkel er mer enn 10
         elif angle_to_center_gaz_deg >= outer_hyst_window:
-            tms_wrench_msg.torque.z = -outer_torque
+            rov_twist_msg.angular.z = -outer_torque
             last_time_in_window = None
 
         # om vinkel er mindre enn 10 og mer enn 3
         elif angle_to_center_gaz_deg < outer_hyst_window and angle_to_center_gaz_deg > inner_hyst_window :
-            tms_wrench_msg.torque.z = -inner_torque
+            rov_twist_msg.angular.z = -inner_torque
             last_time_in_window = None
 
         else:
             rospy.loginfo("else statement")
-            tms_wrench_msg.torque.z = 0
+            rov_twist_msg.angular.z = 0
 
-        pub.publish(tms_wrench_msg)
+        pub.publish(rov_twist_msg)
 
 def condition_call(tms_inner_heading_done):
     global rov_inner_heading_ready
@@ -85,7 +84,7 @@ def condition_call(tms_inner_heading_done):
 if __name__ == "__main__":
     rospy.init_node("rov_heading")
     
-    cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
+    cmd_vel_pub = rospy.Publisher("/rov/cmd_vel", Twist, queue_size = 10)
     
     rospy.Subscriber("/rov/tms_center", PointStamped, center_call, cmd_vel_pub)
     rospy.Subscriber("/tms/inner_heading_done", Bool, condition_call)

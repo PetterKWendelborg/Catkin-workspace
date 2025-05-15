@@ -13,13 +13,15 @@ rov_heading_done = False
 last_time_in_window = None
 
 def center_call(center_msg, pub):
+    # global condition
     center_x = center_msg.point.x
     center_y = center_msg.point.y
     # rospy.loginfo(f"{center_x}, {center_y}")
 
-    stopping_distance = 2.2
-    hysteresis_duration = 5
-    force = 3
+    buffer_distance = 0.5
+    desired_distance = 1.5
+    stopping_distance = desired_distance + buffer_distance
+    hysteresis_duration = 4
     now = rospy.get_time()
     global last_time_in_window
     global rov_heading_done
@@ -43,7 +45,8 @@ def center_call(center_msg, pub):
                 rospy.signal_shutdown("Condition met")
 
         elif center_x > stopping_distance:
-            rov_wrench_msg.force.x = force
+            rov_wrench_msg.force.x = 2
+
         else:
             rov_wrench_msg.force.x = 0
 
@@ -67,5 +70,5 @@ if __name__ == "__main__":
 
     rospy.Subscriber("/rov/tms_center", PointStamped, center_call, cmd_vel_pub)
 
-    approach_pub = rospy.Publisher("/rov/approach_done", Bool, queue_size = 10)
+    approach_pub = rospy.Publisher("/rov/aproach_done", Bool, queue_size = 10)
     rospy.spin()

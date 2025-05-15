@@ -6,7 +6,6 @@
 
     <!-- Necessary for sensors -->
     <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/sonar_snippets.xacro" />
-    <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/sensor_snippets.xacro" />
     <!-- <xacro:include filename="$(find uuv_sensor_ros_plugins)/urdf/sensor_snippets.xacro"/> -->
     <!-- Necessary for thrusters -->
     <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/actuators.xacro" />

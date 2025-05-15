@@ -1,9 +1,7 @@
 #!/usr/bin/env python3 
 import rospy
-import math
-from geometry_msgs.msg import Point, Wrench, PointStamped
+from geometry_msgs.msg import Twist, PointStamped
 from std_msgs.msg import Bool
-import time
 
 inner_rov_heading_done = False 
 aruco_detected = False
@@ -15,8 +13,8 @@ def start_docking(aruco_msg, pub):
     distance_y_rov_to_aruco_4x4 = aruco_msg.point.y
     hysteresis_duration = 6
     terminal_center_hysterisis = 0.020
-    force_y = 1
-    rov_wrench_msg = Wrench()
+    force_y = 0.1
+    rov_twist_msg = Twist()
     boolean = Bool()
     now = rospy.get_time()
     global aruco_detected
@@ -30,8 +28,8 @@ def start_docking(aruco_msg, pub):
         # If ths ROV is above the TMS opening
         if distance_y_rov_to_aruco_4x4 >= -terminal_center_hysterisis and distance_y_rov_to_aruco_4x4 < terminal_center_hysterisis:
             rospy.loginfo("inside_hyst_window")
-            rov_wrench_msg.force.z = 0 
-            pub.publish(rov_wrench_msg) 
+            rov_twist_msg.linear.z = 0 
+            pub.publish(rov_twist_msg) 
 
             if last_time_in_window is None:
                 last_time_in_window = now
@@ -44,27 +42,27 @@ def start_docking(aruco_msg, pub):
                 rospy.signal_shutdown("Condition met")
                 
         elif distance_y_rov_to_aruco_4x4 < -terminal_center_hysterisis:
-            rov_wrench_msg.force.z = force_y     # Go downwards
-            pub.publish(rov_wrench_msg) 
+            rov_twist_msg.linear.z = force_y     # Go downwards
+            pub.publish(rov_twist_msg) 
 
         # If the ROV is below the TMS opening
         elif distance_y_rov_to_aruco_4x4 > terminal_center_hysterisis:
-            rov_wrench_msg.force.z = -force_y      # Go upwards
-            pub.publish(rov_wrench_msg) 
+            rov_twist_msg.linear.z = -force_y      # Go upwards
+            pub.publish(rov_twist_msg) 
 
         # If the ROV is in position to continue docking
         else:
-            rov_wrench_msg.force.z = 0       # Stand still
-            pub.publish(rov_wrench_msg) 
+            rov_twist_msg.linear.z = 0       # Stand still
+            pub.publish(rov_twist_msg) 
         # pub.publish(rov_wrench_msg) 
 
     elif not height_alignment_ready and not aruco_detected:
         rospy.loginfo(f"1 - start_condition: {height_alignment_ready} aruco_detected_4x4: {aruco_detected}")
 
     elif height_alignment_ready and  not aruco_detected:
-        rov_wrench_msg.force.z = 0  
+        rov_twist_msg.linear.z = 0  
         rospy.loginfo(f"2 - start_condition: {height_alignment_ready} aruco_detected_4x4: {aruco_detected}")
-        pub.publish(rov_wrench_msg) 
+        pub.publish(rov_twist_msg) 
 
     else:
         rospy.loginfo(f"3 - start_condition: {height_alignment_ready} aruco_detected_4x4: {aruco_detected}")
@@ -81,7 +79,7 @@ def aruco_call(aruco_msg):
 if __name__ == "__main__":
     rospy.init_node("height_alignment")
 
-    cmd_vel_pub = rospy.Publisher("/rov/thruster_manager/input", Wrench, queue_size = 10)
+    cmd_vel_pub = rospy.Publisher("/rov/cmd_vel", Twist, queue_size = 10)
     
     rospy.Subscriber("/rov/inner_heading_done", Bool, condition_call)
     rospy.Subscriber("/rov/aruco_detect_4x4", Bool, aruco_call)

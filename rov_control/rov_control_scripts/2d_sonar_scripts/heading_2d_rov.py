@@ -18,8 +18,7 @@ def center_call(center_msg, pub):
     center_y = center_msg.point.y
     # rospy.loginfo(f"{center_x}, {center_y}")
     hyst_window = 3.0
-    hysteresis_duration = 5
-    outer_torque = 1.5
+    hysteresis_duration = 4
     now = rospy.get_time()
     global last_time_in_window
     global tms_heading_done
@@ -51,11 +50,11 @@ def center_call(center_msg, pub):
                 rospy.signal_shutdown("Condition met")
 
         elif angle_to_center_gaz_deg <= -hyst_window:
-            rov_wrench_msg.torque.z = -outer_torque
+            rov_wrench_msg.torque.z = -2
             last_time_in_window = None
 
         elif angle_to_center_gaz_deg >= hyst_window:
-            rov_wrench_msg.torque.z = outer_torque
+            rov_wrench_msg.torque.z = 2
             last_time_in_window = None
         else:
             rov_wrench_msg.torque.z = 0

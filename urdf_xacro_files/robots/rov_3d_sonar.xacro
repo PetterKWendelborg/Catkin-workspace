@@ -88,50 +88,58 @@
   <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
 
     <gazebo>
-        <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
-            <fluid_density>${fluid_density}</fluid_density>
-            <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
-            <debug>0</debug>      
-            <link name="$(arg namespace)/base_link">
-                <neutrally_buoyant>1</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
-                <volume>${volume}</volume>  
-                <box>
-                    <width>${size_y}</width>
-                    <length>${size_x}</length>
-                    <height>${size_z}</height>
-                </box>
-                <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
+      <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+        <fluid_density>${fluid_density}</fluid_density>
+        <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
+        <debug>0</debug>      
+        <link name="$(arg namespace)/base_link">
+            <neutrally_buoyant>1</neutrally_buoyant>  <!-- Ensures mass and volume decide float/sink -->
+            <volume>${volume}</volume>  
+            <box>
+                <width>${size_y}</width>
+                <length>${size_x}</length>
+                <height>${size_z}</height>
+            </box>
+            <center_of_buoyancy>0 0 ${cob_z}</center_of_buoyancy>
 
-                <!-- Hydrodynamic Model using Fossen type -->
-                <hydrodynamic_model>
-                    <type>fossen</type>
+            <!-- Hydrodynamic Model using Fossen type -->
+            <hydrodynamic_model>
+                <type>fossen</type>
 
-                    <!-- Rough Added Mass Estimation -->
-                    <added_mass>
-                        ${0.1 * mass}  0  0  0  0  0
-                        0  ${0.1 * mass}  0  0  0  0  
-                        0  0  ${0.1 * mass}  0  0  0
-                        0  0  0  ${0.05 * mass}  0  0
-                        0  0  0  0  ${0.05 * mass}  0
-                        0  0  0  0  0  ${0.05 * mass}
-                    </added_mass>
+                <!-- Rough Added Mass Estimation -->
+                <added_mass>
+                    ${0.1 * mass}  0  0  0  0  0
+                    0  ${0.1 * mass}  0  0  0  0  
+                    0  0  ${0.1 * mass}  0  0  0
+                    0  0  0  ${0.05 * mass}  0  0
+                    0  0  0  0  ${0.05 * mass}  0
+                    0  0  0  0  0  ${0.05 * mass}
+                </added_mass>
 
-                    <!-- Rough Linear Damping Estimation -->
-                    <linear_damping>
-                        ${-100 * size_y} ${-100 * size_x} ${-100 * size_z} 
-                        ${-40 * size_z} ${-40 * size_x} ${-40 * size_y}
-                    </linear_damping>
+                <!-- Rough Linear Damping Estimation -->
+                <linear_damping>
+                    ${-100 * size_y} ${-100 * size_x} ${-100 * size_z} 
+                    ${-40 * size_z} ${-40 * size_x} ${-40 * size_y}
+                </linear_damping>
 
-                    <!-- Rough Quadratic Damping Estimation -->
-                    <quadratic_damping>
-                        ${-120 * size_y} ${-120 * size_x} ${-120 * size_z} 
-                        ${-50 * size_z} ${-50 * size_x} ${-50 * size_y}
-                    </quadratic_damping>
+                <!-- Rough Quadratic Damping Estimation -->
+                <quadratic_damping>
+                    ${-120 * size_y} ${-120 * size_x} ${-120 * size_z} 
+                    ${-50 * size_z} ${-50 * size_x} ${-50 * size_y}
+                </quadratic_damping>
 
-                </hydrodynamic_model>
+            </hydrodynamic_model>
 
-            </link>    
-        </plugin>
+        </link>    
+      </plugin>
+      <!-- Odometry for the PID -->
+      <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+        <robotNamespace>/$(arg namespace)</robotNamespace>
+        <bodyName>$(arg namespace)/base_link</bodyName>
+        <topicName>pose_gt</topicName>
+        <frameName>world</frameName>  <!-- or "odom" if using a local frame -->
+        <updateRate>30</updateRate>
+      </plugin>
     </gazebo>  
 
 
@@ -144,7 +152,7 @@
     <xacro:imu_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
         <origin xyz="0 0 0.63" rpy="0 0 0"/>
     </xacro:imu_sensor>
-    
+
       <!-- camera -->
     <xacro:camera_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
     <origin xyz="0.63 0 0.4" rpy="0 0 0"/>

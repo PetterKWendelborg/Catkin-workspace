@@ -161,7 +161,7 @@ def stop_docking_call(docking_stop):
     global display_plot
     global time_display_plot
 
-    time_display_plot_duration = 10
+    time_display_plot_duration = 8
 
     
     display_plot = docking_stop.data
