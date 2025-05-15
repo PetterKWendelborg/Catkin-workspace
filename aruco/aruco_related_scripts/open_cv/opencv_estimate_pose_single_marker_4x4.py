@@ -77,12 +77,7 @@ def image_callback(msg, pub):
                 rospy.loginfo("4x4_marker id0 found")
                 rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
                 cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
-                rospy.loginfo(f"tvecs_0: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
-                # aruco_0 = Point()
-                # aruco_0.x = tvecs[0][0][0]
-                # aruco_0.y = tvecs[0][0][1]
-                # aruco_0.z = tvecs[0][0][2]
-                # pub.publish(aruco_0)
+                rospy.loginfo(f"\ntvecs_0: \nx= {tvecs[0][0][0]} \ny= {tvecs[0][0][1]} \nz= {tvecs[0][0][2]}")
                 aruco_0 = PointStamped()
                 aruco_0.header.stamp =  msg.header.stamp
                 aruco_0.header.frame_id= "camera_frame_4x4_id0"
@@ -94,12 +89,8 @@ def image_callback(msg, pub):
                 rospy.loginfo("4x4_marker id3 found")
                 rvecs1, tvecs1, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
                 cv.drawFrameAxes(frame, mtx, dist, rvecs1, tvecs1, axis_size)
-                rospy.loginfo(f"tvecs_1: {tvecs1[0][0][0]} {tvecs1[0][0][1]} {tvecs1[0][0][2]}")
-                # aruco_1 = Point()
-                # aruco_1.x = tvecs1[0][0][0]
-                # aruco_1.y = tvecs1[0][0][1]
-                # aruco_1.z = tvecs1[0][0][2]
-                # 
+                rospy.loginfo(f"\ntvecs_1: \nx= {tvecs1[0][0][0]} \ny= {tvecs1[0][0][1]} \nz= {tvecs1[0][0][2]}")
+
                 aruco_1 = PointStamped()
                 aruco_1.header.stamp =  msg.header.stamp
                 aruco_1.header.frame_id= "camera_frame_4x4_id1"
@@ -120,11 +111,6 @@ def image_callback(msg, pub):
         aruco_detected.publish(boolean)
         rospy.loginfo("aruco not in frame")
         rospy.loginfo(f"last_time_in_window: {last_time_in_window}")
-        # center_msg = Point()
-        # center_msg.x = 0.0
-        # center_msg.y = 0.0
-        # center_msg.z = 0.0
-        # pub.publish(center_msg)
         center_msg = PointStamped()
         center_msg.header.stamp =  msg.header.stamp
         center_msg.header.frame_id= "camera_frame_4x4"
@@ -134,7 +120,7 @@ def image_callback(msg, pub):
         pub.publish(center_msg)
 
     # Shows each manipulated frames and resized from camera resolution to the value below
-    frame = cv.resize(frame, (1280, 720))   
+    frame = cv.resize(frame, (640, 480))   
     cv.imshow("frame_4x4_ArUco_marker",frame)    
     cv.waitKey(1) 
             

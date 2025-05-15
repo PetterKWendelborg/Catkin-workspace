@@ -8,15 +8,14 @@ import cv2.aruco as aruco
 from geometry_msgs.msg import Point, PointStamped
 from std_msgs.msg import Bool
 
-# from matplotlib import pyplot as plt 
-
+#480p
 # mtx = np.array([[553.81567322,   0,         319.71592178],
 #                 [  0,         554.03405004, 239.90814897],
 #                 [  0,           0,           1        ]])
 
 # dist = np.array([[ -1.12336404e-04, 5.83416985e-03, -3.92632069e-05, 2.03091756e-05, -4.83095205e-03]])
 
-
+#720p
 # mtx = np.array([[1.10904780e+03,   0,         6.38431658e+02],
 #                 [  0,         1.10907114e+03, 3.59179086e+02],
 #                 [  0,           0,           1        ]])
@@ -77,17 +76,11 @@ def image_callback(msg,pub):
 
             cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
 
-            # Predtermined ids/ we have id 0
             if ids[i] == 0:
             #     rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(corners[i], marker_size, mtx, dist)
             #     cv.drawFrameAxes(frame, mtx, dist, rvecs, tvecs, axis_size)
                 # if tvecs is not None:
-                rospy.loginfo(f"tvecs: {tvecs[0][0][0]} {tvecs[0][0][1]} {tvecs[0][0][2]}")
-
-                # center_msg = Point()
-                # center_msg.x = tvecs[0][0][0]
-                # center_msg.y = tvecs[0][0][1]
-                # center_msg.z = tvecs[0][0][2]
+                rospy.loginfo(f"\ntvecs: \nx= {tvecs[0][0][0]} \ny= {tvecs[0][0][1]} \nz= {tvecs[0][0][2]}")
                 center_msg = PointStamped()
                 center_msg.header.stamp =  msg.header.stamp
                 center_msg.header.frame_id= "camera_frame"
@@ -117,7 +110,7 @@ def image_callback(msg,pub):
         center_msg.point.z = 0.0
         pub.publish(center_msg)
     # Shows each manipulated frames and resized from camera resolution to the value below
-    frame = cv.resize(frame, (1280, 780))   
+    frame = cv.resize(frame, (640, 480))   
     cv.imshow("frame_5x5_ArUco_marker",frame)    
     cv.waitKey(1) 
 
