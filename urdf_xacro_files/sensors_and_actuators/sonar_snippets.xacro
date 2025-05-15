@@ -27,7 +27,7 @@
   </xacro:macro>
 
   <!-- Inspired by m450-130: http://www.blueview.com/products/2d-imaging-sonar/m900-series/ -->
-  <xacro:macro name="forward_multibeam_sonar_m450_130" params="namespace parent_link visualize:=true *origin">
+  <xacro:macro name="forward_multibeam_sonar_m450_130" params="namespace parent_link visualize:=false *origin">
     <xacro:multibeam_sonar
       namespace="${namespace}"
       suffix=""
@@ -154,7 +154,7 @@
     <gazebo reference="${namespace}/sonar_3d_link">
       <material>Gazebo/Red</material>
       <sensor name="sonar_3d_sensor" type="depth">
-        <visualize>true</visualize>
+        <!-- <visualize>true</visualize> -->
         <updateRate>5</updateRate>
         <camera>
           <horizontal_fov>1.57</horizontal_fov>

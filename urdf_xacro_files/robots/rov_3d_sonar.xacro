@@ -144,7 +144,7 @@
     <xacro:imu_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
         <origin xyz="0 0 0.63" rpy="0 0 0"/>
     </xacro:imu_sensor>
-
+    
       <!-- camera -->
     <xacro:camera_sensor parent_link="$(arg namespace)/base_link" namespace="$(arg namespace)">
     <origin xyz="0.63 0 0.4" rpy="0 0 0"/>

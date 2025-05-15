@@ -49,23 +49,25 @@
     <arg name="config_file" value="$(arg config_file)"/>
     <arg name="tam_file" value="$(arg tam_file)"/>
    </include>
-<!-- 2d sonar application -->
-  <!-- <node name="rov_controller" pkg="deep_ocean" type="rov_controller_twod.py" output="screen"/>
-  <node name="rov_approach" pkg="deep_ocean" type="rov_approach_twod.py" output="screen"/> -->
-
+  <!-- 2d sonar application -->
+  <node name="rov_heading" pkg="deep_ocean" type="heading_2d_rov.py" output="screen"/>
+  <node name="approach" pkg="deep_ocean" type="approach_2d_rov.py" output="screen"/>
+    
+  <!-- plot 2d sonar-->
+  <node name="plot_approach_2d" pkg="deep_ocean" type="plot_approach_2d.py" output="screen"/>
   <!-- 3d sonar -->
-  <node name="rough_rov_heading" pkg="deep_ocean" type="heading_rough_3d_rov.py" output="screen"/>
+  <!-- <node name="rough_rov_heading" pkg="deep_ocean" type="heading_rough_3d_rov.py" output="screen"/>
   <node name="rough_height_alignment" pkg="deep_ocean" type="height_alignment_rough.py" output="screen"/>
   <node name="rov_approach" pkg="deep_ocean" type="approach.py" output="screen"/>
-  <node name="fine_rov_heading" pkg="deep_ocean" type="heading_fine_3d_rov.py" output="screen"/>  
+  <node name="fine_rov_heading" pkg="deep_ocean" type="heading_fine_3d_rov.py" output="screen"/>   -->
   
   <!-- camera -->
-  <node name="fine_height_alignment" pkg="deep_ocean" type="height_alignment_fine.py" output="screen"/>
-  <node name="rov_terminal_docking" pkg="deep_ocean" type="terminal_docking.py" output="screen"/>
+  <!-- <node name="fine_height_alignment" pkg="deep_ocean" type="height_alignment_fine.py" output="screen"/>
+  <node name="rov_terminal_docking" pkg="deep_ocean" type="terminal_docking.py" output="screen"/> -->
 
-  <!-- plot -->
-  <!-- <node name="plot_distance_from_camera_to_aruco_marker_5x5" pkg="deep_ocean" type="plot_distance.py" output="screen" />
-  <node name="plot_linear_velocity_x_and_distance" pkg="deep_ocean" type="plot_linear_velocity_x_and_distance.py" output="screen" />
+  <!-- plot 3d sonar-->
+  <!-- <node name="plot_distance_from_camera_to_aruco_marker_5x5" pkg="deep_ocean" type="plot_distance.py" output="screen" /> -->
+  <!-- <node name="plot_linear_velocity_x_and_distance" pkg="deep_ocean" type="plot_linear_velocity_x_and_distance.py" output="screen" />
   <node name="plot_heading_angle_yaw_rov" pkg="deep_ocean" type="plot_heading_angle_yaw_rov.py" output="screen" />
   <node name="plot_linear_velocity_z_and_height" pkg="deep_ocean" type="plot_linear_velocity_z_and_height.py" output="screen" /> -->
 </launch>

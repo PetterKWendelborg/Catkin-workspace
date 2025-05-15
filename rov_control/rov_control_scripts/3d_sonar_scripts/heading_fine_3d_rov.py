@@ -15,8 +15,8 @@ def center_call(center_msg, pub):
     center_x = center_msg.point.x
     center_z = center_msg.point.z
     inner_hyst_window = 0.5
-    outer_hyst_window = 15.0
-    hysteresis_duration = 4
+    outer_hyst_window = 10.0
+    hysteresis_duration = 5
     now = rospy.get_time()
 
     inner_torque = 0.1

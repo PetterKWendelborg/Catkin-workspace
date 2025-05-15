@@ -14,12 +14,12 @@ last_time_in_window = None
 def center_call(center_msg, pub):
     center_x = center_msg.point.x
     center_z = center_msg.point.z
-    inner_hyst_window = 1
+    inner_hyst_window = 3
     outer_hyst_window = 10.0
-    hysteresis_duration = 4
+    hysteresis_duration = 5
     now = rospy.get_time()
 
-    inner_torque = 0.3
+    inner_torque = 0.5
     outer_torque = 1.5
 
     global last_time_in_window

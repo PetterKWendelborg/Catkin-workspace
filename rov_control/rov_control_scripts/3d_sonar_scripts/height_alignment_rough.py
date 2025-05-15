@@ -20,12 +20,12 @@ def center_call(center_msg, pub):
     high_hyst_window = 0.2
     low_hyst_window = -0.5
 
-    hysteresis_duration = 4
+    hysteresis_duration = 5
 
     now = rospy.get_time()
 
     inner_force = 1.5
-    outer_force = 2.5
+    outer_force = 3
 
     global last_time_in_window
     global height_alignment_ready

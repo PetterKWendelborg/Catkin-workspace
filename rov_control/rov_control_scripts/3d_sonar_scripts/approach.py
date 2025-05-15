@@ -29,10 +29,10 @@ def center_call(center_msg, pub):
 
     inner_hyst_window_range =  2.2
 
-    outer_force = 5
-    outer_middle_force = 3
-    middle_inner_force = 0.5
-    hysteresis_duration = 4
+    outer_force = 6
+    outer_to_middle_force = 3
+    middle_to_inner_force = 0.5
+    hysteresis_duration = 5
     now = rospy.get_time()
     global last_time_in_window
     global approach_ready
@@ -62,11 +62,11 @@ def center_call(center_msg, pub):
 
         # If the distance is between the middle_hyst_window_range and outer_hyst_window_range 
         elif center_z > middle_hyst_window_range and center_z < outer_hyst_window_range:
-            rov_wrench_msg.force.x = outer_middle_force
+            rov_wrench_msg.force.x = outer_to_middle_force
 
         # If the distance is between the inner_hyst_window_range and middle_hyst_window_range  
         elif center_z > inner_hyst_window_range and center_z < middle_hyst_window_range:
-            rov_wrench_msg.force.x = middle_inner_force
+            rov_wrench_msg.force.x = middle_to_inner_force
 
         else:
             rov_wrench_msg.force.x = 0

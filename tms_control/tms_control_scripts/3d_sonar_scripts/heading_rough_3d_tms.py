@@ -18,12 +18,12 @@ def center_call(center_msg, pub_wrench):
     boolean = Bool()
 
     # defining the inner and out hysterisis window in degrees
-    inner_hyst_window = 1.0
+    inner_hyst_window = 3.0
     outer_hyst_window = 10.0
     # defining the time the TMS must be inside the hysterisis window for heading to be considered complete
-    hysteresis_duration = 8
+    hysteresis_duration = 5
     # defining the thruster force for when outside the inner and outer hysterisis window
-    inner_torque = 0.5
+    inner_torque = 1
     outer_torque = 4
 
     if center_z != 0:
