@@ -27,9 +27,9 @@ def center_call(center_msg, pub):
 
     inner_hyst_window_range =  2.2
 
-    outer_force = 3
+    outer_force = 5
     outer_middle_force = 3
-    middle_inner_force = 0.2
+    middle_inner_force = 1
     hysteresis_duration = 4
     now = rospy.get_time()
     global last_time_in_window
@@ -43,15 +43,15 @@ def center_call(center_msg, pub):
         #  If the distance is less than inner_hyst_window_range
         if center_z <= inner_hyst_window_range:
             rov_twist_msg.linear.x = 0
-
-            if last_time_in_window is None:
-                last_time_in_window = now
-
-            elif now - last_time_in_window >= hysteresis_duration:
-                # Stayed in window for enough time
-                boolean.data = True
-                approach_pub.publish(boolean)
-                rospy.signal_shutdown("Condition met")
+            last_time_in_window = now
+            pub.publish(rov_twist_msg)
+            while last_time_in_window != None:
+                now = rospy.get_time()
+                if now - last_time_in_window >= hysteresis_duration:
+                    # Stayed in window for enough time
+                    boolean.data = True
+                    approach_pub.publish(boolean)
+                    rospy.signal_shutdown("Condition met")
 
         # If the distance is larger/outside  oter_hyst_window_range
         elif center_z >= outer_hyst_window_range:

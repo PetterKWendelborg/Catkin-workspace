@@ -22,8 +22,8 @@ def start_docking(aruco_msg, pub):
     inside_terminal_opening_hyst_range = stopping_distance
     
 
-    outer_force = 2
-    inner_force = 1
+    outer_force = 4
+    inner_force = 2
 
     rov_twist_msg = Twist()
     boolean = Bool()

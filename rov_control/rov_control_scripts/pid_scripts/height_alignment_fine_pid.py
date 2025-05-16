@@ -12,7 +12,7 @@ def start_docking(aruco_msg, pub):
     # global condition
     distance_y_rov_to_aruco_4x4 = aruco_msg.point.y
     hysteresis_duration = 6
-    terminal_center_hysterisis = 0.020
+    terminal_center_hysterisis = 0.002
     force_y = 0.1
     rov_twist_msg = Twist()
     boolean = Bool()
@@ -29,17 +29,15 @@ def start_docking(aruco_msg, pub):
         if distance_y_rov_to_aruco_4x4 >= -terminal_center_hysterisis and distance_y_rov_to_aruco_4x4 < terminal_center_hysterisis:
             rospy.loginfo("inside_hyst_window")
             rov_twist_msg.linear.z = 0 
+            last_time_in_window = now
             pub.publish(rov_twist_msg) 
-
-            if last_time_in_window is None:
-                last_time_in_window = now
-
-            elif now - last_time_in_window >= hysteresis_duration:
-                # Stayed in window for enough time
-                rospy.loginfo("plz_dock_rov")
-                boolean.data = True
-                docking_pub.publish(boolean)
-                rospy.signal_shutdown("Condition met")
+            while last_time_in_window != None:
+                now = rospy.get_time()
+                if now - last_time_in_window >= hysteresis_duration:
+                    # Stayed in window for enough time
+                    boolean.data = True
+                    docking_pub.publish(boolean)
+                    rospy.signal_shutdown("Condition met")
                 
         elif distance_y_rov_to_aruco_4x4 < -terminal_center_hysterisis:
             rov_twist_msg.linear.z = force_y     # Go downwards

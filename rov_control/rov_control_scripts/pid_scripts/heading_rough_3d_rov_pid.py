@@ -19,8 +19,8 @@ def center_call(center_msg, pub):
     hysteresis_duration = 4
     now = rospy.get_time()
 
-    inner_torque = 0.3
-    outer_torque = 1.0
+    inner_torque = 0.6
+    outer_torque = 2.0
 
     global last_time_in_window
     global tms_heading_done
@@ -41,15 +41,15 @@ def center_call(center_msg, pub):
 
         if angle_to_center_gaz_deg >= -inner_hyst_window and angle_to_center_gaz_deg <= inner_hyst_window:
             rov_twist_msg.angular.z = 0
-
-            if last_time_in_window is None:
-                last_time_in_window = now
-
-            elif now - last_time_in_window >= hysteresis_duration:
-                # Stayed in window for enough time
-                boolean.data = True
-                condition_pub.publish(boolean)
-                rospy.signal_shutdown("Condition met")
+            last_time_in_window = now
+            pub.publish(rov_twist_msg)
+            while last_time_in_window != None:
+                now = rospy.get_time()
+                if now - last_time_in_window >= hysteresis_duration:
+                    # Stayed in window for enough time
+                    boolean.data = True
+                    condition_pub.publish(boolean)
+                    rospy.signal_shutdown("Condition met")
 
         # om vinkel er mindre enn -15
         elif angle_to_center_gaz_deg <= -outer_hyst_window:
