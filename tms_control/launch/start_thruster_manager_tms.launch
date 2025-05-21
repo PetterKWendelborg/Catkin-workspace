@@ -64,7 +64,4 @@
   <!-- plots 3d sonar-->
   <node name="plot_heading_angle_yaw_tms" pkg="deep_ocean" type="plot_heading_angle_yaw_tms.py" output="screen" />
 
-
-
-
 </launch>

@@ -86,15 +86,10 @@
 
   <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
 
-    <!-- initilizing Sonar macro -->
+    <!-- initilizing Sonar macro from UUV -->
   <xacro:forward_multibeam_sonar_m450_130 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" visualize="$(arg visualize)">
     <origin xyz="0.63 0 0.63" rpy="0 0 0"/>
   </xacro:forward_multibeam_sonar_m450_130>
-
-    <!-- mounting camera -->
-  <!--xacro:default_camera namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" suffix="">
-    <origin xyz="0.63 0 0.4" rpy="0 0.6 0"/>
-  </xacro:default_camera-->
 
     <gazebo>
         <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">

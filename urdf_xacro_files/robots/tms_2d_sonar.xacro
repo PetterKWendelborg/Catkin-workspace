@@ -122,7 +122,7 @@
 
   <xacro:default_joint_state_publisher namespace="$(arg namespace)" update_rate="50"/>
 
-  <!-- Initilizing thruster macro, might use another macro to achieve thrusters -->
+  <!-- Initilizing thruster macro -->
   <xacro:thruster_macro namespace="$(arg namespace)" thruster_id="0" mesh_scale="${scale_factor}">
     <origin xyz="${0.6650895*scale_factor} ${0.367385*scale_factor} ${0.828822*scale_factor}" rpy="0 0 ${3*pi/4}"/>
   </xacro:thruster_macro>
@@ -144,14 +144,6 @@
   <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="0" scale="${1}">
     <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} ${0.485*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>
   </xacro:aruco_marker_4x4>
-
-  <!-- <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="1" scale="${1}">
-    <origin xyz="${-0.8*scale_factor} ${0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
-  </xacro:aruco_marker_4x4> -->
-
-  <!-- <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="2" scale="${1}">
-    <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} 0" rpy="${pi/2} 0 ${-pi/2}"/>
-  </xacro:aruco_marker_4x4> -->
 
   <xacro:aruco_marker_4x4 namespace="$(arg namespace)" parent_link="$(arg namespace)/base_link" id="3" scale="${1}">
     <origin xyz="${-0.8*scale_factor} ${-0.5*scale_factor} ${0.485*scale_factor}" rpy="${pi/2} 0 ${-pi/2}"/>

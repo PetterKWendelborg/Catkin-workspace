@@ -5,7 +5,7 @@
   <arg name="uuv_name" default="$(arg model_name)"/>
   <!-- Name of the base link -->
   <arg name="base_link" default="base_link" />
-
+  <arg name="pid" default="" />
   <arg name="sonar_type" default="3d_advanced" />
   <!--
     Thruster manager timeout.
@@ -57,14 +57,14 @@
   <!-- <node name="plot_approach_2d" pkg="deep_ocean" type="plot_approach_2d.py" output="screen"/> -->
 
   <!-- 3d sonar scripts-->
-  <node name="rough_rov_heading" pkg="deep_ocean" type="heading_rough_3d_rov.py" output="screen"/>
-  <node name="rough_height_alignment" pkg="deep_ocean" type="height_alignment_rough.py" output="screen"/>
-  <node name="rov_approach" pkg="deep_ocean" type="approach.py" output="screen"/>
-  <node name="fine_rov_heading" pkg="deep_ocean" type="heading_fine_3d_rov.py" output="screen"/>  
+  <node name="rough_rov_heading$(arg pid)" pkg="deep_ocean" type="heading_rough_3d_rov$(arg pid).py" output="screen"/>
+  <node name="rough_height_alignment$(arg pid)" pkg="deep_ocean" type="height_alignment_rough$(arg pid).py" output="screen"/>
+  <node name="rov_approach$(arg pid)" pkg="deep_ocean" type="approach$(arg pid).py" output="screen"/>
+  <node name="fine_rov_heading$(arg pid)" pkg="deep_ocean" type="heading_fine_3d_rov$(arg pid).py" output="screen"/>  
   
   <!-- camera scripts-->
-  <node name="fine_height_alignment" pkg="deep_ocean" type="height_alignment_fine.py" output="screen"/>
-  <node name="rov_terminal_docking" pkg="deep_ocean" type="terminal_docking.py" output="screen"/>
+  <node name="fine_height_alignment$(arg pid)" pkg="deep_ocean" type="height_alignment_fine$(arg pid).py" output="screen"/>
+  <node name="rov_terminal_docking$(arg pid)" pkg="deep_ocean" type="terminal_docking$(arg pid).py" output="screen"/>
 
   <!-- plot 3d sonar-->
   <node name="plot_linear_velocity_x_and_distance" pkg="deep_ocean" type="plot_linear_velocity_x_and_distance.py" output="screen" />
