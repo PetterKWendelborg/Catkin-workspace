@@ -52,17 +52,17 @@
    
 
   <!-- Heading using 2d sonar -->  
-  <node name="tms_heading" pkg="deep_ocean" type="heading_2d_tms.py" output="screen"/>
+  <!-- <node name="tms_heading" pkg="deep_ocean" type="heading_2d_tms.py" output="screen"/> -->
 
   <!-- plots 2d sonar-->
-  <node name="plot_heading_angle_yaw_tms" pkg="deep_ocean" type="plot_heading_angle_yaw_2d_tms_rov.py" output="screen" />
+  <!-- <node name="plot_heading_angle_yaw_2d_tms_rov" pkg="deep_ocean" type="plot_heading_angle_yaw_2d_tms_rov.py" output="screen" /> -->
 
   <!-- Heading using 3d sonar -->  
-  <!-- <node name="outer_tms_heading" pkg="deep_ocean" type="heading_rough_3d_tms.py" output="screen"/>
-  <node name="inner_tms_heading" pkg="deep_ocean" type="heading_fine_3d_tms.py" output="screen"/> -->
+  <node name="outer_tms_heading" pkg="deep_ocean" type="heading_rough_3d_tms.py" output="screen"/>
+  <node name="inner_tms_heading" pkg="deep_ocean" type="heading_fine_3d_tms.py" output="screen"/>
 
   <!-- plots 3d sonar-->
-  <!-- <node name="plot_heading_angle_yaw_tms" pkg="deep_ocean" type="plot_heading_angle_yaw_tms.py" output="screen" /> -->
+  <node name="plot_heading_angle_yaw_tms" pkg="deep_ocean" type="plot_heading_angle_yaw_tms.py" output="screen" />
 
 
 
