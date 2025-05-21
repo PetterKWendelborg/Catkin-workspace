@@ -3,7 +3,7 @@
 
   <!-- Necessary for sonar to work -->
   <xacro:arg name="namespace" default="tms"/>
-  <xacro:arg name="visualize" default="false"/>
+  <xacro:arg name="visualize" default="true"/>
   <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/sonar_snippets.xacro" />
   <xacro:include filename="$(find deep_ocean)/urdf_xacro_files/sensors_and_actuators/sensor_snippets.xacro" />
   <!-- Necessary for thruster_macro to work -->

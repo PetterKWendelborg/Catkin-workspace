@@ -5,7 +5,7 @@
 
     <!-- Change these values to spawn the ROV and TMS with 3d or 2d sonar using sonar_type,
          and change visualize to enable or disable the visualisation of the TMS' 2d sonar -->
-    <arg name="visualize" default="true" />
+    <arg name="visualize" default="True" />
     <arg name="sonar_type" default="3d" />  <!-- '3d' or '2d' -->
 
     <!-- Start undervannsverden -->
@@ -22,7 +22,7 @@
 
     <!-- Spawn model in Gazebo (same for both) -->
     <node name="spawn_rov" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-param /$(arg namespace_rov)/robot_description -urdf -model rov -x -2 -y -1 -z -9.2" />
+          args="-param /$(arg namespace_rov)/robot_description -urdf -model rov -x -3 -y 0 -z -9.76" />
 
     <!-- Robot state publisher (same for both) -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
@@ -43,7 +43,7 @@
     </group>
   </group>
 
-
+<!-- visualize:=$(arg visualize)" /> -->
 
   <!-- Spawn TMS (Conditional Selection) -->
   <group ns="$(arg namespace_tms)">
@@ -51,8 +51,8 @@
     <param name="robot_description"
       command="$(find xacro)/xacro '$(find deep_ocean)/urdf_xacro_files/robots/tms_$(arg sonar_type)_sonar.xacro'
         namespace:=$(arg namespace_tms)
-        visualize:=$(arg visualize)" />
-
+        visualize:=False" />
+        
     <!-- Spawn model in Gazebo (same for both) -->
     <node name="spawn_tms" pkg="gazebo_ros" type="spawn_model" output="screen"
           args="-param /$(arg namespace_tms)/robot_description -urdf -model tms -x 3 -y 0 -z -10 -R 0 -P 0 -Y 0" />
